@@ -28,6 +28,9 @@ sketch
 # Local History for Visual Studio Code
 .history/
 
+# IntelliJ IDEA 관련 설정 무시
+.idea/
+
 # Built Visual Studio Code Extensions
 *.vsix
 
