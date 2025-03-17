@@ -5,13 +5,14 @@ import underLogoImg from "../../assets/images/main_under_logo.png";
 import signupImg from "../../assets/images/login_page_two.png";
 import "../../styles/main_background.css";
 import BeeAnimation from "../../components/animations/BeeAnimation";
+import FlowerAnimation from "../../components/animations/FlowerAnimation";
 
 const SignupLoginMain = () => {
     return (
       <>
         {/* 벌이 화면 전체를 날아다니도록 background-container 밖에서 배치 */}
         <BeeAnimation />
-
+        <FlowerAnimation/>
         <div className="background-container relative">
           <div className="relative z-10 flex flex-col items-center -translate-y-24">
               {/* 쏙쏙 로고 */}
