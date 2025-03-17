@@ -1,8 +1,7 @@
-// Tailwind v4 방식
+// Tailwind v3 방식
 export default {
-    plugins: {
-      '@tailwindcss/postcss': {},
-      autoprefixer: {},
-    },
-  };
-  
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
