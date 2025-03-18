@@ -1,0 +1,107 @@
+/* 회원가입, 로그인 재사용 css */
+
+/* 입력 필드 컨테이너 */
+.input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px; /* 입력 필드 간격 */
+    margin-left: -90px;
+}
+
+/* 개별 입력 필드 라벨 + 인풋 그룹 */
+.input-wrapper {
+    display: flex;
+    align-items: center; /* ✅ 같은 줄 정렬 */
+    justify-content: center; /* ✅ 전체적으로 가운데 정렬 */
+    gap: 15px; /* 라벨과 입력 필드 사이 여백 */
+    width: 480px; /* ✅ 전체 너비 맞추기 */
+}
+
+/* 모든 input을 동일한 구조로 정렬하기 위해 input-with-icon을 추가 */
+.input-with-icon {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+/* 라벨 스타일 */
+.input-wrapper label {
+    font-size: 22px;
+    font-family: "KccGanpan"; /* 기존 스타일 유지 */
+    color: #5C3B1E; /* 짙은 갈색 */
+    white-space: nowrap; /* ✅ 텍스트 줄바꿈 방지 */
+    width: 120px; /* ✅ 동일한 너비로 정렬 */
+    text-align: right; /* ✅ 라벨을 오른쪽 정렬 */
+}
+
+/* 개별 입력 필드 */
+.custom-input {
+    width: 320px; /* ✅ 모든 입력 필드 동일한 너비 */
+    padding: 12px 14px;
+    border: 4px solid #A67C52; /* 나무 색상 */
+    background: #FBE8C9; /* 부드러운 베이지 */
+    border-radius: 20px;
+    font-size: 20px; /* 글자 크기 살짝 줄임 */
+    font-family: "KccGanpan";
+    color: #5C3B1E;
+    outline: none;
+    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    box-shadow: 3px 3px 0px #5C3B1E;
+}
+
+/* placeholder 색상 */
+.custom-input::placeholder {
+    color: #8B5E3C;
+    font-size: 19px;
+}
+
+/* 포커스 효과 */
+.custom-input:focus {
+    border-color: #8B5E3C;
+    transform: scale(1.03);
+}
+
+/* 확인 버튼 스타일 */
+.confirm-button {
+    width: 120px;
+    padding: 8px 10px;
+    border: 4px solid #A67C52; /* 나무 테두리 */
+    background: #FBE8C9; /* 부드러운 베이지 */
+    border-radius: 20px;
+    font-size: 20px;
+    font-family: "KccGanpan"; /* 동화 느낌 */
+    color: #5C3B1E;
+    cursor: pointer;
+    outline: none;
+    transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    box-shadow: 3px 3px 0px #5C3B1E;
+}
+
+/* 버튼 hover 효과 */
+.confirm-button:hover {
+    background: #EAD2A8; /* 살짝 어두운 베이지 */
+    transform: scale(1.03);
+}
+
+/* 버튼 클릭 시 눌리는 효과 */
+.confirm-button:active {
+    transform: scale(0.97);
+    box-shadow: 1px 1px 0px #5C3B1E;
+}
+
+/* 비밀번호 확인 체크 아이콘 */
+.check-icon {
+    font-size: 20px;
+}
+
+/* 비밀번호 일치할 때 (초록색 체크) */
+.valid {
+    color: green;
+}
+
+/* 비밀번호 불일치할 때 (빨간색 X) */
+.invalid {
+    color: red;
+}
