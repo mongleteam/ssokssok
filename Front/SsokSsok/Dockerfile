@@ -4,6 +4,6 @@ COPY package.json .
 RUN pnpm install
 COPY . .
 EXPOSE 5080
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "run", "dev"]
 
 # 변경용
