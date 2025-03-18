@@ -10,7 +10,7 @@ const LoginPage = () => {
         <BeeAnimation />
         <FlowerAnimation/>
             <div className="background-container relative flex flex-col items-center">
-                <img src={LoginBoard} alt="login_board" className="relative flex justify-center w-[14rem] mt-[-90px]"/>
+                <img src={LoginBoard} alt="login_board" className="relative flex justify-center w-[17rem] mt-[-90px]"/>
                 
                 <div className="input-container mt-12">
                     {/* 아이디 입력 */}

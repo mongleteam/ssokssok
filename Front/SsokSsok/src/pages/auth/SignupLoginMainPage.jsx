@@ -34,18 +34,18 @@ const SignupLoginMain = () => {
 
               <div className="relative -translate-y-12">
                   {/* 로고 밑에 이미지 이야기 속으로 쏙 */}
-                  <img src={underLogoImg} alt="under_logo_img" className="w-[35rem]"/>
+                  <img src={underLogoImg} alt="under_logo_img" className="w-[37rem]"/>
                   <div className="absolute left-1/2 -translate-x-1/2 -bottom-[16rem] z-[-1]">
                       {/* 회원가입 로그인 버튼 */}
                       <img src={signupImg} alt="signup, login button" className="w-[19rem]"/>
                       {/* 회원가입 버튼 */}
-                      <button className="absolute top-[37%] left-1/2 -translate-x-1/2 font-ganpan text-black text-3xl"
+                      <button className="absolute top-[37%] left-1/2 -translate-x-1/2 font-ganpan text-black text-4xl"
                             onClick={() => navigate("/signup")}>
                           회원가입
                       </button>
 
                       {/* 로그인 버튼 */}
-                      <button className="absolute top-[72%] left-1/2 -translate-x-1/2 font-ganpan text-black text-3xl"
+                      <button className="absolute top-[72%] left-1/2 -translate-x-1/2 font-ganpan text-black text-4xl"
                             onClick={() => navigate("/login")}>
                           로그인
                       </button>

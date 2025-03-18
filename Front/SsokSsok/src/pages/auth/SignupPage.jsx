@@ -25,7 +25,7 @@ const SignupPage = () => {
             <FlowerAnimation />
             <div className="background-container relative flex flex-col items-center">
                 {/* 회원가입 팻말 */}
-                <img src={SignupBoard} alt="SignupBoard" className="relative flex justify-center w-[14rem] mt-[-50px]" />
+                <img src={SignupBoard} alt="SignupBoard" className="relative flex justify-center w-[17rem] mt-[-50px]" />
 
                 {/* 입력 폼 */}
                 <div className="input-container mt-7">
@@ -70,7 +70,7 @@ const SignupPage = () => {
                 </div>
 
                     {/* 확인버튼 만들어라 지인아 ..  */}
-                    <button className="confirm-button mt-7">확인</button>
+                    <button className="confirm-button mt-8">확인</button>
 
             </div>
         </>

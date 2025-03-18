@@ -5,7 +5,7 @@ import rabbitAnimation from "../../lottie/rabbit.json"; // 🐰 Lottie 파일 �
 const RabbitAnimation = () => {
     return (
         <div className="flex justify-center w-full">
-            <div className="absolute top-[-158px] left-[82%] -translate-x-1/2 w-[150px] h-[150px]">
+            <div className="absolute top-[-154px] left-[84%] -translate-x-1/2 w-[150px] h-[150px]">
                 <Lottie animationData={rabbitAnimation} loop={true} />
             </div>
         </div>
