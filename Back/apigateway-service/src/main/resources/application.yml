@@ -13,18 +13,18 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: user-service
+        - id: user-service-no-jwt
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/v1/auth/login, /api/v1/auth/signup
           filters: [ ]
-        - id: user-service
+        - id: user-service-auth-other
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/v1/auth/**
           filters:
             - name: AuthorizationHeaderFilter
-        - id: user-service
+        - id: user-service-user
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/v1/user/**

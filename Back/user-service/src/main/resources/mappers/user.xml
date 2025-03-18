@@ -35,4 +35,16 @@
     <select id="findById" resultMap="UserResultMap">
         SELECT * FROM user WHERE id = #{id}
     </select>
+
+    <!--  회원 정보 조회  -->
+    <select id="getUserInfo" resultMap="UserResultMap">
+        SELECT id, name, nickname, email
+        FROM user
+        WHERE user_pk = #{userId}
+    </select>
+
+    <!-- 회원탈퇴 -->
+    <delete id="deleteUser">
+        DELETE FROM user WHERE user_pk = #{userId}
+    </delete>
 </mapper>

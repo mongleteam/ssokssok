@@ -86,4 +86,19 @@ public class AuthServicempl implements AuthService {
         return new LoginResponseDTO(accessToken, refreshToken);
     }
 
+    @Override
+    public void logout(String userPk, HttpServletResponse response) {
+        // 1. Redis에서 Refresh Token 삭제
+        redisTemplate.delete("RT:" + userPk);
+
+        // 2. 클라이언트의 Refresh Token 쿠키 삭제
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0); // 쿠키 즉시 만료
+        response.addCookie(refreshTokenCookie);
+
+    }
+
 }

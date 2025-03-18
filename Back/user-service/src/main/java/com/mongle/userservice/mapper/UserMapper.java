@@ -15,4 +15,8 @@ public interface UserMapper {
     int countByNickname(@Param("nickname") String nickname);
 
     User findById(@Param("id") String id);
+
+    User getUserInfo(@Param("userId") int userId);
+
+    void deleteUser(@Param("userId") int userId);
 }
