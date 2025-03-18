@@ -1,10 +1,10 @@
-package com.mongle.ssockssock;
+package com.mongle.apigatewayservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SsockssockApplicationTests {
+class ApigatewayServiceApplicationTests {
 
     @Test
     void contextLoads() {
