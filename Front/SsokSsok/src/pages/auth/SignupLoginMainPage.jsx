@@ -7,7 +7,7 @@ import "../../styles/main_background.css";
 import BeeAnimation from "../../components/animations/BeeAnimation";
 import FlowerAnimation from "../../components/animations/FlowerAnimation";
 import { useNavigate } from "react-router-dom";
-
+import RabbitAnimation from "../../components/animations/RabbitAnimation";
 const SignupLoginMain = () => {
     const navigate = useNavigate()
     return (
@@ -26,10 +26,15 @@ const SignupLoginMain = () => {
                   animate={{ rotate: [0, 2, -2, 2, -2, 0] }} 
                   transition={{ repeat: Infinity, duration: 2 }}
               />
+
+              {/* 🐰 토끼 애니메이션 */}
+              <div className="relative w-full flex justify-center">
+                  <RabbitAnimation />
+              </div>
+
               <div className="relative -translate-y-12">
                   {/* 로고 밑에 이미지 이야기 속으로 쏙 */}
                   <img src={underLogoImg} alt="under_logo_img" className="w-[35rem]"/>
-
                   <div className="absolute left-1/2 -translate-x-1/2 -bottom-[16rem] z-[-1]">
                       {/* 회원가입 로그인 버튼 */}
                       <img src={signupImg} alt="signup, login button" className="w-[19rem]"/>

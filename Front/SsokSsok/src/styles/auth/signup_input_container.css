@@ -18,13 +18,7 @@
     width: 480px; /* ✅ 전체 너비 맞추기 */
 }
 
-/* 모든 input을 동일한 구조로 정렬하기 위해 input-with-icon을 추가 */
-.input-with-icon {
-    display: flex;
-    align-items: center;
-    position: relative;
-    width: 100%;
-}
+
 
 /* 라벨 스타일 */
 .input-wrapper label {
