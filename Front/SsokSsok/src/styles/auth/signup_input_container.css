@@ -33,7 +33,7 @@
 /* 개별 입력 필드 */
 .custom-input {
     width: 320px; /* ✅ 모든 입력 필드 동일한 너비 */
-    padding: 12px 14px;
+    padding: 14px 18px;
     border: 4px solid #A67C52; /* 나무 색상 */
     background: #FBE8C9; /* 부드러운 베이지 */
     border-radius: 20px;
@@ -48,7 +48,7 @@
 /* placeholder 색상 */
 .custom-input::placeholder {
     color: #8B5E3C;
-    font-size: 19px;
+    font-size: 18px;
 }
 
 /* 포커스 효과 */
