@@ -10,6 +10,7 @@ export default {
         whitechalk: ['Whitechalk', 'sans-serif'],
         ganpan: ['KccGanpan', 'sans-serif'],
         dodam: ['KccDodam', 'sans-serif'],
+        cafe24: ['Cafe24', 'sans-serif'],
       },
     },
   },

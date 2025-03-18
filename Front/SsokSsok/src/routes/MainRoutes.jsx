@@ -4,7 +4,7 @@ import Main from "../pages/main/MainPage"
 const MainRoutes = () => {
     return (
         <Routes>
-            <Route path="/main" element={<Main />} />
+            <Route path="/" element={<Main />} />
         </Routes>
     );
 };

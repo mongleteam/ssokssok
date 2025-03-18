@@ -26,6 +26,14 @@
     font-display: swap; /* ✅ 이거 추가 (중요) */
 }
 
+@font-face {
+    font-family: 'Cafe24';
+    src: url('/fonts/Cafe24.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* ✅ 이거 추가 (중요) */
+}
+
 html, body {
     margin: 0;
     padding: 0;
