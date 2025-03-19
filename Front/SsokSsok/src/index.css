@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Whitechalk';
+    src: url('/fonts/210하얀분필R.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* ✅ 이거 추가 (중요) */
+}
+
+@font-face {
+    font-family: 'KccGanpan';
+    src: url('/fonts/KCC-Ganpan.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* ✅ 이거 추가 (중요) */
+}
+
+@font-face {
+    font-family: 'KccDodam';
+    src: url('/fonts/KCCDodamdodam.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* ✅ 이거 추가 (중요) */
+}
+
+@font-face {
+    font-family: 'Cafe24';
+    src: url('/fonts/Cafe24.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* ✅ 이거 추가 (중요) */
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
