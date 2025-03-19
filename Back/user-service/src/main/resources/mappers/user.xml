@@ -47,4 +47,18 @@
     <delete id="deleteUser">
         DELETE FROM user WHERE user_pk = #{userId}
     </delete>
+
+    <!-- 이름 수정  -->
+    <update id="updateUserName">
+        UPDATE user
+        SET name = #{newName}, update_date = NOW()
+        WHERE user_pk = #{userId}
+    </update>
+
+    <!-- 닉네임 수정   -->
+    <update id="updateUserNickName">
+        UPDATE user
+        SET nickname = #{newNickName}, update_date = NOW()
+        WHERE user_pk = #{userId}
+    </update>
 </mapper>
