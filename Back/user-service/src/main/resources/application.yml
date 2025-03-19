@@ -12,7 +12,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: 3.36.67.192
       port: 6379
   mybatis:
     type-aliases-package: com.example.*
@@ -30,4 +30,4 @@ eureka:
     register-with-eureka: true  # 유레카 서버에 등록
     fetch-registry: true  # 다른 서비스 정보 가져오기
     service-url:
-      defaultZone: http://localhost:8761/eureka  # Eureka Server 주소
+      defaultZone: http://3.36.67.192:8761/eureka  # Eureka Server 주소
