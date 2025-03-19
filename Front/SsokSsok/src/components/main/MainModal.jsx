@@ -20,7 +20,7 @@ const Modal = ({ isOpen, onClose, children }) => {
 
         {/* 닫기 */}
         <button onClick={onClose} className="absolute top-5 right-8">
-          <img src={closeButton} alt="Close" className="w-10 h-10" />
+          <img src={closeButton} alt="Close" className="w-11 h-10" />
         </button>
 
         {/* 모달 내용 */}
