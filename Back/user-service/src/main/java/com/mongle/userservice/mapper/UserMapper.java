@@ -24,4 +24,7 @@ public interface UserMapper {
 
     void updateUserNickName(@Param("userId") int userId, @Param("newNickName") String newNickName);
 
+    String findIdByEmail(@Param("email") String email);
+
+
 }

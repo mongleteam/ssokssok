@@ -61,4 +61,10 @@
         SET nickname = #{newNickName}, update_date = NOW()
         WHERE user_pk = #{userId}
     </update>
+
+    <!-- 아이디 찾기   -->
+    <select id="findIdByEmail" resultType="string">
+        SELECT id FROM user WHERE email = #{email}
+    </select>
+
 </mapper>
