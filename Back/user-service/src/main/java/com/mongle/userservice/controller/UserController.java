@@ -2,12 +2,11 @@ package com.mongle.userservice.controller;
 
 
 import com.mongle.userservice.common.ApiResponseJson;
+import com.mongle.userservice.dto.request.UpdateNameRequestDTO;
+import com.mongle.userservice.dto.request.UpdateNickNameRequestDTO;
 import com.mongle.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 @RestController
@@ -23,5 +22,22 @@ public class UserController {
     ){
         userService.deleteUser(userPk);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "회원탈퇴에 성공하였습니다.", null));
+    }
+
+    @PutMapping("/name")
+    public ResponseEntity<ApiResponseJson> updateUserName(
+            @RequestHeader("X-User-Id") String userPk,
+            @RequestBody UpdateNameRequestDTO request
+    ){
+        userService.updateUserName(userPk, request);
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "이름이 변경되었습니다.", null));
+    }
+    @PutMapping("/nickname")
+    public ResponseEntity<ApiResponseJson> updateUserNickName(
+            @RequestHeader("X-User-Id") String userPk,
+            @RequestBody UpdateNickNameRequestDTO request
+    ){
+        userService.updateUserNickName(userPk, request);
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "닉네임이 변경되었습니다.", null));
     }
 }
