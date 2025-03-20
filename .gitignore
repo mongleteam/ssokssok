@@ -30,6 +30,7 @@ sketch
 
 # IntelliJ IDEA 관련 설정 무시
 .idea/
+.env
 
 # Built Visual Studio Code Extensions
 *.vsix
