@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import logoImg from "../../assets/images/logo.png";
+import logoImg from "../../assets/images/SsokSsok_logo.png";
 import underLogoImg from "../../assets/images/main_under_logo.png";
 import signupImg from "../../assets/images/login_page_two.png";
 import "../../styles/main_background.css";
@@ -21,7 +21,7 @@ const SignupLoginMain = () => {
               <motion.img 
                   src={logoImg} 
                   alt="logo" 
-                  className="w-[18rem]"
+                  className="w-[20rem]"
                   initial={{ y: -60, rotate: 0 }}
                   animate={{ rotate: [0, 2, -2, 2, -2, 0] }} 
                   transition={{ repeat: Infinity, duration: 2 }}
