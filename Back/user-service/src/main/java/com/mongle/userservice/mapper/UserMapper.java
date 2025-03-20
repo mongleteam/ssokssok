@@ -31,4 +31,5 @@ public interface UserMapper {
     void updateUserPassword(@Param("userId") String userId, @Param("newPassword") String newPassword);
 
 
+
 }

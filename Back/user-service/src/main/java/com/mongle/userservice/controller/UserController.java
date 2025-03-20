@@ -7,6 +7,7 @@ import com.mongle.userservice.dto.request.UpdateNameRequestDTO;
 import com.mongle.userservice.dto.request.UpdateNickNameRequestDTO;
 import com.mongle.userservice.dto.request.UpdatePasswordRequestDTO;
 import com.mongle.userservice.dto.response.FindIdResponseDTO;
+import com.mongle.userservice.dto.response.GetUserInfoResponseDTO;
 import com.mongle.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -60,5 +61,13 @@ public class UserController {
     ){
         userService.updateUserPassword(userPk, request);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "비밀번호 변경에 성공하였습니다.", null));
+    }
+
+    @GetMapping("")
+    public ResponseEntity<ApiResponseJson> getUserInfo(
+            @RequestHeader("X-User-Id") String userPk
+    ){
+      GetUserInfoResponseDTO response = userService.getUserInfo(userPk);
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "회원정보 조회에 성공하였습니다.", response));
     }
 }

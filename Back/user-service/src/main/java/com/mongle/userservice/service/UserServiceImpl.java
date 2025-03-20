@@ -6,6 +6,7 @@ import com.mongle.userservice.dto.request.UpdateNameRequestDTO;
 import com.mongle.userservice.dto.request.UpdateNickNameRequestDTO;
 import com.mongle.userservice.dto.request.UpdatePasswordRequestDTO;
 import com.mongle.userservice.dto.response.FindIdResponseDTO;
+import com.mongle.userservice.dto.response.GetUserInfoResponseDTO;
 import com.mongle.userservice.entity.User;
 import com.mongle.userservice.exception.CustomException;
 import com.mongle.userservice.exception.ErroCode;
@@ -93,6 +94,18 @@ public class UserServiceImpl implements UserService{
         String encryptedPassword = bCryptPasswordEncoder.encode(request.getNewPassword());
         userMapper.updateUserPassword(userPk, encryptedPassword);
 
+    }
+
+    @Override
+    public GetUserInfoResponseDTO getUserInfo(String userPk) {
+
+        User user = userMapper.getUserInfo(userPk);
+
+        if (user == null) {
+            throw new CustomException(ErroCode.NOT_EXIST_MEMBER_ID);
+        }
+        // 3. DTO로 변환하여 반환
+        return new GetUserInfoResponseDTO(user.getId(), user.getName(), user.getNickname(), user.getEmail());
     }
 
 
