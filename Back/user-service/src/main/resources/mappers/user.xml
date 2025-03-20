@@ -17,8 +17,8 @@
 
     <!--  회원가입  -->
     <insert id="signup" parameterType="com.mongle.userservice.entity.User" useGeneratedKeys="true" keyProperty="userId" keyColumn="user_pk">
-        INSERT INTO user(id,name,nickname,email,password,created_date,update_date)
-        VALUES(#{id},#{name},#{nickname},#{email},#{password},NOW(),NOW());
+        INSERT INTO user(id,user_pk,name,nickname,email,password,created_date,update_date)
+        VALUES(#{id},#{userId},#{name},#{nickname},#{email},#{password},NOW(),NOW());
     </insert>
 
     <select id="countById" resultType="int">

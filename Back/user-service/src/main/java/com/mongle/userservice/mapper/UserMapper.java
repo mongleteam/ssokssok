@@ -16,13 +16,13 @@ public interface UserMapper {
 
     User findById(@Param("id") String id);
 
-    User getUserInfo(@Param("userId") int userId);
+    User getUserInfo(@Param("userId") String userId);
 
-    void deleteUser(@Param("userId") int userId);
+    void deleteUser(@Param("userId") String userId);
 
-    void updateUserName(@Param("userId") int userId, @Param("newName") String newName);
+    void updateUserName(@Param("userId") String userId, @Param("newName") String newName);
 
-    void updateUserNickName(@Param("userId") int userId, @Param("newNickName") String newNickName);
+    void updateUserNickName(@Param("userId") String userId, @Param("newNickName") String newNickName);
 
     String findIdByEmail(@Param("email") String email);
 

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Cookie;
+
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -41,7 +43,9 @@ public class AuthServicempl implements AuthService {
             throw new CustomException(ErroCode.DUPLICATE_MEMBER_NICKNAME);
         }
         // DTO의 변환 메서드를 호출하여 User 엔티티 생성
+        String userPk = UUID.randomUUID().toString();
         User user = request.toUserEntity(passwordEncoder.encode(request.getPassword()));
+        user.setUserId(userPk);
         try{
             userMapper.signup(user);
         }catch (Exception e) {

@@ -21,15 +21,15 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUser(String userPk){
 
-        int userId = Integer.parseInt(userPk);
+
         // 1. 유저 존재 여보 확인
-        User user = userMapper.getUserInfo(userId);
+        User user = userMapper.getUserInfo(userPk);
         if(user == null){
             throw new CustomException(ErroCode.NOT_EXIST_MEMBER_ID);
         }
 
         // 2. 유저가 존재하면 DB에서 삭제
-        userMapper.deleteUser(userId);
+        userMapper.deleteUser(userPk);
 
     }
 
@@ -40,9 +40,9 @@ public class UserServiceImpl implements UserService{
             throw new CustomException(ErroCode.INVALID_INPUT);
         }
 
-        int userId = Integer.parseInt(userPk);
 
-        userMapper.updateUserName(userId, request.getNewName());
+
+        userMapper.updateUserName(userPk, request.getNewName());
     }
 
     @Override
@@ -52,9 +52,8 @@ public class UserServiceImpl implements UserService{
             throw new CustomException(ErroCode.INVALID_INPUT);
         }
 
-        int userId = Integer.parseInt(userPk);
 
-        userMapper.updateUserNickName(userId, request.getNewNickName());
+        userMapper.updateUserNickName(userPk, request.getNewNickName());
     }
 
     @Override
