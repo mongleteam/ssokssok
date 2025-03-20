@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mongle.friendservice.mapper.FriendMapper">
+    <resultMap id="FriendResultMap" type="com.mongle.friendservice.entity.Friend">
+        <id column="friend_pk" property="friendPk" />
+        <result column="user_pk" property="userPk" />
+        <result column="friend_id" property="friendId" />
+    </resultMap>
+
+    <select id="countByUserPkAndFriend" resultType="int">
+        SELECT COUNT(*) FROM friend WHERE user_pk = #{userPk} and friend_id = #{friendId}
+    </select>
+</mapper>
