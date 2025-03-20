@@ -8,6 +8,7 @@ import com.mongle.userservice.dto.response.LoginResponseDTO;
 import com.mongle.userservice.dto.response.RegisterResponseDTO;
 import com.mongle.userservice.security.JwtTokenProvider;
 import com.mongle.userservice.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +41,11 @@ public class AuthController {
     ){
         authService.logout(userPk, response);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "로그아웃에 성공하였습니다", null));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponseJson> refresh(HttpServletRequest request, HttpServletResponse response) {
+        LoginResponseDTO responseDTO = authService.refresh(request, response);
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "JWT 재발급에 성공했습니다.", responseDTO));
     }
 }

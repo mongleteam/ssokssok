@@ -11,4 +11,5 @@ public interface AuthService {
     RegisterResponseDTO signup(RegisterRequestDTO request);
     LoginResponseDTO login(LoginRequestDTO request,HttpServletResponse response);
     void logout(String userPk, HttpServletResponse response);
+    LoginResponseDTO refresh(HttpServletRequest request, HttpServletResponse response);
 }
