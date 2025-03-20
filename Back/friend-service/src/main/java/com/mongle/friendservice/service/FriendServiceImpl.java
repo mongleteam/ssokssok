@@ -16,6 +16,7 @@ public class FriendServiceImpl implements FriendService {
     private RedisTemplate<String, String> redisTemplate;
     private final FriendMapper friendMapper;
     private final NotificationMapper notificationMapper;
+    private final NotificationService notificationService;
 
 
     @Override
@@ -31,11 +32,8 @@ public class FriendServiceImpl implements FriendService {
         Notification notification = new Notification();
         notification.setUserPk(userPk);
         notification.setFriendId(request.getFriendId());
-        try{
-            notificationMapper.insert(notification);
-        } catch (Exception e) {
-            throw new RuntimeException("친구 요청 실패: " + e.getMessage());
-        }
+        notification.setCreateDate(System.currentTimeMillis());
+        notificationService.createNotification(userPk, request.getFriendId(), false);
     }
 
     @Override

@@ -13,5 +13,11 @@ public class Notification {
     private Integer notificationPk;
     private String userPk;
     private String friendId;
-    private LocalDateTime createDate;
+    private Long createDate;
+
+    public Notification(String userPk, String friendId, long createDate) {
+        this.userPk = userPk;
+        this.friendId = friendId;
+        this.createDate = createDate;
+    }
 }

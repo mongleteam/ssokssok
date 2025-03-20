@@ -16,11 +16,18 @@
 
     <insert id="insert" parameterType="com.mongle.friendservice.entity.Notification" useGeneratedKeys="true" keyProperty="notificationPk" keyColumn="notification_pk">
         INSERT INTO notification(user_pk, friend_id, create_date)
-        VALUES(#{userPk},#{friendId},NOW());
+        VALUES(#{userPk},#{friendId},#{createDate});
     </insert>
 
     <delete id="deleteByUserPkAndFriendId">
         DELETE FROM notification WHERE user_pk = #{userPk} AND friend_id = #{friendId}
     </delete>
+
+    <select id="findNotificationsByUserId" resultType="com.mongle.friendservice.dto.response.NotificationListResponseDTO">
+        SELECT friend_id AS friendId, UNIX_TIMESTAMP(create_date) * 1000 AS timestamp
+        FROM notification
+        WHERE user_pk = #{userPk}
+        ORDER BY create_date DESC
+    </select>
 
 </mapper>
