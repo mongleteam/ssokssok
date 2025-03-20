@@ -41,6 +41,15 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
+            String path = request.getURI().getPath();
+
+
+            // 🔹 Refresh API 요청은 JWT 검증을 건너뜀
+            if (path.equals("/api/auth/refresh")) {
+                log.info("Refresh API 요청 - JWT 검증 우회");
+                return chain.filter(exchange);
+            }
+
 
             // 🔹 Authorization 헤더가 없으면 401 반환
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {

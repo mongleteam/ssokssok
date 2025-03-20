@@ -6,7 +6,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://3.36.67.192:8761/eureka
+      defaultZone: http://localhost:8761/eureka
 spring:
   application:
     name: apigateway-service
@@ -16,18 +16,18 @@ spring:
         - id: user-service-no-jwt
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/api/v1/auth/login, /api/v1/auth/signup, /api/v1/user/id
+            - Path=/api/auth/login, /api/auth/signup, /api/user/id
           filters: [ ]
         - id: user-service-auth-other
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/api/v1/auth/**
+            - Path=/api/auth/**
           filters:
             - name: AuthorizationHeaderFilter
         - id: user-service-user
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/api/v1/user/**
+            - Path=/api/user/**
           filters:
             - name: AuthorizationHeaderFilter
       default-filters:
