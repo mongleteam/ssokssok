@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Cookie;
+
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -41,7 +43,9 @@ public class AuthServicempl implements AuthService {
             throw new CustomException(ErroCode.DUPLICATE_MEMBER_NICKNAME);
         }
         // DTO의 변환 메서드를 호출하여 User 엔티티 생성
+        String userPk = UUID.randomUUID().toString();
         User user = request.toUserEntity(passwordEncoder.encode(request.getPassword()));
+        user.setUserId(userPk);
         try{
             userMapper.signup(user);
         }catch (Exception e) {
@@ -99,6 +103,61 @@ public class AuthServicempl implements AuthService {
         refreshTokenCookie.setMaxAge(0); // 쿠키 즉시 만료
         response.addCookie(refreshTokenCookie);
 
+    }
+
+    // 리프레시 토큰 쿠키에서 가져오기
+    @Override
+    public LoginResponseDTO refresh(HttpServletRequest request, HttpServletResponse response) {
+        // 1. 쿠키에서 Refresh Token
+        String refreshToken = null;
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshToken == null) {
+            throw new CustomException(ErroCode.INVALID_TOKEN);
+        }
+
+        // 2. 쿠키에 리프레시 토큰 있으면 유효성 검사
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new CustomException(ErroCode.INVALID_TOKEN);
+        }
+
+        String userPk = jwtTokenProvider.extractSubject(refreshToken);
+
+        // 3. Redis에서 Refresh Token 검증
+        String storedRefreshToken = redisTemplate.opsForValue().get("RT:" + userPk);
+        if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
+            throw new CustomException(ErroCode.INVALID_TOKEN);
+        }
+
+        // 4. 새 Access Token 및 Refresh Token 발급
+        String newAccessToken = jwtTokenProvider.createAccessToken(userPk);
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(userPk);
+
+        // 5. Redis에 새로운 Refresh Token 저장
+        redisTemplate.opsForValue().set(
+                "RT:" + userPk, newRefreshToken,
+                jwtTokenProvider.getRefreshTokenValidityInMillis(), TimeUnit.MILLISECONDS
+        );
+
+        // 6. 쿠키에 새로운 Refresh Token 저장 (기존 쿠키 덮어쓰기)
+        Cookie newCookie = new Cookie("refreshToken", newRefreshToken);
+        newCookie.setHttpOnly(true);
+        newCookie.setSecure(true);
+        newCookie.setPath("/");
+        newCookie.setMaxAge((int) jwtTokenProvider.getRefreshTokenValidityInMillis() / 1000);
+        response.addCookie(newCookie);
+
+        // 7. 새로운 JWT 반환
+        return new LoginResponseDTO(newAccessToken, newRefreshToken);
     }
 
 }

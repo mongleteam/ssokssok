@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import BeeAnimation from "../../components/animations/BeeAnimation";
 import FlowerAnimation from "../../components/animations/FlowerAnimation";
 import SignupBoard from "../../assets/images/signin_board_icon.png";
-import RabbitAnimation from "../../components/animations/RabbitAnimation";
+
 import "../../styles/auth/signup_input_container.css";
 
 const SignupPage = () => {

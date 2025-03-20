@@ -1,10 +1,12 @@
 import {Routes, Route} from "react-router-dom";
-import Main from "../pages/main/MainPage"
+import MainPage from "../pages/main/MainPage"
+import MyAlbumPage from "../pages/main/MyAlbumPage";
 
 const MainRoutes = () => {
     return (
         <Routes>
-            <Route path="/" element={<Main />} />
+            <Route path="/" element={<MainPage />} />
+            <Route path="myalbum" element={<MyAlbumPage />} />
         </Routes>
     );
 };

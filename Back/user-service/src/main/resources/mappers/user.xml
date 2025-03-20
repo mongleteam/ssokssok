@@ -17,8 +17,8 @@
 
     <!--  회원가입  -->
     <insert id="signup" parameterType="com.mongle.userservice.entity.User" useGeneratedKeys="true" keyProperty="userId" keyColumn="user_pk">
-        INSERT INTO user(id,name,nickname,email,password,created_date,update_date)
-        VALUES(#{id},#{name},#{nickname},#{email},#{password},NOW(),NOW());
+        INSERT INTO user(id,user_pk,name,nickname,email,password,created_date,update_date)
+        VALUES(#{id},#{userId},#{name},#{nickname},#{email},#{password},NOW(),NOW());
     </insert>
 
     <select id="countById" resultType="int">
@@ -47,4 +47,37 @@
     <delete id="deleteUser">
         DELETE FROM user WHERE user_pk = #{userId}
     </delete>
+
+    <!-- 이름 수정  -->
+    <update id="updateUserName">
+        UPDATE user
+        SET name = #{newName}, update_date = NOW()
+        WHERE user_pk = #{userId}
+    </update>
+
+    <!-- 닉네임 수정   -->
+    <update id="updateUserNickName">
+        UPDATE user
+        SET nickname = #{newNickName}, update_date = NOW()
+        WHERE user_pk = #{userId}
+    </update>
+
+    <!-- 아이디 찾기   -->
+    <select id="findIdByEmail" resultType="string">
+        SELECT id FROM user WHERE email = #{email}
+    </select>
+
+    <!--  현재 비밀번호 조회  -->
+    <select id="getPasswordByUserId" resultType="string">
+        SELECT password FROM user WHERE user_pk = #{userId}
+    </select>
+
+    <!--  새로운 비밀번호 변경  -->
+    <update id="updateUserPassword">
+        UPDATE user
+        SET password = #{newPassword}, update_date = NOW()
+        WHERE user_pk = #{userId}
+    </update>
+
+
 </mapper>
