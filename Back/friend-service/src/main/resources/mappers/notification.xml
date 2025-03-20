@@ -19,4 +19,8 @@
         VALUES(#{userPk},#{friendId},NOW());
     </insert>
 
+    <delete id="deleteByUserPkAndFriendId">
+        DELETE FROM notification WHERE user_pk = #{userPk} AND friend_id = #{friendId}
+    </delete>
+
 </mapper>

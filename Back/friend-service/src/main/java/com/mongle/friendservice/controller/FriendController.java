@@ -15,24 +15,25 @@ public class FriendController {
     private final FriendService friendService;
 
     @PostMapping("/regist")
-    public ResponseEntity<ApiResponseJson> registerFriend(@RequestHeader("X-User-Id") String UserPk, @RequestBody FriendRequestDTO friendRequestDTO) {
-        friendService.createFriendNotification(UserPk, friendRequestDTO);
+    public ResponseEntity<ApiResponseJson> registerFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
+        friendService.createFriendNotification(userPk, friendRequestDTO);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 요청에 성공했습니다.", null));
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<ApiResponseJson> acceptFriend(@RequestHeader("X-User-Id") String UserPk, @RequestBody FriendRequestDTO friendRequestDTO) {
+    public ResponseEntity<ApiResponseJson> acceptFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
 
         return ResponseEntity.ok(new ApiResponseJson());
     }
 
     @DeleteMapping("/reject")
-    public ResponseEntity<ApiResponseJson> rejectFriend(@RequestHeader("X-User-Id") String UserPk, @RequestBody FriendRequestDTO friendRequestDTO) {
-        return ResponseEntity.ok(new ApiResponseJson());
+    public ResponseEntity<ApiResponseJson> rejectFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
+        friendService.deleteFriendNotification(userPk, friendRequestDTO);
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 요청 거절에 성공했습니다.", null));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<ApiResponseJson> getFriendList(@RequestHeader("X-User-Id") String UserPk) {
+    public ResponseEntity<ApiResponseJson> getFriendList(@RequestHeader("X-User-Id") String userPk) {
         return ResponseEntity.ok(new ApiResponseJson());
     }
 }

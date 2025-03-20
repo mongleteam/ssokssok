@@ -8,4 +8,6 @@ import org.apache.ibatis.annotations.Param;
 public interface NotificationMapper {
     int countByUserPkAndFriend(@Param("userPk") String userPk, @Param("friendId") String friendId);
     int insert(Notification notification);
+
+    void deleteByUserPkAndFriendId(@Param("userPk") String userPk, @Param("friendId") String friendId);
 }

@@ -37,4 +37,15 @@ public class FriendServiceImpl implements FriendService {
             throw new RuntimeException("친구 요청 실패: " + e.getMessage());
         }
     }
+
+    @Override
+    public void deleteFriendNotification(String userPk, FriendRequestDTO request) {
+        try{
+            notificationMapper.deleteByUserPkAndFriendId(userPk, request.getFriendId());
+        } catch (Exception e) {
+            throw new RuntimeException("친구 요청 알림 삭제 실패: " + e.getMessage());
+        }
+    }
+
+
 }
