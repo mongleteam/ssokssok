@@ -78,4 +78,6 @@
         SET password = #{newPassword}, update_date = NOW()
         WHERE user_pk = #{userId}
     </update>
+
+
 </mapper>
