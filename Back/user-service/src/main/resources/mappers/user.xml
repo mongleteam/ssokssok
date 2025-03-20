@@ -67,4 +67,15 @@
         SELECT id FROM user WHERE email = #{email}
     </select>
 
+    <!--  현재 비밀번호 조회  -->
+    <select id="getPasswordByUserId" resultType="string">
+        SELECT password FROM user WHERE user_pk = #{userId}
+    </select>
+
+    <!--  새로운 비밀번호 변경  -->
+    <update id="updateUserPassword">
+        UPDATE user
+        SET password = #{newPassword}, update_date = NOW()
+        WHERE user_pk = #{userId}
+    </update>
 </mapper>
