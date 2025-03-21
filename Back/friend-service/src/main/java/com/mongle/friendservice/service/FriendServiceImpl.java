@@ -1,14 +1,21 @@
 package com.mongle.friendservice.service;
 
+import com.mongle.friendservice.client.UserServiceClient;
 import com.mongle.friendservice.dto.request.FriendRequestDTO;
+import com.mongle.friendservice.dto.response.FriendListResponseDTO;
+import com.mongle.friendservice.entity.Friend;
 import com.mongle.friendservice.entity.Notification;
 import com.mongle.friendservice.exception.CustomException;
 import com.mongle.friendservice.exception.ErroCode;
 import com.mongle.friendservice.mapper.FriendMapper;
 import com.mongle.friendservice.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +24,7 @@ public class FriendServiceImpl implements FriendService {
     private final FriendMapper friendMapper;
     private final NotificationMapper notificationMapper;
     private final NotificationService notificationService;
+    private final UserServiceClient userServiceClient;
 
 
     @Override
@@ -32,7 +40,6 @@ public class FriendServiceImpl implements FriendService {
         Notification notification = new Notification();
         notification.setUserPk(userPk);
         notification.setFriendId(request.getFriendId());
-        notification.setCreateDate(System.currentTimeMillis());
         notificationService.createNotification(userPk, request.getFriendId(), false);
     }
 
@@ -40,8 +47,48 @@ public class FriendServiceImpl implements FriendService {
     public void deleteFriendNotification(String userPk, FriendRequestDTO request) {
         try{
             notificationMapper.deleteByUserPkAndFriendId(userPk, request.getFriendId());
+            notificationService.sendNotification(userPk);
         } catch (Exception e) {
             throw new RuntimeException("친구 요청 알림 삭제 실패: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<FriendListResponseDTO> getFriendList(String userPk) {
+        try{
+            List<Friend> list = friendMapper.getList(userPk);
+            List<String> requestList = new ArrayList<>();
+            List<String> result = new ArrayList<>();
+            for(Friend friend : list){
+                requestList.add(friend.getFriendId());
+            }
+            result = userServiceClient.getNicknameList(requestList);
+            List<FriendListResponseDTO> friendListResponseDTOList = new ArrayList<>();
+            for (int i = 0; i < list.size(); i++) {
+                Friend friend = list.get(i);
+                String nickname = result.get(i);
+
+                // 작업 수행
+                FriendListResponseDTO friendListResponseDTO = new FriendListResponseDTO(friend.getFriendId(), nickname);
+                friendListResponseDTOList.add(friendListResponseDTO);
+            }
+
+            return friendListResponseDTOList;
+        } catch (Exception e) {
+            throw new RuntimeException("친구 목록 조회 실패: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void createFriendRelation(String userPk, FriendRequestDTO friendRequestDTO) {
+        try{
+            friendMapper.insert(userPk, friendRequestDTO.getFriendId());
+            String friendPk = userServiceClient.getUUID(friendRequestDTO.getFriendId());
+            String userId = userServiceClient.getId(userPk);
+            friendMapper.insert(friendPk, userId);
+        }catch (Exception e){
+            throw new RuntimeException("친구 요청 수락 실패: " + e.getMessage());
         }
     }
 

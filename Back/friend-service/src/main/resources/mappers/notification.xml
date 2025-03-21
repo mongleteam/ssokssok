@@ -16,7 +16,7 @@
 
     <insert id="insert" parameterType="com.mongle.friendservice.entity.Notification" useGeneratedKeys="true" keyProperty="notificationPk" keyColumn="notification_pk">
         INSERT INTO notification(user_pk, friend_id, create_date)
-        VALUES(#{userPk},#{friendId},#{createDate});
+        VALUES(#{userPk},#{friendId},NOW())
     </insert>
 
     <delete id="deleteByUserPkAndFriendId">

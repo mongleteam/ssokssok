@@ -15,6 +15,5 @@ public interface NotificationMapper {
 
     void deleteByUserPkAndFriendId(@Param("userPk") String userPk, @Param("friendId") String friendId);
 
-    @Select("SELECT friend_id, UNIX_TIMESTAMP(created_at) * 1000 AS timestamp FROM notifications WHERE user_id = #{userPk} ORDER BY created_at DESC")
     List<NotificationListResponseDTO> findNotificationsByUserId(@Param("userPk") String userPk);
 }

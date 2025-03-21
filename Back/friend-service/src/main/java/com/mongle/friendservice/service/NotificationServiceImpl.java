@@ -50,7 +50,9 @@ public class NotificationServiceImpl implements NotificationService {
 
         // MySQL에 저장 (friend 상태)
         if (!isMulti) {
-            Notification notification = new Notification(userPk, friendId, timestamp);
+            Notification notification = new Notification();
+            notification.setUserPk(userPk);
+            notification.setFriendId(friendId);
             notificationMapper.insert(notification);
         }
 
@@ -69,6 +71,7 @@ public class NotificationServiceImpl implements NotificationService {
         sendNotification(userPk);
     }
 
+    @Override
     public void sendNotification(String userPk) {
         SseEmitter emitter = emitters.get(userPk);
         if (emitter != null) {

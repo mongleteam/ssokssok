@@ -12,4 +12,9 @@
     <select id="countByUserPkAndFriend" resultType="int">
         SELECT COUNT(*) FROM friend WHERE user_pk = #{userPk} and friend_id = #{friendId}
     </select>
+
+    <insert id="insert">
+        INSERT INTO friend(user_pk, friend_id) VALUES(#{userPk}, #{friendId})
+    </insert>
+
 </mapper>
