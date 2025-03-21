@@ -90,5 +90,14 @@
         </foreach>
     </select>
 
+    <!-- 친구 요청을 위한 UUID 조회 -->
+    <select id="getUUID" parameterType="string" resultType="string">
+        SELECT user_pk FROM user WHERE id = #{id}
+    </select>
+
+    <!-- 친구 요청을 위한 ID 조회  -->
+    <select id="getId" parameterType="string" resultType="string">
+        SELECT id FROM user WHERE user_pk = #{uuid}
+    </select>
 
 </mapper>
