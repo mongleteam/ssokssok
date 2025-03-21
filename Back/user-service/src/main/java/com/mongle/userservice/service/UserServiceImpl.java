@@ -115,6 +115,16 @@ public class UserServiceImpl implements UserService{
         return userMapper.findNicknamesByUserId(idList);
     }
 
+    @Override
+    public String getUUID(String id) {
+        return userMapper.getUUID(id);
+    }
+
+    @Override
+    public String getId(String uuid) {
+        return userMapper.getId(uuid);
+    }
+
 
 
 }

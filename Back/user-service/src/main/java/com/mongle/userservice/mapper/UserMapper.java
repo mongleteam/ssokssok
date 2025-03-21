@@ -34,6 +34,8 @@ public interface UserMapper {
 
     List<String> findNicknamesByUserId(@Param("idList") List<String> idList);
 
+    String getUUID(@Param("id") String id);
 
+    String getId(@Param("uuid") String uuid);
 
 }

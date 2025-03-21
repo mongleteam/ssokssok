@@ -77,5 +77,15 @@ public class UserController {
         return userService.getNicknamesByUserId(idList);
     }
 
+    @GetMapping("/getUUID")
+    public String getUUID(@RequestParam("id") String id){
+        return userService.getUUID(id);
+    }
+
+    @GetMapping("getId")
+    public String getId(@RequestParam("uuid") String uuid){
+        return userService.getId(uuid);
+    }
+
 
 }
