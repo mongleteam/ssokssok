@@ -7,6 +7,8 @@ import com.mongle.userservice.dto.request.UpdatePasswordRequestDTO;
 import com.mongle.userservice.dto.response.FindIdResponseDTO;
 import com.mongle.userservice.dto.response.GetUserInfoResponseDTO;
 
+import java.util.List;
+
 public interface UserService {
     void deleteUser(String userPk);
     void updateUserName(String userPk, UpdateNameRequestDTO request);
@@ -14,5 +16,6 @@ public interface UserService {
     FindIdResponseDTO findId(FindIdRequestDTO request);
     void updateUserPassword(String userPk, UpdatePasswordRequestDTO request);
     GetUserInfoResponseDTO getUserInfo(String userPk);
+    List<String> getNicknamesByUserId(List<String> idList);
 
 }

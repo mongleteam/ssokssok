@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
@@ -107,6 +109,12 @@ public class UserServiceImpl implements UserService{
         // 3. DTO로 변환하여 반환
         return new GetUserInfoResponseDTO(user.getId(), user.getName(), user.getNickname(), user.getEmail());
     }
+
+    @Override
+    public List<String> getNicknamesByUserId(List<String> idList) {
+        return userMapper.findNicknamesByUserId(idList);
+    }
+
 
 
 }
