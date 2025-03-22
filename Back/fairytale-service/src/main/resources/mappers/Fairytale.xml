@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mongle.fairytaleservice.mapper.FairytaleMapper">
+    <resultMap id="FairytaleMap" type="com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO">
+        <id property="fairytalePk" column="fairytale_pk" />
+        <result property="title" column="title" />
+        <result property="count" column="count" />
+        <result property="coverImgUrl" column="cover_img_url" />
+        <result property="first" column="first" />
+        <result property="second" column="second" />
+        <result property="metadata" column="metadata" />
+    </resultMap>
+
+    <!--   동화책 정보 조회   -->
+    <select id="findFairytaleById" parameterType="int" resultMap="FairytaleMap">
+        SELECT * FROM fairytale WHERE fairytale_pk = #{fairytalePk}
+    </select>
+
+</mapper>
