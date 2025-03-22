@@ -44,11 +44,12 @@ const SignupPage = () => {
           window.location.href = "/login"
         } else {
           alert("회원가입에 실패했습니다.")
+          console.log("BASE_URL", import.meta.env.VITE_SPRING_API_URL)
         }
       } catch (err) {
         console.error("회원가입 실패:", err)
         alert("회원가입에 실패했습니다.")
-        
+        console.log("BASE_URL", import.meta.env.VITE_SPRING_API_URL)
       }
   }
 
