@@ -5,7 +5,7 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 public class fairytale {
-    private int fairytaleId;
+    private int fairytalePk;
     private String title;
     private int count;
     private String coverImgUrl;
