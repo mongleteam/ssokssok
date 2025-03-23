@@ -1,10 +1,19 @@
 package com.mongle.fairytaleservice.mapper;
 
+import com.mongle.fairytaleservice.dto.response.FairytaleInfoDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO;
+import com.mongle.fairytaleservice.dto.response.ProgressInfoDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface FairytaleMapper {
-    FairytaleInfoResponseDTO findFairytaleById(@Param("fairytalePk") Integer fairytalePk);
+    FairytaleInfoDTO findFairytaleById(@Param("fairytalePk") Integer fairytalePk);
+
+    List<ProgressInfoDTO> findProgressListByFairytaleAndUser(
+            @Param("fairytalePk") Integer fairytalePk,
+            @Param("userPk") String userPk
+    );
 }
