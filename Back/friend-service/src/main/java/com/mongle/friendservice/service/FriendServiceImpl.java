@@ -94,5 +94,17 @@ public class FriendServiceImpl implements FriendService {
         }
     }
 
+    @Override
+    public void deleteFriend(String userPk, FriendRequestDTO friendRequestDTO) {
+        int cnt = friendMapper.delete(userPk, friendRequestDTO.getFriendId());
+        if(cnt == 0){
+            throw new CustomException(ErroCode.DELETE_FAIL);
+        }
+        String friendPk = userServiceClient.getUUID(friendRequestDTO.getFriendId());
+        String userId = userServiceClient.getId(userPk);
+        friendMapper.delete(friendPk, userId);
+
+    }
+
 
 }

@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 public enum ErroCode {
     DUPLICATE_FRIEND_RELATION(4001, "이미 친구 관계입니다"),
     INVALID_REQUEST(4002, "잘못된 친구 요청입니다"),
-    NOTIFICATION_NOT_FOUND(4003, "잘못된 멀티 요청입니다.");
+    NOTIFICATION_NOT_FOUND(4003, "잘못된 멀티 요청입니다"),
+    DELETE_FAIL(4004, "친구 삭제를 실패했습니다");
 //    DUPLICATE_MEMBER_ID(2001, "이미 사용중인 아이디입니다"),
 //    DUPLICATE_MEMBER_EMAIL(2002, "이미 사용중인 이메일입니다"),
 //    DUPLICATE_MEMBER_NICKNAME(2003, "이미 사용중인 닉네임입니다"),
