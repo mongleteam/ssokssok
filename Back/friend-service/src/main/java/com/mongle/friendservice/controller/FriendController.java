@@ -19,7 +19,7 @@ import java.util.Map;
 public class FriendController {
 
     private final FriendService friendService;
-    private final NotificationService notificationService;
+
 
     @PostMapping("/regist")
     public ResponseEntity<ApiResponseJson> registerFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
@@ -29,6 +29,7 @@ public class FriendController {
 
     @PostMapping("/accept")
     public ResponseEntity<ApiResponseJson> acceptFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
+        friendService.deleteFriendNotification(userPk, friendRequestDTO);
         friendService.createFriendRelation(userPk, friendRequestDTO);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 요청 수락에 성공했습니다.", null));
     }
