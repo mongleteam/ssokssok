@@ -47,4 +47,10 @@ public class FriendController {
         data.put("friendList", list);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 목록 조회에 성공했습니다.", data));
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponseJson> deleteFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
+        friendService.deleteFriend(userPk, friendRequestDTO);
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 삭제에 성공했습니다.", null));
+    }
 }

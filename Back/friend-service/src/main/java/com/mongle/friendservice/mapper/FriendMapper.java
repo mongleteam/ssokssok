@@ -14,4 +14,6 @@ public interface FriendMapper {
     List<Friend> getList(@Param("userPk") String userPk);
 
     void insert(@Param("userPk") String userPk,@Param("friendId") String friendId);
+
+    int delete(String userPk, String friendId);
 }
