@@ -1,12 +1,16 @@
 package com.mongle.fairytaleservice.entity;
 
 import lombok.*;
+import java.time.LocalDateTime;
 
-@NoArgsConstructor
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class myalbum {
     private int myalbumPk;
     private String userPk;
-    private int fairytalePk;
-    private String finish;
+    private Integer fairytalePk;
+    private String myalbumDataImgUrl;
+    private LocalDateTime createdDate;
 }

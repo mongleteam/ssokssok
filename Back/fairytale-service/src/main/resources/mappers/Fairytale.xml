@@ -43,4 +43,9 @@
         FROM fairytale
     </select>
 
+    <insert id="insertMyAlbum" parameterType="com.mongle.fairytaleservice.entity.myalbum">
+        INSERT INTO myalbum (user_pk, fairytale_pk, myalbum_data_img_url, created_date)
+        VALUES (#{userPk}, #{fairytalePk}, #{myalbumDataImgUrl}, #{createdDate})
+    </insert>
+
 </mapper>
