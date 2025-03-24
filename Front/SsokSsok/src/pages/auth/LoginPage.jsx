@@ -7,11 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { loginApi } from "../../apis/authApi";
 import { jwtDecode } from "jwt-decode";
 import useAuthStore from "../../stores/authStore";
+import { mypageInfoApi } from "../../apis/myPageApi";
+
 
 const LoginPage = () => {
 
     const navigate = useNavigate()
-    const {setAccessToken} = useAuthStore()
+    const {setAccessToken, setUser} = useAuthStore()
     const [formData, setFormData] = useState({
         id: "",
         password: "",
@@ -41,6 +43,7 @@ const LoginPage = () => {
           }
       
           setAccessToken(accessToken) // Zustand + localStorage 저장
+
           alert("로그인 성공!")
           navigate("/main")
         } catch (error) {
