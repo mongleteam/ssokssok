@@ -7,8 +7,9 @@ const AuthRoutes = () => {
         <Routes>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login/>}/>
+         
         </Routes>
-    );
-};
+    )
+}
 
-export default AuthRoutes;
+export default AuthRoutes
