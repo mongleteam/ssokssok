@@ -1,4 +1,4 @@
-import springApi from "./axiosConfig";
+import springApi  from "./axiosConfig";
 
 // 회원가입
 export const signupApi = (signupData) => {
@@ -9,6 +9,7 @@ export const signupApi = (signupData) => {
 export const loginApi = (loginData) => {
     return springApi.post("/auth/login", loginData)
 }
+
 
 // 리프레쉬토큰
 // export const refreshTokenApi = () => {
