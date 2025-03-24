@@ -20,6 +20,7 @@ const useAuthStore = create((set) => {
       set({ accessToken: null, isAuthenticated: false })
       window.location.replace("/login")
     },
+
   }
 })
 
