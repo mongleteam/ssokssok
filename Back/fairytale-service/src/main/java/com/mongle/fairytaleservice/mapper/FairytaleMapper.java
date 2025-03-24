@@ -6,6 +6,7 @@ import com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO;
 import com.mongle.fairytaleservice.dto.response.ProgressInfoDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import com.mongle.fairytaleservice.entity.myalbum;
 
 import java.util.List;
 
@@ -18,4 +19,5 @@ public interface FairytaleMapper {
             @Param("userPk") String userPk
     );
     List<FairytaleSimpleDTO> findAllFairytale();
+    void insertMyAlbum(myalbum album);
 }
