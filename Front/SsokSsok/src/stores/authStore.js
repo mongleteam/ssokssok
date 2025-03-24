@@ -2,6 +2,7 @@
 import { create } from "zustand"
 import { isTokenExpired } from "../utils/tokenUtils"
 import axios from "axios"
+import { authApi } from "../apis/axiosConfig"
 const useAuthStore = create((set) => {
   const storedToken = localStorage.getItem("accessToken")
   const validToken = storedToken && !isTokenExpired(storedToken)
@@ -18,11 +19,7 @@ const useAuthStore = create((set) => {
     logout: async () => {
       try {
         // 서버에 로그아웃 요청
-        await axios.post(
-          `${import.meta.env.VITE_SPRING_API_URL}/user/logout`,
-          {},
-          { withCredentials: true }
-        )
+        await authApi.post("/user/logout")
         console.log("백엔드드 로그아웃 성공")
       } catch (err) {
         console.warn("백엔드드 로그아웃 실패", err)
