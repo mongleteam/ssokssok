@@ -20,6 +20,7 @@ public class CorsConfig {
         config.addAllowedOrigin("https://j12e201.p.ssafy.io");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
