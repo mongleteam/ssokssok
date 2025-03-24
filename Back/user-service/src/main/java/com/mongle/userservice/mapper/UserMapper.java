@@ -38,4 +38,5 @@ public interface UserMapper {
 
     String getId(@Param("uuid") String uuid);
 
+    List<String> getIdList(@Param("id") String id);
 }

@@ -90,5 +90,8 @@ public class UserController {
         return userService.getId(uuid);
     }
 
-
+    @GetMapping("/id-list")
+    public List<String> getIdList(@RequestParam("id") String id){
+        return userService.getIdList(id);
+    }
 }
