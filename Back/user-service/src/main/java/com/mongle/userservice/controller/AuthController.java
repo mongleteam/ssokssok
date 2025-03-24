@@ -10,11 +10,14 @@ import com.mongle.userservice.dto.response.LoginResponseDTO;
 import com.mongle.userservice.dto.response.RegisterResponseDTO;
 import com.mongle.userservice.security.JwtTokenProvider;
 import com.mongle.userservice.service.AuthService;
+import com.mongle.userservice.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
 
     @PostMapping("/signup")
@@ -49,5 +53,19 @@ public class AuthController {
     public ResponseEntity<ApiResponseJson> refresh(HttpServletRequest request, HttpServletResponse response) {
         LoginResponseDTO responseDTO = authService.refresh(request, response);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "JWT 재발급에 성공했습니다.", responseDTO));
+    }
+
+    @GetMapping("/check-id")
+    public ResponseEntity<ApiResponseJson> checkId(
+            @RequestParam String id
+    ){
+        boolean isSuccess = authService.checkId(id);
+
+        if (isSuccess) {
+            return ResponseEntity.ok(new ApiResponseJson(false, 200, "이미 존재하는 아이디입니다.", null));
+        }else {
+            return ResponseEntity.ok(new ApiResponseJson(true, 200, "사용 가능한 아이디입니다.", null));
+        }
+
     }
 }

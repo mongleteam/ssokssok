@@ -14,4 +14,5 @@ public interface AuthService {
     FindIdResponseDTO findId(FindIdRequestDTO request);
     LoginResponseDTO login(LoginRequestDTO request,HttpServletResponse response);
     LoginResponseDTO refresh(HttpServletRequest request, HttpServletResponse response);
+    boolean checkId(String id);
 }
