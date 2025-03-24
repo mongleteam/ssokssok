@@ -31,7 +31,7 @@ const MainModal = ({ isOpen, onClose, children }) => {
         </div>
       </motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default MainModal;
+export default MainModal
