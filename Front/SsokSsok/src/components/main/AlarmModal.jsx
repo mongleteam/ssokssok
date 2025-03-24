@@ -1,9 +1,10 @@
 import React from "react";
+import AlarmBoard from "../../assets/images/alarm_board_icon.png"
 
 const AlarmModal = () => {
   return (
     <div className="text-black text-xl text-center">
-      <h2 className="font-bold">알림</h2>
+      <img src={AlarmBoard} alt="alarmBoard" className="w-[14rem] -mt-[20.5rem]"/>
     </div>
   )
 }
