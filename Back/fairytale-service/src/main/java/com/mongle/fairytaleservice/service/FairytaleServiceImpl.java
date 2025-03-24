@@ -2,11 +2,14 @@ package com.mongle.fairytaleservice.service;
 
 
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO;
+import com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO;
 import com.mongle.fairytaleservice.exception.CustomException;
 import com.mongle.fairytaleservice.exception.ErrorCode;
 import com.mongle.fairytaleservice.mapper.FairytaleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,5 +33,10 @@ public class FairytaleServiceImpl implements FairytaleService {
         response.setProgressList(progressList);
 
         return response;
+    }
+
+    @Override
+    public List<FairytaleSimpleDTO> getAllFairytale(){
+        return fairytaleMapper.findAllFairytale();
     }
 }

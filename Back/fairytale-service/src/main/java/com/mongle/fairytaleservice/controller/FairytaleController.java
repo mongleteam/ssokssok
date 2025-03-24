@@ -23,4 +23,11 @@ public class FairytaleController {
         FairytaleInfoResponseDTO responseDTO = fairytaleService.findFairytaleById(fairytalePk, userPk);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "동화책 정보 조회에 성공하였습니다.", responseDTO));
     }
+
+//    @GetMapping("/bookilist")
+//    public ResponseEntity<ApiResponseJson> getFairytaleBookilist(
+//            @RequestHeader("X-User-Id") String userPk
+//    ){
+//
+//    }
 }
