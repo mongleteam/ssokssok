@@ -2,8 +2,10 @@ package com.mongle.userservice.controller;
 
 
 import com.mongle.userservice.common.ApiResponseJson;
+import com.mongle.userservice.dto.request.FindIdRequestDTO;
 import com.mongle.userservice.dto.request.LoginRequestDTO;
 import com.mongle.userservice.dto.request.RegisterRequestDTO;
+import com.mongle.userservice.dto.response.FindIdResponseDTO;
 import com.mongle.userservice.dto.response.LoginResponseDTO;
 import com.mongle.userservice.dto.response.RegisterResponseDTO;
 import com.mongle.userservice.security.JwtTokenProvider;
@@ -34,13 +36,13 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "로그인에 성공하였습니다", responseDTO));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<ApiResponseJson> logout(
-            @RequestHeader("X-User-Id") String userPk,
-            HttpServletResponse response
+    @PostMapping("/id")
+    public ResponseEntity<ApiResponseJson> findId(
+            @RequestBody FindIdRequestDTO request
     ){
-        authService.logout(userPk, response);
-        return ResponseEntity.ok(new ApiResponseJson(true, 200, "로그아웃에 성공하였습니다", null));
+        FindIdResponseDTO response = authService.findId(request);
+
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "아이디 찾기에 성공하였습니다.", response));
     }
 
     @PostMapping("/refresh")
