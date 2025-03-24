@@ -2,6 +2,7 @@ package com.mongle.fairytaleservice.mapper;
 
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO;
+import com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO;
 import com.mongle.fairytaleservice.dto.response.ProgressInfoDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,4 +17,5 @@ public interface FairytaleMapper {
             @Param("fairytalePk") Integer fairytalePk,
             @Param("userPk") String userPk
     );
+    List<FairytaleSimpleDTO> findAllFairytale();
 }

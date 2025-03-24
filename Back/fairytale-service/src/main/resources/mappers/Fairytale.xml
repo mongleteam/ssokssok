@@ -33,4 +33,14 @@
           AND p.user_pk = #{userPk}
     </select>
 
+    <!--  전체 동화책 리스트 조회  -->
+    <select id="findAllFairytale" resultType="com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO">
+        SELECT
+            fairytale_pk AS fairytalePk,
+            title,
+            count,
+            cover_img_url AS coverImgUrl
+        FROM fairytale
+    </select>
+
 </mapper>

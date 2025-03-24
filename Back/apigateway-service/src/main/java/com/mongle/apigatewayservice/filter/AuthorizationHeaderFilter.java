@@ -16,6 +16,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +50,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
                 log.info("Refresh API 요청 - JWT 검증 우회");
                 return chain.filter(exchange);
             }
+
 
 
             // 🔹 Authorization 헤더가 없으면 401 반환
