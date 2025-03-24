@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -70,4 +72,20 @@ public class UserController {
       GetUserInfoResponseDTO response = userService.getUserInfo(userPk);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "회원정보 조회에 성공하였습니다.", response));
     }
+    @GetMapping("/nicknameList")
+    public List<String> getNincknameList(@RequestParam("idList") List<String> idList){
+        return userService.getNicknamesByUserId(idList);
+    }
+
+    @GetMapping("/getUUID")
+    public String getUUID(@RequestParam("id") String id){
+        return userService.getUUID(id);
+    }
+
+    @GetMapping("getId")
+    public String getId(@RequestParam("uuid") String uuid){
+        return userService.getId(uuid);
+    }
+
+
 }

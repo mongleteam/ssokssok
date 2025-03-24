@@ -78,6 +78,26 @@
         SET password = #{newPassword}, update_date = NOW()
         WHERE user_pk = #{userId}
     </update>
+    
+    <!--  친구 목록 조회(닉네임) -->
+    <select id="findNicknamesByUserId" parameterType="list" resultType="string">
+        SELECT nickname
+        FROM user
+        WHERE id IN 
+        <foreach item="id" index="index" collection="idList"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
+    <!-- 친구 요청을 위한 UUID 조회 -->
+    <select id="getUUID" parameterType="string" resultType="string">
+        SELECT user_pk FROM user WHERE id = #{id}
+    </select>
+
+    <!-- 친구 요청을 위한 ID 조회  -->
+    <select id="getId" parameterType="string" resultType="string">
+        SELECT id FROM user WHERE user_pk = #{uuid}
+    </select>
 
 </mapper>
