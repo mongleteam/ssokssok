@@ -11,7 +11,10 @@ import com.mongle.userservice.entity.User;
 import com.mongle.userservice.exception.CustomException;
 import com.mongle.userservice.exception.ErroCode;
 import com.mongle.userservice.mapper.UserMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    private final RedisTemplate<String, String> redisTemplate;
     @Override
     public void deleteUser(String userPk){
 
@@ -52,6 +55,21 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void logout(String userPk, HttpServletResponse response) {
+        // 1. Redis에서 Refresh Token 삭제
+        redisTemplate.delete("RT:" + userPk);
+
+        // 2. 클라이언트의 Refresh Token 쿠키 삭제
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0); // 쿠키 즉시 만료
+        response.addCookie(refreshTokenCookie);
+
+    }
+
+    @Override
     public void updateUserNickName(String userPk, UpdateNickNameRequestDTO request){
         // 1. 빈칸을 입력할 경우 에러 처리
         if (request.getNewNickName() == null || request.getNewNickName().trim().isEmpty()) {
@@ -62,19 +80,7 @@ public class UserServiceImpl implements UserService{
         userMapper.updateUserNickName(userPk, request.getNewNickName());
     }
 
-    @Override
-    public FindIdResponseDTO findId(FindIdRequestDTO request) {
-        // 1.이메일 추출
-        String email = request.getEmail();
 
-        // 2. 이메일을 이용하여 아이디 조회 (UserMapper.findIdByEmail가 String 반환)
-        String foundUserId = userMapper.findIdByEmail(email);
-        if (foundUserId == null) {
-            throw new CustomException(ErroCode.NOT_EXIST_MEMBER_EMAIL);
-        }
-        // 3. FindIdResponseDTO 생성하여 반환
-        return new FindIdResponseDTO(foundUserId);
-    }
 
     @Override
     public void updateUserPassword(String userPk, UpdatePasswordRequestDTO request) {
