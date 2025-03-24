@@ -4,28 +4,30 @@ import MyFriendIcon from "../../assets/images/friend_icon.png";
 import LogoutIcon from "../../assets/images/logout_icon.png";
 import useAuthStore from "../../stores/authStore";
 import { mypageInfoApi } from "../../apis/myPageApi";
+import FriendModal from "./FriendModal";
 
-const MyPageModal = () => {
-  const [myInfo, setMyInfo] = useState(null);
-  const { logout } = useAuthStore();
+const MyPageModal = ({openModal}) => {
+  const [myInfo, setMyInfo] = useState(null)
+  const { logout } = useAuthStore()
+
   useEffect(() => { 
     const fetchMyInfo = async () => {
       try {
-        const res = await mypageInfoApi();
+        const res = await mypageInfoApi()
         setMyInfo(res.data);
       } catch (err) {
         console.error("내 정보 조회 실패", err.response?.data || err.message);
       }
-    };
-
-    fetchMyInfo();
-  }, []);
-
-  const handleLogout = () => {
-    if (window.confirm("로그아웃갈비?")) {
-      logout();
     }
-  };
+
+    fetchMyInfo()
+  }, [])
+
+  const handleLogout = async () => {
+    if (window.confirm("로그아웃갈비?")) {
+      await logout()
+    }
+  }
 
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-full text-black text-center font-ganpan">
@@ -35,7 +37,8 @@ const MyPageModal = () => {
         <img
           src={MyFriendIcon}
           alt="MyFriendIcon"
-          className="w-[9rem] absolute top-1/2 left-full -translate-y-[30%] ml-2"
+          onClick={() => openModal(FriendModal)}
+          className="w-[9rem] absolute top-1/2 left-full -translate-y-[30%] ml-2 hover:scale-110 cursor-pointer"
         />
       </div>
 
@@ -45,7 +48,7 @@ const MyPageModal = () => {
         <p className="whitespace-nowrap">이메일: {myInfo?.data.email || "로딩 중..."}</p>
         <p>
           닉네임: {myInfo?.data.nickname || "로딩 중..."}{" "}
-          <button className="bg-white bg-opacity-80 text-black text-sm px-2 py-1 rounded-full ml-2 relative -top-1">수정</button>
+          <button className="bg-white bg-opacity-80 text-black text-lg px-2 py-1 rounded-full ml-2 relative -top-1">수정</button>
         </p>
       </div>
 

@@ -21,8 +21,8 @@ const MainModal = ({ isOpen, onClose, children }) => {
         <img src={modalBackground} alt="Modal Background" className="w-full" />
 
         {/* 닫기 버튼 */}
-        <button onClick={onClose} className="absolute top-5 right-8 z-10">
-          <img src={closeButton} alt="Close" className="w-11 h-10" />
+        <button onClick={onClose} className="absolute top-[1.75rem] right-8 z-10">
+          <img src={closeButton} alt="Close" className="w-11 h-11" />
         </button>
 
         {/* 자식 컴포넌트 (내용) */}
@@ -31,7 +31,7 @@ const MainModal = ({ isOpen, onClose, children }) => {
         </div>
       </motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default MainModal;
+export default MainModal
