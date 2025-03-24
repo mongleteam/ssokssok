@@ -8,6 +8,7 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -43,6 +44,10 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             ServerHttpRequest request = exchange.getRequest();
             String path = request.getURI().getPath();
 
+            if (request.getMethod() == HttpMethod.OPTIONS) {
+                log.info("Preflight OPTIONS 요청 - 필터 통과");
+                return chain.filter(exchange);
+            }
 
             // 🔹 Refresh API 요청은 JWT 검증을 건너뜀
             if (path.equals("/api/auth/refresh")) {
