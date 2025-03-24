@@ -162,4 +162,9 @@ public class AuthServicempl implements AuthService {
         return new LoginResponseDTO(newAccessToken, newRefreshToken);
     }
 
+    @Override
+    public boolean checkId(String id) {
+        return userMapper.countById(id) > 0;
+    }
+
 }
