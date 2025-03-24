@@ -3,10 +3,13 @@ package com.mongle.fairytaleservice.controller;
 
 import com.mongle.fairytaleservice.common.ApiResponseJson;
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO;
+import com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO;
 import com.mongle.fairytaleservice.service.FairytaleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/fairytale")
@@ -24,10 +27,10 @@ public class FairytaleController {
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "동화책 정보 조회에 성공하였습니다.", responseDTO));
     }
 
-//    @GetMapping("/bookilist")
-//    public ResponseEntity<ApiResponseJson> getFairytaleBookilist(
-//            @RequestHeader("X-User-Id") String userPk
-//    ){
-//
-//    }
+    @GetMapping("/booklist")
+    public ResponseEntity<ApiResponseJson> getFairytaleBookilist(
+    ){
+        List<FairytaleSimpleDTO> books = fairytaleService.getAllFairytale();
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "동화책 리스트 조회에 성공하였습니다.",books));
+    }
 }
