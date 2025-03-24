@@ -26,5 +26,10 @@ public interface UserMapper {
 
     String findIdByEmail(@Param("email") String email);
 
+    String getPasswordByUserId(@Param("userId") String userId);
+
+    void updateUserPassword(@Param("userId") String userId, @Param("newPassword") String newPassword);
+
+
 
 }
