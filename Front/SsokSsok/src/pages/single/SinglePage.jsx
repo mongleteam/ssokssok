@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import '../../styles/book_background.css'; // CSS 파일 임포트
 import StoryHeader from "../../components/StoryHeader";
 import PhotoModal from "../../components/story/PhotoModal";
-import SingleStoryRenderer from "../../components/story/SingleStoryRenderer";
+import SingleStoryRenderer from "../../components/single/SingleStoryRenderer";
 import JSZip from "jszip";
 
 function SinglePage() {
