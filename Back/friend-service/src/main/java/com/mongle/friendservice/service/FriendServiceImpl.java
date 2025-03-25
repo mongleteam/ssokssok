@@ -29,12 +29,14 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public void createFriendNotification(String userPk ,FriendRequestDTO request) {
+        String friendPk = userServiceClient.getUUID(request.getFriendId());
+        String userId = userServiceClient.getId(userPk);
         // 1. 이미 친구 관계면 에러
         if(friendMapper.countByUserPkAndFriend(userPk, request.getFriendId()) > 0){
             throw new CustomException(ErroCode.DUPLICATE_FRIEND_RELATION);
         }
         // 2. 이미 요청했으면 에러
-        if(notificationMapper.countByUserPkAndFriend(userPk, request.getFriendId()) > 0){
+        if(notificationMapper.countByUserPkAndFriend(friendPk, userId) > 0){
             throw new CustomException(ErroCode.DUPLICATE_FRIEND_RELATION);
         }
         Notification notification = new Notification();
@@ -46,7 +48,9 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public void deleteFriendNotification(String userPk, FriendRequestDTO request) {
         try{
-            int cnt = notificationMapper.deleteByUserPkAndFriendId(userPk, request.getFriendId());
+            String friendPk = userServiceClient.getUUID(request.getFriendId());
+            String userId = userServiceClient.getId(userPk);
+            int cnt = notificationMapper.deleteByUserPkAndFriendId(friendPk, userId);
             if(cnt == 0){
                 throw new CustomException(ErroCode.INVALID_REQUEST);
             }

@@ -97,8 +97,11 @@ public class NotificationServiceImpl implements NotificationService {
     public void deleteMultiNotification(String userPk, FriendRequestDTO friendRequestDTO) {
         String friendId = friendRequestDTO.getFriendId();
 
+        String friendPk = userServiceClient.getUUID(friendId);
+        String userId = userServiceClient.getId(userPk);
+
         // Redis 키 생성
-        String redisKey = REDIS_NOTIFICATION_PREFIX + userPk + ":" + friendId;
+        String redisKey = REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId;
 
         // 삭제 시도
         Boolean result = redisTemplate.delete(redisKey);
