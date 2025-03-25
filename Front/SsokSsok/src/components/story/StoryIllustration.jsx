@@ -1,7 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import illustration from '../../assets/images/illustration_default.png';
 
-function StoryIllustration() {
+function StoryIllustration({ storyData }) {
+  // 이미지 소스 상태
+  const [imageSrc, setImageSrc] = useState(illustration); 
+  // 오디오 소스 상태
+  const [audioSrc, setAudioSrc] = useState(null); 
+
   useEffect(() => {
     if (window.tornpaperLoaded) return; // 이미 로드된 경우 리턴
     
@@ -27,10 +32,17 @@ function StoryIllustration() {
     };
   }, []);
 
+  useEffect(() => {
+    if (storyData) {
+      setImageSrc(storyData.image); // 이미지 소스 설정
+      setAudioSrc(storyData.audio); // 오디오 소스 설정
+    }
+  }, [storyData]);
+
   return (
     <div className="relative w-full h-auto torn-effect">
       <img
-        src={illustration}
+        src={imageSrc}
         alt="Illustration"
         className="w-full h-auto"
         style={{ filter: "url(#filter_tornpaper)" }}
