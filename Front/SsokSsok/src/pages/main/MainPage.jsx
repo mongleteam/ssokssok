@@ -44,18 +44,18 @@ const MainPage = () => {
         <FlowerAnimation/>
         <Header />
         <div className="background-container relative flex flex-col items-center">
-            <img src={SsokSookBookClubBoard} alt="SsokSsokBookClubBoard" className="w-[18rem] mb-12"/>
+            <img src={SsokSookBookClubBoard} alt="SsokSsokBookClubBoard" className="w-[20rem] mb-12"/>
 
                 {/* 📌 첫 번째 책장과 책들 */}
                 <div className="relative flex flex-col items-center">
-                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[49rem] -mb-13 rotate-2 z-0" />
-                    <div className="flex justify-center -mt-[25rem] z-10">
+                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[50rem] -mb-13 rotate-2 z-0" />
+                    <div className="flex justify-center -mt-[26rem] z-10">
                         {books.slice(0, 4).map((book, index) => (
                             <motion.img 
                             key={index} 
                             src={book.image} 
                             alt={book.title} 
-                            className="w-[10rem]"
+                            className="w-[11rem]"
                             whileHover={{ scale: 1.1, y: -10 }}
                             transition={{ type: "spring", stiffness: 200 }}
                         />
@@ -65,14 +65,14 @@ const MainPage = () => {
                 
                 {/* 📌 두 번째 책장과 책들 */}
                 <div className="relative flex flex-col items-center mt-8">
-                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[49rem] -mb-18 rotate-2 z-0" />
-                    <div className="flex justify-center -mt-[25rem] z-10">
+                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[50rem] -mb-18 rotate-2 z-0" />
+                    <div className="flex justify-center -mt-[26rem] z-10">
                         {books.slice(4, 8).map((book, index) => (
                             <motion.img 
                             key={index} 
                             src={book.image} 
                             alt={book.title} 
-                            className="w-[10rem]"
+                            className="w-[11rem]"
                             whileHover={{ scale: 1.1, y: -10 }}
                             transition={{ type: "spring", stiffness: 200 }}
                         />

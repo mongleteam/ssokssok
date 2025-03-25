@@ -17,7 +17,9 @@ export const acceptFriendApi = (friendId) => {
 
 // 친구 추가 요청 거절
 export const rejectFriendApi = (friendId) => {
-    return authApi.delete('/friend/reject', {friendId})
+    return authApi.delete('/friend/reject', {
+        data: {friendId}
+    })
 }
 
 // 친구 목록 조회

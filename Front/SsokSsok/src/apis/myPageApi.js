@@ -4,3 +4,8 @@ import { authApi } from "./axiosConfig";
 export const mypageInfoApi = () => {
     return authApi.get("/user")
 }
+
+// 닉네임 수정
+export const updateNicknameApi = (newNickName) => {
+    return authApi.put("/user/nickname", {newNickName})
+}

@@ -1,12 +1,27 @@
-import React, { useState } from "react";
-import { plusFriendApi, searchFriendApi } from "../../apis/FriendApi";
+import React, { useState, useEffect } from "react";
+import { myFriendApi, plusFriendApi, searchFriendApi } from "../../apis/FriendApi";
 import checkIcon from "../../assets/images/check_icon.png"
 import boardImage from "../../assets/images/friend_board.png"
 import plusIcon from "../../assets/images/plus_icon.png"
+import DeleteIcon from "../../assets/images/remove_icon.png"
 
 const FriendModal = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
+
+    const [myFriend, setMyFriend] = useState([])
+    useEffect(() => {
+        const fetchMyFriend = async () => {
+            try {
+                const res = await myFriendApi()
+                console.log(res.data.data.friendList)
+                setMyFriend(res.data.data.friendList)
+            } catch (err) {
+                console.error("친구 조회 실패", err)
+            }
+        }
+        fetchMyFriend()
+    }, [])
 
     const handleSearch = async () => {
         if (!searchTerm.trim()) return
@@ -32,15 +47,31 @@ const FriendModal = () => {
     return (
         <div className="flex w-full h-full font-dodam text-black text-2xl sm:text-3xl md:text-3xl lg:text-4xl tracking-wide">
             {/* 왼쪽 */}
-            <div className="w-1/2 flex flex-col items-center justify-start pt-12">
+            <div className="w-1/2 flex flex-col items-center justify-start pt-20">
                 <h2>내 친구 목록</h2>
+                <div className="grid grid-cols-2 gap-x-3 w-[23rem] ml-10 mt-4">
+                    {myFriend.map((friend, index) => (
+                        <div
+                        
+                        key={index}
+                        className="w-full h-[4rem] bg-no-repeat bg-contain bg-center flex justify-between items-center px-4"
+                        style={{
+                            backgroundImage: `url(${boardImage})`,
+                        }}
+                        >
+                        <span className="font-dodam text-2xl font-bold">{friend.friendNickname}</span>
+                        <img src={DeleteIcon} alt="삭제" className="w-9 h-9 cursor-pointer" />
+                        </div>
+                    ))}
+                </div>
+
             </div>
 
         {/* 가운데 선 */}
         <div className="w-[2px] h-[85%] bg-[#d6b98c] mx-4 mt-11" />
 
         {/* 오른쪽 */}
-        <div className="flex-1 flex flex-col items-center justify-start pt-12">
+        <div className="flex-1 flex flex-col items-center justify-start pt-20">
             <h2>친구 추가하기</h2>
               {/* 검색창 */}
                 <div className="flex mt-6 w-full max-w-[80%]">
