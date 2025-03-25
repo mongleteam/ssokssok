@@ -28,11 +28,12 @@ function StoryIllustration() {
   }, []);
 
   return (
-    <div className="relative w-[600px] h-auto torn-effect">
+    <div className="relative w-full h-auto torn-effect">
       <img
         src={illustration}
         alt="Illustration"
-        style={{ filter: 'url(#filter_tornpaper)' }}
+        className="w-full h-auto"
+        style={{ filter: "url(#filter_tornpaper)" }}
       />
     </div>
   );
