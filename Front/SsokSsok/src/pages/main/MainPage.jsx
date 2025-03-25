@@ -16,6 +16,7 @@ import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../stores/authStore";
 import { isTokenExpired } from "../../utils/tokenUtils";
+import HanselBookOpening from "../../components/animations/HanselBookOpening";
 
 const books = [
     { title: "헨젤과 그레텔", image: bookHansel },
@@ -31,13 +32,23 @@ const books = [
 const MainPage = () => {
     const { accessToken } = useAuthStore()
     const navigate = useNavigate()
-  
     useEffect(() => {
-      if (!accessToken || isTokenExpired(accessToken)) {
-        alert("로그인이 필요합니다.")
-        navigate("/login")
-      }
+        if (!accessToken || isTokenExpired(accessToken)) {
+            alert("로그인이 필요합니다.")
+            navigate("/login")
+        }
     }, [accessToken, navigate])
+
+    const [openHansel, setOpenHansel] = useState(false)
+    const handleBookClick = (bookTitle) => {
+        if (bookTitle === "헨젤과 그레텔") {
+            setOpenHansel(true)
+        } else {
+            alert("서비스 추후 준비중입니다 🥹")
+        }
+    }
+    if (openHansel) return <HanselBookOpening />
+
     return (
         <>
         <BeeAnimation />
@@ -57,6 +68,7 @@ const MainPage = () => {
                             alt={book.title} 
                             className="w-[11rem]"
                             whileHover={{ scale: 1.1, y: -10 }}
+                            onClick={() => handleBookClick(book.title)}
                             transition={{ type: "spring", stiffness: 200 }}
                         />
                         ))}
