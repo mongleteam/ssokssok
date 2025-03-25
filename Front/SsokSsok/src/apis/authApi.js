@@ -17,3 +17,13 @@ export const loginApi = (loginData) => {
 //         withCredentials: true,
 //     })
 // }
+
+// 아이디 중복체크 
+export const checkIdApi = (keyword) => {
+    return springApi.get(`/auth/check-id?id=${keyword}`)
+}
+
+// 닉네임 중복체크
+export const checkNickNameApi = (keyword) => {
+    return springApi.get(`/auth/check-nickname?nickname=${keyword}`)
+}

@@ -35,7 +35,8 @@ const MyPageModal = ({openModal}) => {
 
   const handleNicknameSave = async () => {
     try {
-      await updateNicknameApi(nickname);
+      const res = await updateNicknameApi(nickname)
+      // 성공한 경우
       setMyInfo((prev) => ({
         ...prev,
         data: { ...prev.data, nickname },
@@ -43,11 +44,13 @@ const MyPageModal = ({openModal}) => {
       setEditing(false);
       alert("닉네임이 수정되었습니다!")
     } catch (err) {
+      // 400 에러일 때 백엔드가 보내주는 message 표시
+      const errorMessage = err?.response?.data?.message || "닉네임 수정에 실패했습니다."
+      alert(errorMessage)
       console.error("닉네임 수정 실패", err)
-      alert("닉네임 수정에 실패했습니다.")
     }
   }
-
+  
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-full text-black text-center font-whitechalk">
       {/* 배경 속 보드 이미지 */}

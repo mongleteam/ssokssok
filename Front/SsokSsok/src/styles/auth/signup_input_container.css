@@ -15,7 +15,7 @@
     align-items: center; /* ✅ 같은 줄 정렬 */
     justify-content: center; /* ✅ 전체적으로 가운데 정렬 */
     gap: 15px; /* 라벨과 입력 필드 사이 여백 */
-    width: 480px; /* ✅ 전체 너비 맞추기 */
+    /* width: 480px; ✅ 전체 너비 맞추기 */
 }
 
 
