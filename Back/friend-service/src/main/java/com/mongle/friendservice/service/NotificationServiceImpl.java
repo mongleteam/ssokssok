@@ -3,8 +3,13 @@ package com.mongle.friendservice.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongle.friendservice.client.UserServiceClient;
+
+import com.mongle.friendservice.dto.request.FriendRequestDTO;
+
 import com.mongle.friendservice.dto.response.NotificationListResponseDTO;
 import com.mongle.friendservice.entity.Notification;
+import com.mongle.friendservice.exception.CustomException;
+import com.mongle.friendservice.exception.ErroCode;
 import com.mongle.friendservice.mapper.NotificationMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -86,6 +91,22 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
     }
+
+    @Override
+    public void deleteMultiNotification(String userPk, FriendRequestDTO friendRequestDTO) {
+        String friendId = friendRequestDTO.getFriendId();
+
+        // Redis 키 생성
+        String redisKey = REDIS_NOTIFICATION_PREFIX + userPk + ":" + friendId;
+
+        // 삭제 시도
+        Boolean result = redisTemplate.delete(redisKey);
+
+        if (Boolean.FALSE.equals(result)) {
+            throw new CustomException(ErroCode.NOTIFICATION_NOT_FOUND);
+        }
+    }
+
 
 
 

@@ -17,4 +17,12 @@
         INSERT INTO friend(user_pk, friend_id) VALUES(#{userPk}, #{friendId})
     </insert>
 
+    <select id="getList" resultMap="FriendResultMap">
+        SELECT * FROM friend WHERE user_pk = #{userPk}
+    </select>
+
+    <delete id="delete">
+        DELETE FROM friend WHERE user_pk = #{userPk} AND friend_id = #{friendId}
+    </delete>
+
 </mapper>

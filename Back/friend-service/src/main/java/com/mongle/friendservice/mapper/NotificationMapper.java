@@ -13,7 +13,7 @@ public interface NotificationMapper {
     int countByUserPkAndFriend(@Param("userPk") String userPk, @Param("friendId") String friendId);
     int insert(Notification notification);
 
-    void deleteByUserPkAndFriendId(@Param("userPk") String userPk, @Param("friendId") String friendId);
+    int deleteByUserPkAndFriendId(@Param("userPk") String userPk, @Param("friendId") String friendId);
 
     List<NotificationListResponseDTO> findNotificationsByUserId(@Param("userPk") String userPk);
 }
