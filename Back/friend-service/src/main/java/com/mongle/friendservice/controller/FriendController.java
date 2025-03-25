@@ -33,7 +33,7 @@ public class FriendController {
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 요청 수락에 성공했습니다.", null));
     }
 
-    @DeleteMapping("/reject")
+    @PostMapping("/reject")
     public ResponseEntity<ApiResponseJson> rejectFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
         friendService.deleteFriendNotification(userPk, friendRequestDTO);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 요청 거절에 성공했습니다.", null));
@@ -47,7 +47,7 @@ public class FriendController {
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 목록 조회에 성공했습니다.", data));
     }
 
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     public ResponseEntity<ApiResponseJson> deleteFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
         friendService.deleteFriend(userPk, friendRequestDTO);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 삭제에 성공했습니다.", null));
