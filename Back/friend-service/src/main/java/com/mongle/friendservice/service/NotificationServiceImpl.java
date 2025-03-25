@@ -54,12 +54,14 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void createNotification(String userPk, String friendId, boolean isMulti) {
         Long timestamp = System.currentTimeMillis();
+        String friendPk = userServiceClient.getUUID(friendId);
+        String userId = userServiceClient.getId(userPk);
 
         // MySQL에 저장 (friend 상태)
         if (!isMulti) {
             Notification notification = new Notification();
-            notification.setUserPk(userPk);
-            notification.setFriendId(friendId);
+            notification.setUserPk(friendPk);
+            notification.setFriendId(userId);
             notificationMapper.insert(notification);
         }
 
@@ -68,8 +70,7 @@ public class NotificationServiceImpl implements NotificationService {
             try {
                 NotificationListResponseDTO redisNotification = new NotificationListResponseDTO("multi", friendId, timestamp);
                 String json = objectMapper.writeValueAsString(redisNotification);
-                String friendPk = userServiceClient.getUUID(friendId);
-                String userId = userServiceClient.getId(userPk);
+
                 redisTemplate.opsForValue().set(REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId, json);
             } catch (Exception e) {
                 e.printStackTrace();
