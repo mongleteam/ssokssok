@@ -20,7 +20,6 @@ public class FriendController {
 
     private final FriendService friendService;
 
-
     @PostMapping("/regist")
     public ResponseEntity<ApiResponseJson> registerFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
         friendService.createFriendNotification(userPk, friendRequestDTO);
