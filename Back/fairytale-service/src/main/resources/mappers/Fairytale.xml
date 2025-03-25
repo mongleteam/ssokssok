@@ -43,9 +43,34 @@
         FROM fairytale
     </select>
 
+    <!--  마이 앨범에 인터랙션 이미지 추가  -->
     <insert id="insertMyAlbum" parameterType="com.mongle.fairytaleservice.entity.myalbum">
         INSERT INTO myalbum (user_pk, fairytale_pk, myalbum_data_img_url, created_date)
         VALUES (#{userPk}, #{fairytalePk}, #{myalbumDataImgUrl}, #{createdDate})
+    </insert>
+
+
+    <!-- 진행상황 생성   -->
+    <insert id="insertProgress" parameterType="com.mongle.fairytaleservice.entity.progress"
+            useGeneratedKeys="true" keyProperty="progressPk" keyColumn="progress_pk">
+        INSERT INTO progress (
+            now_page,
+            mode,
+            friend_id,
+            user_pk,
+            fairytale_pk,
+            finish,
+            role
+        )
+        VALUES (
+                   #{nowPage},
+                   #{mode},
+                   #{friendId},
+                   #{userPk},
+                   #{fairytalePk},
+                   FALSE,
+                   #{role}
+               )
     </insert>
 
 </mapper>
