@@ -16,4 +16,5 @@ public interface AuthService {
     LoginResponseDTO refresh(HttpServletRequest request, HttpServletResponse response);
     boolean checkId(String id);
     boolean checkNickname(String nickname);
+    boolean checkEmail(String email);
 }

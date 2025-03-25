@@ -2,6 +2,7 @@ package com.mongle.userservice.controller;
 
 
 import com.mongle.userservice.common.ApiResponseJson;
+import com.mongle.userservice.dto.request.CheckEmailRequestDTO;
 import com.mongle.userservice.dto.request.FindIdRequestDTO;
 import com.mongle.userservice.dto.request.LoginRequestDTO;
 import com.mongle.userservice.dto.request.RegisterRequestDTO;
@@ -80,5 +81,17 @@ public class AuthController {
         }
 
     }
+    @PostMapping("/check-email")
+    public ResponseEntity<ApiResponseJson> checkEmail(
+            @RequestBody CheckEmailRequestDTO request
+    ){
+        boolean isSuccess = authService.checkEmail(request.getEmail());
+        if (isSuccess) {
+            return ResponseEntity.ok(new ApiResponseJson(false, 200, "이미 존재하는 이메일입니다.", null));
+        }else {
+            return ResponseEntity.ok(new ApiResponseJson(true, 200, "사용 가능한 이메일입니다.", null));
+        }
+    }
+
 
 }

@@ -172,4 +172,10 @@ public class AuthServicempl implements AuthService {
         return userMapper.countByNickname(nickname) > 0;
     }
 
+    @Override
+    public boolean checkEmail(String email) {
+        return userMapper.countByEmail(email) > 0;
+    }
+
+
 }
