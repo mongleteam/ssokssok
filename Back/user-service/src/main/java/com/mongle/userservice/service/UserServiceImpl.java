@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService{
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
+    private final AuthService authService;
     @Override
     public void deleteUser(String userPk){
 
@@ -76,8 +77,12 @@ public class UserServiceImpl implements UserService{
             throw new CustomException(ErroCode.INVALID_INPUT);
         }
 
-
-        userMapper.updateUserNickName(userPk, request.getNewNickName());
+        boolean isSuccess = authService.checkNickname(request.getNewNickName());
+        if (isSuccess) {
+            throw new CustomException(ErroCode.DUPLICATE_MEMBER_NICKNAME);
+        }else {
+            userMapper.updateUserNickName(userPk, request.getNewNickName());
+        }
     }
 
 
