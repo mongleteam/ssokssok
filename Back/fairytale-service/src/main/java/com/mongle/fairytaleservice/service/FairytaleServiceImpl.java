@@ -2,6 +2,7 @@ package com.mongle.fairytaleservice.service;
 
 
 import com.mongle.fairytaleservice.dto.request.ProgressInsertRequestDTO;
+import com.mongle.fairytaleservice.dto.request.ProgressUpdateRequestDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO;
 import com.mongle.fairytaleservice.exception.CustomException;
@@ -88,4 +89,21 @@ public class FairytaleServiceImpl implements FairytaleService {
 
         return progress.getProgressPk();
     }
+    @Override
+    public void updateProgress(int progressPk, String userPk, ProgressUpdateRequestDTO requestDTO){
+        progress existing = fairytaleMapper.selectProgressById(progressPk);
+
+        // 1. 이 진행상황이 다른 사용자면 에러
+        if(!existing.getUserPk().equals(userPk)){
+            throw new CustomException(ErrorCode.DIFFER_USER);
+        }
+
+        // 2. 진행상황 업데이트
+        fairytaleMapper.updateProgress(
+                progressPk,
+                requestDTO.getNowPage(),
+                requestDTO.isFinish()
+        );
+    }
+
 }

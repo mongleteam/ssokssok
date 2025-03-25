@@ -22,4 +22,10 @@ public interface FairytaleMapper {
     List<FairytaleSimpleDTO> findAllFairytale();
     void insertMyAlbum(myalbum album);
     int insertProgress(progress progress);
+    progress selectProgressById(@Param("progressPk") Integer progressPk);
+    int updateProgress(
+            @Param("progressPk") Integer progressPk,
+            @Param("nowPage") Integer nowPage,
+            @Param("finish") Boolean finish
+           );
 }

@@ -73,4 +73,36 @@
                )
     </insert>
 
+    <!--  pk로 진행상황 조회  -->
+    <select id="selectProgressById" resultType="com.mongle.fairytaleservice.entity.progress">
+        SELECT
+            progress_pk  AS progressPk,
+            now_page     AS nowPage,
+            mode         AS mode,
+            friend_id    AS friendId,
+            user_pk      AS userPk,
+            fairytale_pk AS fairytalePk,
+            finish       AS finish,
+            role         AS role
+        FROM progress
+        WHERE progress_pk = #{progressPk}
+    </select>
+
+
+    <!-- 진행상황 업데이트
+     업데이트 되는 값이 null 값이 아닌 경우 업데이트
+     -->
+    <update id="updateProgress"  parameterType="map">
+        UPDATE progress
+        <set>
+            <if test="nowPage != null">
+                now_page = #{nowPage},
+            </if>
+            <if test="finish != null">
+                finish = #{finish},
+            </if>
+        </set>
+        WHERE progress_pk = #{progressPk}
+    </update>
+
 </mapper>
