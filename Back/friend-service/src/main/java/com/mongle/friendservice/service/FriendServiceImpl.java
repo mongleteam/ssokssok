@@ -90,7 +90,7 @@ public class FriendServiceImpl implements FriendService {
             String userId = userServiceClient.getId(userPk);
             friendMapper.insert(friendPk, userId);
 
-            notificationService.sendNotification(userPk);
+            notificationService.sendNotification(friendPk);
         }catch (Exception e){
             throw new RuntimeException("친구 요청 수락 실패: " + e.getMessage());
         }

@@ -78,7 +78,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         // SSE를 통해 클라이언트에게 실시간 알림 전송
-        sendNotification(userPk);
+        sendNotification(friendPk);
     }
 
     @Override
