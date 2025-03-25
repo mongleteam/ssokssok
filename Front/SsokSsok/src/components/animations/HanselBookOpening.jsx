@@ -11,7 +11,7 @@ const HanselBookOpening = () => {
 
   useEffect(() => {
     const t1 = setTimeout(() => setStart(true), 100);
-    const t2 = setTimeout(() => navigate("/bookstart/hansel"), 2000);
+    const t2 = setTimeout(() => navigate("/main/bookstart/hansel"), 2000);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
