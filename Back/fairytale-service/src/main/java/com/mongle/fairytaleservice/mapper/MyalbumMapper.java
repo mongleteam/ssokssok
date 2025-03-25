@@ -9,4 +9,5 @@ import java.util.List;
 @Mapper
 public interface MyalbumMapper {
     List<GetMyalbumResponseDTO> findFairytaleTitleByUserId(@Param("userPk") String userPk);
+    int deleteMyalbums(@Param("myalbumPks") List<Integer> myalbumPks,@Param("userPk") String userPk);
 }

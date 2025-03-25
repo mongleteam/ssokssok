@@ -2,14 +2,13 @@ package com.mongle.fairytaleservice.controller;
 
 
 import com.mongle.fairytaleservice.common.ApiResponseJson;
+import com.mongle.fairytaleservice.dto.request.DeleteMyAlbumRequestDTO;
 import com.mongle.fairytaleservice.dto.response.GetMyalbumResponseDTO;
 import com.mongle.fairytaleservice.service.MyalbumService;
+import jakarta.ws.rs.DELETE;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +24,15 @@ public class MyalbumController {
     ){
         List<GetMyalbumResponseDTO> result = myalbumService.getMyalbumList(userPk);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "마이앨범 조회에 성공하였습니다.", result));
+    }
+
+    @PostMapping("")
+    public ResponseEntity<ApiResponseJson> deleteMyAlbums(
+            @RequestHeader("X-User-Id") String userPK,
+            @RequestBody DeleteMyAlbumRequestDTO requestDTO
+    ){
+        myalbumService.deleteMyalbum(requestDTO.getMyalbumPks(), userPK);
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "마이앨범 삭제에 성공하였습니다.", null));
     }
 
 

@@ -9,12 +9,24 @@
         SELECT
             m.myalbum_pk        AS myalbumPk,
             m.myalbum_data_img_url AS myalbumImgUrl,
-            DATE_FORMAT(m.created_date, '%Y-%m-%d') AS createDate,
+            DATE_FORMAT(m.created_date, '%Y-%m-%d') AS createdDate,
             f.title             AS title
         FROM myalbum m
                  LEFT JOIN fairytale f ON m.fairytale_pk = f.fairytale_pk
         WHERE m.user_pk = #{userPk}
         ORDER BY m.created_date DESC
     </select>
+
+    <!--  마이 앨범에 있는 사진 삭제 -->
+    <delete id="deleteMyalbums" parameterType="map">
+        DELETE FROM myalbum
+        WHERE user_pk = #{userPk}
+        AND myalbum_pk IN
+        <foreach item="pk" collection="myalbumPks" open="(" separator="," close=")">
+            #{pk}
+        </foreach>
+    </delete>
+
+
 
 </mapper>

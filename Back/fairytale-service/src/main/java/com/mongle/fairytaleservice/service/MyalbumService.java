@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface MyalbumService {
     List<GetMyalbumResponseDTO> getMyalbumList(String userPk);
+    void deleteMyalbum(List<Integer> myalbumPks, String userPk);
 
 }
