@@ -2,6 +2,7 @@ package com.mongle.fairytaleservice.controller;
 
 
 import com.mongle.fairytaleservice.common.ApiResponseJson;
+import com.mongle.fairytaleservice.dto.request.ProgressInsertRequestDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO;
 import com.mongle.fairytaleservice.service.FairytaleService;
@@ -44,5 +45,15 @@ public class FairytaleController {
         String url = fairytaleService.uploadAndSave(file, userPk, fairytalePk);
 
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "사진 업로드 성공", url));
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponseJson> createProgress(
+            @RequestBody ProgressInsertRequestDTO requestDTO,
+            @RequestHeader("X-User-Id") String userPk
+    ){
+        int newPk = fairytaleService.createProgress(requestDTO);
+
+        return ResponseEntity.ok(new ApiResponseJson(true,200,"진행상황 생성에 성공했습니다.", newPk));
     }
 }
