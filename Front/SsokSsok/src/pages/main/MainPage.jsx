@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BeeAnimation from "../../components/animations/BeeAnimation";
 import FlowerAnimation from "../../components/animations/FlowerAnimation";
 import SsokSsokBookClub from "../../assets/images/bookshelf_img.png"
@@ -13,6 +13,9 @@ import bookSnowWhite from "../../assets/images/book_snowwhite.png";
 import bookRabbit from "../../assets/images/book_rabbit.png";
 import bookSunMoon from "../../assets/images/book_sunmoon.png";
 import Header from "../../components/Header";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../stores/authStore";
+import { isTokenExpired } from "../../utils/tokenUtils";
 
 const books = [
     { title: "헨젤과 그레텔", image: bookHansel },
@@ -26,6 +29,15 @@ const books = [
 ]
 
 const MainPage = () => {
+    const { accessToken } = useAuthStore()
+    const navigate = useNavigate()
+  
+    useEffect(() => {
+      if (!accessToken || isTokenExpired(accessToken)) {
+        alert("로그인이 필요합니다.")
+        navigate("/login")
+      }
+    }, [accessToken, navigate])
     return (
         <>
         <BeeAnimation />

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mongle.fairytaleservice.mapper.FairytaleMapper">
+    <!-- 동화책 단건 조회 -->
+    <select id="findFairytaleById" parameterType="int" resultType="com.mongle.fairytaleservice.dto.response.FairytaleInfoDTO">
+        SELECT
+            fairytale_pk AS fairytalePk,
+            title,
+            count,
+            cover_img_url AS coverImgUrl,
+            first,
+            second,
+            metadata
+        FROM fairytale
+        WHERE fairytale_pk = #{fairytalePk}
+    </select>
+
+    <!-- 진행상황 리스트 조회 (user.nickname 조인) -->
+    <select id="findProgressListByFairytaleAndUser"
+            resultType="com.mongle.fairytaleservice.dto.response.ProgressInfoDTO">
+        SELECT
+            p.progress_pk AS progressPk,
+            p.now_page AS nowPage,
+            p.mode,
+            p.finish,
+            p.role,
+            u.nickname AS friendNickname
+        FROM progress p
+                 LEFT JOIN user u ON p.friend_id = u.id
+        WHERE p.fairytale_pk = #{fairytalePk}
+          AND p.user_pk = #{userPk}
+    </select>
+
+    <!--  전체 동화책 리스트 조회  -->
+    <select id="findAllFairytale" resultType="com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO">
+        SELECT
+            fairytale_pk AS fairytalePk,
+            title,
+            count,
+            cover_img_url AS coverImgUrl
+        FROM fairytale
+    </select>
+
+    <!--  마이 앨범에 인터랙션 이미지 추가  -->
+    <insert id="insertMyAlbum" parameterType="com.mongle.fairytaleservice.entity.myalbum">
+        INSERT INTO myalbum (user_pk, fairytale_pk, myalbum_data_img_url, created_date)
+        VALUES (#{userPk}, #{fairytalePk}, #{myalbumDataImgUrl}, #{createdDate})
+    </insert>
+
+
+    <!-- 진행상황 생성   -->
+    <insert id="insertProgress" parameterType="com.mongle.fairytaleservice.entity.progress"
+            useGeneratedKeys="true" keyProperty="progressPk" keyColumn="progress_pk">
+        INSERT INTO progress (
+            now_page,
+            mode,
+            friend_id,
+            user_pk,
+            fairytale_pk,
+            finish,
+            role
+        )
+        VALUES (
+                   #{nowPage},
+                   #{mode},
+                   #{friendId},
+                   #{userPk},
+                   #{fairytalePk},
+                   FALSE,
+                   #{role}
+               )
+    </insert>
+
+    <!--  pk로 진행상황 조회  -->
+    <select id="selectProgressById" resultType="com.mongle.fairytaleservice.entity.progress">
+        SELECT
+            progress_pk  AS progressPk,
+            now_page     AS nowPage,
+            mode         AS mode,
+            friend_id    AS friendId,
+            user_pk      AS userPk,
+            fairytale_pk AS fairytalePk,
+            finish       AS finish,
+            role         AS role
+        FROM progress
+        WHERE progress_pk = #{progressPk}
+    </select>
+
+
+    <!-- 진행상황 업데이트
+     업데이트 되는 값이 null 값이 아닌 경우 업데이트
+     -->
+    <update id="updateProgress"  parameterType="map">
+        UPDATE progress
+        <set>
+            <if test="nowPage != null">
+                now_page = #{nowPage},
+            </if>
+            <if test="finish != null">
+                finish = #{finish},
+            </if>
+        </set>
+        WHERE progress_pk = #{progressPk}
+    </update>
+
+</mapper>
