@@ -87,6 +87,8 @@ public class FriendServiceImpl implements FriendService {
             String friendPk = userServiceClient.getUUID(friendRequestDTO.getFriendId());
             String userId = userServiceClient.getId(userPk);
             friendMapper.insert(friendPk, userId);
+
+            notificationService.sendNotification(userPk);
         }catch (Exception e){
             throw new RuntimeException("친구 요청 수락 실패: " + e.getMessage());
         }

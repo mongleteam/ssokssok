@@ -2,6 +2,7 @@ package com.mongle.friendservice.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongle.friendservice.client.UserServiceClient;
 import com.mongle.friendservice.dto.response.NotificationListResponseDTO;
 import com.mongle.friendservice.entity.Notification;
 import com.mongle.friendservice.mapper.NotificationMapper;
@@ -33,6 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private static final String REDIS_NOTIFICATION_PREFIX = "notification:";
     private static final Long DEFAULT_TIMEOUT = 60000L;
+    private final UserServiceClient userServiceClient;
 
     public SseEmitter connect(String userPk, String lastEventId) {
         String eventId = userPk + "-" + System.currentTimeMillis();
@@ -61,7 +63,9 @@ public class NotificationServiceImpl implements NotificationService {
             try {
                 NotificationListResponseDTO redisNotification = new NotificationListResponseDTO("multi", friendId, timestamp);
                 String json = objectMapper.writeValueAsString(redisNotification);
-                redisTemplate.opsForValue().set(REDIS_NOTIFICATION_PREFIX + userPk + ":" + friendId, json);
+                String friendPk = userServiceClient.getUUID(friendId);
+                String userId = userServiceClient.getId(userPk);
+                redisTemplate.opsForValue().set(REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId, json);
             } catch (Exception e) {
                 e.printStackTrace();
             }

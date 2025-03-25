@@ -19,7 +19,6 @@ import java.util.Map;
 public class FriendController {
 
     private final FriendService friendService;
-    private final NotificationService notificationService;
 
     @PostMapping("/regist")
     public ResponseEntity<ApiResponseJson> registerFriend(@RequestHeader("X-User-Id") String userPk, @RequestBody FriendRequestDTO friendRequestDTO) {
