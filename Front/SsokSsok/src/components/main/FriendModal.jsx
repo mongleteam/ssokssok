@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { myFriendApi, plusFriendApi, searchFriendApi } from "../../apis/FriendApi";
+import { deleteFriendApi, myFriendApi, plusFriendApi, searchFriendApi } from "../../apis/FriendApi";
 import checkIcon from "../../assets/images/check_icon.png"
 import boardImage from "../../assets/images/friend_board.png"
 import plusIcon from "../../assets/images/plus_icon.png"
@@ -44,8 +44,23 @@ const FriendModal = () => {
         }
     }
 
+    const handleDeleteFriend = async (friendId, friendNickname) => {
+        const confirmDelete = window.confirm(`${friendNickname}님을 삭제하시겠습니까?`)
+        if (!confirmDelete) return
+      
+        try {
+          await deleteFriendApi(friendId);
+          alert(`${friendNickname}님이 삭제되었습니다!`)
+          
+          setMyFriend(prev => prev.filter(friend => friend.friendId !== friendId))
+        } catch (err) {
+          console.error("친구 삭제 실패", err)
+          alert("친구 삭제에 실패했습니다.")
+        }
+      }
+
     return (
-        <div className="flex w-full h-full font-dodam text-black text-2xl sm:text-3xl md:text-3xl lg:text-4xl tracking-wide">
+        <div className="flex w-full h-full font-whitechalk text-black text-2xl sm:text-3xl md:text-3xl lg:text-4xl tracking-wide">
             {/* 왼쪽 */}
             <div className="w-1/2 flex flex-col items-center justify-start pt-20">
                 <h2>내 친구 목록</h2>
@@ -60,7 +75,8 @@ const FriendModal = () => {
                         }}
                         >
                         <span className="font-dodam text-2xl font-bold">{friend.friendNickname}</span>
-                        <img src={DeleteIcon} alt="삭제" className="w-9 h-9 cursor-pointer" />
+                        <img src={DeleteIcon} alt="삭제" className="w-9 h-9 cursor-pointer" 
+                        onClick={() => handleDeleteFriend(friend.friendId, friend.friendNickname)}/>
                         </div>
                     ))}
                 </div>
@@ -111,7 +127,7 @@ const FriendModal = () => {
                     </div>
                     ))
                 ) : (
-                    <p className="text-gray-500 text-2xl font-dodam mt-4">검색 결과가 없습니다.</p>
+                    <p className="text-gray-500 text-2xl font-whitechalk mt-4">검색 결과가 없습니다.</p>
                 )}
                 </div>
 

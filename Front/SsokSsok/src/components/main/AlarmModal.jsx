@@ -87,7 +87,7 @@ const AlarmModal = () => {
           </div>
         ))
       ) : (
-        <p className="text-3xl font-dodam text-gray-600 text-center pt-8">알림이 없습니다!</p>
+        <p className="text-3xl font-whitechalk text-gray-600 text-center pt-8">알림이 없습니다!</p>
       )}
     </div>
      
