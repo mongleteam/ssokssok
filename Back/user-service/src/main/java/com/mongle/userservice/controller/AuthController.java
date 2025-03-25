@@ -68,4 +68,17 @@ public class AuthController {
         }
 
     }
+    @GetMapping("/check-nickname")
+    public ResponseEntity<ApiResponseJson> checkNickname(
+            @RequestParam String nickname
+    ){
+        boolean isSuccess = authService.checkNickname(nickname);
+        if (isSuccess) {
+            return ResponseEntity.ok(new ApiResponseJson(false, 200, "이미 존재하는 닉네임입니다.", null));
+        }else {
+            return ResponseEntity.ok(new ApiResponseJson(true, 200, "사용 가능한 닉네임입니다.", null));
+        }
+
+    }
+
 }

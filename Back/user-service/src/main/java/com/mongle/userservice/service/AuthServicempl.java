@@ -167,4 +167,9 @@ public class AuthServicempl implements AuthService {
         return userMapper.countById(id) > 0;
     }
 
+    @Override
+    public boolean checkNickname(String nickname) {
+        return userMapper.countByNickname(nickname) > 0;
+    }
+
 }
