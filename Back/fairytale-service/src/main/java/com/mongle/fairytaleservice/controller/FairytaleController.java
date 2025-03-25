@@ -3,6 +3,7 @@ package com.mongle.fairytaleservice.controller;
 
 import com.mongle.fairytaleservice.common.ApiResponseJson;
 import com.mongle.fairytaleservice.dto.request.ProgressInsertRequestDTO;
+import com.mongle.fairytaleservice.dto.request.ProgressUpdateRequestDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO;
 import com.mongle.fairytaleservice.service.FairytaleService;
@@ -52,8 +53,20 @@ public class FairytaleController {
             @RequestBody ProgressInsertRequestDTO requestDTO,
             @RequestHeader("X-User-Id") String userPk
     ){
+        requestDTO.setUserPk(userPk);
         int newPk = fairytaleService.createProgress(requestDTO);
 
         return ResponseEntity.ok(new ApiResponseJson(true,200,"진행상황 생성에 성공했습니다.", newPk));
+    }
+
+    @PatchMapping("/{progress_pk}")
+    public ResponseEntity<ApiResponseJson> updateProgress(
+            @PathVariable("progress_pk") Integer progressPk,
+            @RequestBody ProgressUpdateRequestDTO requestDTO,
+            @RequestHeader("X-User-Id") String userPk
+        ){
+        fairytaleService.updateProgress(progressPk,userPk,requestDTO);
+
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "진행상황 업데이트에 성공하였습니다.", null));
     }
 }
