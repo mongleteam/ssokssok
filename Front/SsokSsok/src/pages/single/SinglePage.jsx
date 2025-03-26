@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import '../../styles/book_background.css'; // CSS 파일 임포트
 import StoryHeader from "../../components/StoryHeader";
 import PhotoModal from "../../components/story/PhotoModal";
-import SingleStoryRenderer from "../../components/story/SingleStoryRenderer";
+import SingleStoryRenderer from "../../components/single/SingleStoryRenderer";
 import JSZip from "jszip";
 
 function SinglePage() {
@@ -47,21 +47,20 @@ function SinglePage() {
       }, []);
     return (
         <div className="book-background-container">
-        {/* 멀티 모드 화면 콘텐츠 */}
+        {/* 싱글글 모드 화면 콘텐츠 */}
         <StoryHeader />
 
         {/* 포토모달 */}
         <PhotoModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
-        {!showModal && story && assets && (
-        <SingleStoryRenderer story={story} assets={assets} />
-      )}
-        
-
         <div className="content-container">
             <h1 className="font-cafe24">싱글 모드</h1>
             {/* 삽화, 미션, 힌트 등 하위 컴포넌트 */}
+            {!showModal && story && assets && (
+        <SingleStoryRenderer story={story} assets={assets} />
+      )}
         </div>
+        
       </div>
     );
   }
