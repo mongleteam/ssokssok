@@ -52,4 +52,9 @@ public class FriendController {
         friendService.deleteFriend(userPk, friendRequestDTO);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "친구 삭제에 성공했습니다.", null));
     }
+
+    @DeleteMapping("/api/friend/delete-friends")
+    public void deleteFriend(@RequestParam("userPk") String userPk,@RequestParam("userId") String userId){
+        friendService.deleteAll(userPk, userId);
+    }
 }
