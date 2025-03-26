@@ -18,7 +18,7 @@ function StoryDialogue({ storyData }) {
 
   useEffect(() => {
     const fetchScript = async () => {
-      if (!storyData?.textFile) {
+      if (!storyData?.textFile && !storyData?.scriptFile) {
         setScriptText("대사 파일이 없습니다.");
         return;
       }
@@ -44,39 +44,15 @@ function StoryDialogue({ storyData }) {
     fetchScript();
   }, [storyData]);
 
-  const handleAudioPlayPause = () => {
-    setIsAudioPlaying(!isAudioPlaying);
-  };
-
-  const handleTtsPlayPause = () => {
-    setIsTtsPlaying(!isTtsPlaying);
-  };
-
   useEffect(() => {
-    if (audioSrc) {
-      const audio = new Audio(audioSrc);
-      audio.onplay = () => {
-        setIsAudioPlaying(true);
-      };
-      audio.onpause = () => {
-        setIsAudioPlaying(false);
-      };
-      audio.onended = () => {
-        setIsAudioPlaying(false);
-      };
-
-      if (isAudioPlaying) {
-        audio.play();
-      } else {
-        audio.pause();
-      }
-
-      return () => {
-        audio.pause();
-        audio.currentTime = 0;
-      };
+    if (ttsAudioSrc) {
+      setTimeout(() => {
+        const ttsAudio = new Audio(ttsAudioSrc);
+        ttsAudio.play();
+        setIsTtsPlaying(true);
+      }, 1000); // 1초 후에 자동 재생
     }
-  }, [isAudioPlaying, audioSrc]);
+  }, [ttsAudioSrc]);
 
   useEffect(() => {
     if (ttsAudioSrc) {
@@ -91,12 +67,6 @@ function StoryDialogue({ storyData }) {
         setIsTtsPlaying(false);
       };
 
-      if (isTtsPlaying) {
-        ttsAudio.play();
-      } else {
-        ttsAudio.pause();
-      }
-
       return () => {
         ttsAudio.pause();
         ttsAudio.currentTime = 0;
@@ -105,32 +75,31 @@ function StoryDialogue({ storyData }) {
   }, [isTtsPlaying, ttsAudioSrc]);
 
   return (
-    <div className="font-whitechalk text-xl text-center">
+    <div className="flex items-center justify-center font-whitechalk text-3xl text-center w-full h-full">
       {/* 스크립트 텍스트 출력 */}
       {scriptText && (
-        <div className="m-4 px-6 py-4 rounded-lg max-w-2xl text-center whitespace-pre-line">
+        <div className="m-4 px-6 py-4 max-w-2xl text-center whitespace-pre-line">
           {scriptText}
         </div>
       )}
       
-      {/* 일반 오디오 플레이어 */}
-      {/* {audioSrc && (
-        <div>
-          <audio controls src={audioSrc} />
-          <button onClick={handleAudioPlayPause}>
-            {isAudioPlaying ? "일시 정지" : "재생"}
-          </button>
-        </div>
-      )} */}
-      
       {/* TTS 오디오 플레이어 */}
-      {ttsAudioSrc && (
-        <div>
-          <audio controls src={ttsAudioSrc} />
-          <button onClick={handleTtsPlayPause}>
-          </button>
-        </div>
-      )}
+      {/* <audio controls src={ttsAudioSrc} /> */}
+
+      {/* {ttsAudioSrc && (
+        <button onClick={() => {
+          const ttsAudio = new Audio(ttsAudioSrc);
+          if (isTtsPlaying) {
+            ttsAudio.pause();
+            setIsTtsPlaying(false);
+          } else {
+            ttsAudio.play();
+            setIsTtsPlaying(true);
+          }
+        }}>
+          {isTtsPlaying ? "일시 정지" : "다시 듣기"}
+        </button>
+      )} */}
     </div>
   );
 }

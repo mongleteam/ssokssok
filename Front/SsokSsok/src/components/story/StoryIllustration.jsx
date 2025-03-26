@@ -37,7 +37,7 @@ function StoryIllustration({ storyData }) {
   }, [storyData]);
 
   return (
-    <div className="relative w-full h-auto torn-effect">
+    <div className="relative w-full h-auto">
       <img
         src={imageSrc}
         alt="Illustration"
