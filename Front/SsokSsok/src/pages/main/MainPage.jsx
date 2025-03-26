@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../stores/authStore";
 import { isTokenExpired } from "../../utils/tokenUtils";
 import HanselBookOpening from "../../components/animations/HanselBookOpening";
+import lockImg from "../../assets/images/lock.png";
 
 const books = [
     { title: "헨젤과 그레텔", image: bookHansel },
@@ -61,17 +62,31 @@ const MainPage = () => {
                 <div className="relative flex flex-col items-center">
                     <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[50rem] -mb-13 rotate-2 z-0" />
                     <div className="flex justify-center -mt-[26rem] z-10">
-                        {books.slice(0, 4).map((book, index) => (
-                            <motion.img 
-                            key={index} 
-                            src={book.image} 
-                            alt={book.title} 
-                            className="w-[11rem]"
-                            whileHover={{ scale: 1.1, y: -10 }}
-                            onClick={() => handleBookClick(book.title)}
-                            transition={{ type: "spring", stiffness: 200 }}
-                        />
-                        ))}
+                    {books.slice(0, 4).map((book, index) => {
+                        const isLocked = book.title !== "헨젤과 그레텔";
+                        return (
+                            <div key={index} className="relative w-[11rem] mx-2">
+                                <motion.img 
+                                    src={book.image} 
+                                    alt={book.title} 
+                                    className={`w-full ${isLocked ? "opacity-60" : ""}`}
+                                    whileHover={{ scale: isLocked ? 1 : 1.1, y: isLocked ? 0 : -10 }}
+                                    onClick={() => handleBookClick(book.title)}
+                                    transition={{ type: "spring", stiffness: 200 }}
+                                />
+                                {isLocked && (
+                                    <>
+                                        <div className="absolute top-0 left-0 w-[11rem] bg-black bg-opacity-20 rounded-md pointer-events-none z-10" />
+                                        <img 
+                                            src={lockImg} 
+                                            alt="lock" 
+                                            className="absolute top-1/2 left-1/2 w-12 transform -translate-x-1/2 -translate-y-1/2"
+                                        />
+                                    </>
+                                )}
+                            </div>
+                        )
+                    })}
                     </div>
                 </div>
                 
@@ -79,16 +94,31 @@ const MainPage = () => {
                 <div className="relative flex flex-col items-center mt-8">
                     <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[50rem] -mb-18 rotate-2 z-0" />
                     <div className="flex justify-center -mt-[26rem] z-10">
-                        {books.slice(4, 8).map((book, index) => (
-                            <motion.img 
-                            key={index} 
-                            src={book.image} 
-                            alt={book.title} 
-                            className="w-[11rem]"
-                            whileHover={{ scale: 1.1, y: -10 }}
-                            transition={{ type: "spring", stiffness: 200 }}
-                        />
-                        ))}
+                    {books.slice(4, 8).map((book, index) => {
+                        const isLocked = book.title !== "헨젤과 그레텔";
+                        return (
+                            <div key={index} className="relative w-[11rem] mx-2">
+                                <motion.img 
+                                    src={book.image} 
+                                    alt={book.title} 
+                                    className={`w-full ${isLocked ? "opacity-60" : ""}`}
+                                    whileHover={{ scale: isLocked ? 1 : 1.1, y: isLocked ? 0 : -10 }}
+                                    onClick={() => handleBookClick(book.title)}
+                                    transition={{ type: "spring", stiffness: 200 }}
+                                />
+                                {isLocked && (
+                                    <>
+                                        <div className="absolute top-0 left-0 w-[11rem] bg-black bg-opacity-20 rounded-md pointer-events-none z-10" />
+                                        <img 
+                                            src={lockImg} 
+                                            alt="lock" 
+                                            className="absolute top-1/2 left-1/2 w-12 transform -translate-x-1/2 -translate-y-1/2"
+                                        />
+                                    </>
+                                )}
+                            </div>
+                        )
+                    })}
                     </div>
                 </div>             
             </div>

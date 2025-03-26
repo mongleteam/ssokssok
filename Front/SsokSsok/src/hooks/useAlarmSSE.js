@@ -23,6 +23,7 @@ const useAlarmSSE = (accessToken) => {
       }
     );
     console.log("✅ SSE 연결 URL:", import.meta.env.VITE_SPRING_API_URL);
+    console.log("🚀 AccessToken 확인:", accessToken);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
