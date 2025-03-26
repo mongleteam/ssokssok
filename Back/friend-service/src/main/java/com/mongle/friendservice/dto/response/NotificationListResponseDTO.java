@@ -11,11 +11,12 @@ public class NotificationListResponseDTO {
     String state;
     String friendId;
     private Long timestamp;
+    String roomId;
 
-    public static NotificationListResponseDTO fromMySQL(String friendId, Long timestamp) {
-        return new NotificationListResponseDTO("friend", friendId, timestamp);
+    public static NotificationListResponseDTO fromMySQL(String friendId, Long timestamp, String roomId) {
+        return new NotificationListResponseDTO("friend", friendId, timestamp, roomId);
     }
-    public static NotificationListResponseDTO fromRedis(String friendId, Long timestamp) {
-        return new NotificationListResponseDTO("multi", friendId, timestamp);
+    public static NotificationListResponseDTO fromRedis(String friendId, Long timestamp, String roomId) {
+        return new NotificationListResponseDTO("multi", friendId, timestamp, roomId);
     }
 }

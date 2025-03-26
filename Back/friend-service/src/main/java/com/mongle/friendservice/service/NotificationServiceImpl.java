@@ -21,10 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -52,10 +49,11 @@ public class NotificationServiceImpl implements NotificationService {
         return emitter;
     }
     @Override
-    public void createNotification(String userPk, String friendId, boolean isMulti) {
+    public String createNotification(String userPk, String friendId, boolean isMulti) {
         Long timestamp = System.currentTimeMillis();
         String friendPk = userServiceClient.getUUID(friendId);
         String userId = userServiceClient.getId(userPk);
+        String roomId = generateRandomId(friendId);
 
         // MySQL에 저장 (friend 상태)
         if (!isMulti) {
@@ -68,7 +66,7 @@ public class NotificationServiceImpl implements NotificationService {
         // Redis에 저장 (multi 상태)
         if (isMulti) {
             try {
-                NotificationListResponseDTO redisNotification = new NotificationListResponseDTO("multi", friendId, timestamp);
+                NotificationListResponseDTO redisNotification = new NotificationListResponseDTO("multi", friendId, timestamp, roomId);
                 String json = objectMapper.writeValueAsString(redisNotification);
 
                 redisTemplate.opsForValue().set(REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId, json);
@@ -79,6 +77,8 @@ public class NotificationServiceImpl implements NotificationService {
 
         // SSE를 통해 클라이언트에게 실시간 알림 전송
         sendNotification(friendPk);
+
+        return roomId;
     }
 
     @Override
@@ -97,11 +97,9 @@ public class NotificationServiceImpl implements NotificationService {
     public void deleteMultiNotification(String userPk, FriendRequestDTO friendRequestDTO) {
         String friendId = friendRequestDTO.getFriendId();
 
-        String friendPk = userServiceClient.getUUID(friendId);
-        String userId = userServiceClient.getId(userPk);
 
         // Redis 키 생성
-        String redisKey = REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId;
+        String redisKey = REDIS_NOTIFICATION_PREFIX + userPk + ":" + friendId;
 
         // 삭제 시도
         Boolean result = redisTemplate.delete(redisKey);
@@ -121,7 +119,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         List<NotificationListResponseDTO> friendNotifications = new ArrayList<>();
         for (NotificationListResponseDTO dto : mysqlNotifications) {
-            friendNotifications.add(NotificationListResponseDTO.fromMySQL(dto.getFriendId(), dto.getTimestamp()));
+            friendNotifications.add(NotificationListResponseDTO.fromMySQL(dto.getFriendId(), dto.getTimestamp(), dto.getRoomId()));
         }
 
         // 병합 후 최신순 정렬
@@ -145,7 +143,7 @@ public class NotificationServiceImpl implements NotificationService {
                     if (json != null) {
                         RedisNotificationData redisData = objectMapper.readValue(json, RedisNotificationData.class);
                         if (redisData.getFriendId() != null && redisData.getTimestamp() != null) {
-                            notifications.add(NotificationListResponseDTO.fromRedis(redisData.getFriendId(), redisData.getTimestamp()));
+                            notifications.add(NotificationListResponseDTO.fromRedis(redisData.getFriendId(), redisData.getTimestamp(), redisData.getRoomId()));
                         }
                     }
                 } catch (Exception e) {
@@ -156,12 +154,17 @@ public class NotificationServiceImpl implements NotificationService {
         return notifications;
     }
 
+    public static String generateRandomId(String friendId) {
+        return friendId + "-" + UUID.randomUUID().toString().substring(0, 8);
+    }
+
 
     @Getter
     @Setter
     private static class RedisNotificationData {
         private String friendId;
         private Long timestamp;
+        private String roomId;
     }
 
 
