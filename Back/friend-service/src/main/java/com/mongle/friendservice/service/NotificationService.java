@@ -11,7 +11,7 @@ public interface NotificationService {
 
     List<NotificationListResponseDTO> getNotifications(String userPk);
 
-    void createNotification(String userPk, String friendId, boolean isMulti);
+    String createNotification(String userPk, String friendId, boolean isMulti);
 
     void sendNotification(String userPk);
 
