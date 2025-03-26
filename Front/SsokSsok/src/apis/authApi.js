@@ -12,11 +12,11 @@ export const loginApi = (loginData) => {
 
 
 // 리프레쉬토큰
-// export const refreshTokenApi = () => {
-//     return springApi.post("/auth/refresh", {}, {
-//         withCredentials: true,
-//     })
-// }
+export const refreshTokenApi = () => {
+    return springApi.post("/auth/refresh", {}, {
+        withCredentials: true,
+    })
+}
 
 // 아이디 중복체크 
 export const checkIdApi = (keyword) => {

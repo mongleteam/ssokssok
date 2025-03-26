@@ -28,7 +28,14 @@ const LoginPage = () => {
         try {
           const res = await loginApi(formData)
           const { accessToken, refreshToken } = res.data.data
-      
+          useAuthStore.getState().setAccessToken(accessToken)
+
+          // // user가 있다면 저장
+          // if (user) {
+          //   useAuthStore.getState().setUser(user);
+          // } else {
+          //   console.warn("❌ 로그인 응답에 user 정보 없음!");
+          // }
           if (!accessToken || !refreshToken) {
             alert("서버로부터 토큰을 받지 못했습니다.")
             return

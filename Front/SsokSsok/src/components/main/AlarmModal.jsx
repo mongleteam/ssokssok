@@ -5,21 +5,38 @@ import NotificationBoard from "../../assets/images/alarm_board_img.png"
 import CheckIcon from "../../assets/images/check_icon.png"
 import DeleteIcon from "../../assets/images/remove_icon.png"
 import { acceptFriendApi, rejectFriendApi } from "../../apis/FriendApi";
+import { useAlarmStore } from "../../stores/alarmStore";
 
 const AlarmModal = () => {
 
-  const [myAlarm, setMyAlarm] = useState([])
-  useEffect(() => {
-    const fetchMyAlarm = async () => {
-      try {
-        const res = await notiListApi()
-        setMyAlarm(res.data.data.notifications)
-      } catch (err) {
-        console.error("알람 조회 실패", err)
-      }
+  const myAlarm = useAlarmStore((state) => state.alarms);
+  const setAlarms = useAlarmStore((state) => state.setAlarms);
+
+  // useEffect(() => {
+  //   const fetchMyAlarm = async () => {
+  //     try {
+  //       const res = await notiListApi()
+  //       console.log("✅ 알림 API 응답", res.data.data.notifications);
+  //       setAlarms(res.data.data.notifications)
+  //     } catch (err) {
+  //       console.error("알람 조회 실패", err)
+  //     }
+  //   }
+  //   fetchMyAlarm()
+  // }, []) // [] 두번째 인자 없으면 무한 불러옴 -> 막힘 (중요)
+
+  const fetchMyAlarm = async () => {
+    try {
+      const res = await notiListApi();
+      console.log("✅ 알림 API 응답", res.data.data.notifications)
+      setAlarms(res.data.data.notifications)
+    } catch (err) {
+      console.error("알람 조회 실패", err)
     }
-    fetchMyAlarm()
-  }, []) // [] 두번째 인자 없으면 무한 불러옴 -> 막힘 (중요)
+  }
+  useEffect(() => {
+    fetchMyAlarm() // 모달 열릴 때 최초 한번만 조회
+  }, [])
 
   const getMessage = (item) => {
     switch(item.state) {
@@ -41,8 +58,7 @@ const AlarmModal = () => {
         } else if (item.state === "multi") {
           console.log("게임 초대 수락 (API 아직 없음)", item.friendId)
         }
-        // 수락 후 UI에서 알림 제거
-        setMyAlarm(prev => prev.filter((_, i) => i !== item.index))
+        await fetchMyAlarm()
       } catch (err) {
         console.error("수락 실패", err)
       }
@@ -56,7 +72,7 @@ const AlarmModal = () => {
         } else if (item.state === "multi") {
           console.log("게임 초대 거절 (API 아직 없음)", item.friendId)
         }
-        setMyAlarm(prev => prev.filter((_, i) => i !== item.index))
+        await fetchMyAlarm()
       } catch (err) {
         console.error("거절 실패", err)
       }
@@ -68,7 +84,7 @@ const AlarmModal = () => {
       <img src={AlarmBoard} alt="alarmBoard" className="w-[14rem] -mt-[20.5rem]"/>
 
       <div className="absolute left-1/2 -translate-x-1/2 space-y-1 w-[38rem] max-h-[20rem] overflow-y-auto mt-1">
-      {myAlarm.length > 0 ? (
+      {Array.isArray(myAlarm) && myAlarm.length > 0 ? (
         myAlarm.map((item, index) => (
           <div
             key={index}
