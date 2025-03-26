@@ -12,6 +12,16 @@ export default {
         dodam: ['KccDodam', 'sans-serif'],
         cafe24: ['Cafe24', 'sans-serif'],
       },
+      keyframes: {
+        blinkTwice: {
+          '0%, 100%': { opacity: '1' },
+          '25%, 75%': { opacity: '0' },
+          '50%': { opacity: '1' },
+        },
+      },
+      animation: {
+        blinkTwice: 'blinkTwice 1s ease-in-out 1',
+      },
     },
   },
   plugins: [],
