@@ -15,5 +15,5 @@ public interface FriendMapper {
 
     void insert(@Param("userPk") String userPk,@Param("friendId") String friendId);
 
-    int delete(String userPk, String friendId);
+    int delete(@Param("userPk")String userPk,@Param("friendId")String friendId);
 }
