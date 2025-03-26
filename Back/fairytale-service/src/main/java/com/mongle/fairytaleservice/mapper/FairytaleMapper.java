@@ -15,7 +15,11 @@ import java.util.List;
 public interface FairytaleMapper {
     FairytaleInfoDTO findFairytaleById(@Param("fairytalePk") Integer fairytalePk);
 
-    List<ProgressInfoDTO> findProgressListByFairytaleAndUser(
+    List<ProgressInfoDTO> findSingleProgress(
+            @Param("fairytalePk") Integer fairytalePk,
+            @Param("userPk") String userPk
+    );
+    List<ProgressInfoDTO> findMultiProgress(
             @Param("fairytalePk") Integer fairytalePk,
             @Param("userPk") String userPk
     );

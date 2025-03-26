@@ -17,8 +17,26 @@
         WHERE fairytale_pk = #{fairytalePk}
     </select>
 
-    <!-- 진행상황 리스트 조회 (user.nickname 조인) -->
-    <select id="findProgressListByFairytaleAndUser"
+    <!-- 싱글모드 진행상황 리스트 조회 (user.nickname 조인) -->
+    <select id="findSingleProgress"
+            resultType="com.mongle.fairytaleservice.dto.response.ProgressInfoDTO">
+        SELECT
+            p.progress_pk AS progressPk,
+            p.now_page AS nowPage,
+            p.mode,
+            p.finish,
+            p.role,
+            u.nickname AS friendNickname
+        FROM progress p
+                 LEFT JOIN user u ON p.friend_id = u.id
+        WHERE p.fairytale_pk = #{fairytalePk}
+            AND p.user_pk = #{userPk}
+            AND p.mode = 'SINGLE'
+        ORDER BY p.created_date DESC
+            LIMIT 1
+    </select>
+    <!--  멀티모드 진행상황 조회  -->
+    <select id="findMultiProgress"
             resultType="com.mongle.fairytaleservice.dto.response.ProgressInfoDTO">
         SELECT
             p.progress_pk AS progressPk,
@@ -31,6 +49,7 @@
                  LEFT JOIN user u ON p.friend_id = u.id
         WHERE p.fairytale_pk = #{fairytalePk}
           AND p.user_pk = #{userPk}
+          AND p.mode = 'MULTI'
         ORDER BY p.created_date DESC
             LIMIT 3
     </select>

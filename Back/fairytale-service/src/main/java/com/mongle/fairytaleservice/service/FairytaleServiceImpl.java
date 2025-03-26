@@ -5,6 +5,7 @@ import com.mongle.fairytaleservice.dto.request.ProgressInsertRequestDTO;
 import com.mongle.fairytaleservice.dto.request.ProgressUpdateRequestDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleInfoResponseDTO;
 import com.mongle.fairytaleservice.dto.response.FairytaleSimpleDTO;
+import com.mongle.fairytaleservice.dto.response.ProgressInfoDTO;
 import com.mongle.fairytaleservice.exception.CustomException;
 import com.mongle.fairytaleservice.exception.ErrorCode;
 import com.mongle.fairytaleservice.mapper.FairytaleMapper;
@@ -15,6 +16,7 @@ import com.mongle.fairytaleservice.entity.myalbum;
 import com.mongle.fairytaleservice.entity.progress;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,12 +35,21 @@ public class FairytaleServiceImpl implements FairytaleService {
         }
 
         // 2. 진행상황 리스트 가져오기
-        var progressList = fairytaleMapper.findProgressListByFairytaleAndUser(fairytalePk, userPk);
 
+        // 싱글 진행상황 1개
+        var single = fairytaleMapper.findSingleProgress(fairytalePk, userPk);
+
+        // 멀티 진행상황 최신 3개
+        var multiList = fairytaleMapper.findMultiProgress(fairytalePk, userPk);
+
+        List<ProgressInfoDTO> progressList = new ArrayList<>();
+        progressList.addAll(single);
+        progressList.addAll(multiList);
         // 3. 응답 DTO 조립
         var response = new FairytaleInfoResponseDTO();
         response.setFairytale(fairytale);
         response.setProgressList(progressList);
+
 
         return response;
     }
