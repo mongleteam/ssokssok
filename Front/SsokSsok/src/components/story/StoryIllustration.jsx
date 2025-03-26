@@ -4,8 +4,6 @@ import illustration from '../../assets/images/illustration_default.png';
 function StoryIllustration({ storyData }) {
   // 이미지 소스 상태
   const [imageSrc, setImageSrc] = useState(illustration); 
-  // 오디오 소스 상태
-  const [audioSrc, setAudioSrc] = useState(null); 
 
   useEffect(() => {
     if (window.tornpaperLoaded) return; // 이미 로드된 경우 리턴
@@ -35,7 +33,6 @@ function StoryIllustration({ storyData }) {
   useEffect(() => {
     if (storyData) {
       setImageSrc(storyData.image); // 이미지 소스 설정
-      setAudioSrc(storyData.audio); // 오디오 소스 설정
     }
   }, [storyData]);
 
