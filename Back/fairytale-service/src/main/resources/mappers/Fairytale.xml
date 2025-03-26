@@ -26,12 +26,13 @@
             p.mode,
             p.finish,
             p.role,
-            u.nickname AS friendNickname
+            u.nickname AS friendNickname,
+            p.friend_id AS friendId
         FROM progress p
                  LEFT JOIN user u ON p.friend_id = u.id
         WHERE p.fairytale_pk = #{fairytalePk}
-            AND p.user_pk = #{userPk}
-            AND p.mode = 'SINGLE'
+          AND p.user_pk = #{userPk}
+          AND p.mode = 'SINGLE'
         ORDER BY p.created_date DESC
             LIMIT 1
     </select>
@@ -44,7 +45,8 @@
             p.mode,
             p.finish,
             p.role,
-            u.nickname AS friendNickname
+            u.nickname AS friendNickname,
+            p.friend_id AS friendId
         FROM progress p
                  LEFT JOIN user u ON p.friend_id = u.id
         WHERE p.fairytale_pk = #{fairytalePk}
