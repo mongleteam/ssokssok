@@ -110,5 +110,10 @@ public class FriendServiceImpl implements FriendService {
 
     }
 
+    @Override
+    public void deleteAll(String userPk, String userId) {
+        friendMapper.deleteAll(userPk, userId);
+    }
+
 
 }

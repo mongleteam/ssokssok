@@ -15,4 +15,6 @@ public interface FriendService {
     void createFriendRelation(String userPk, FriendRequestDTO friendRequestDTO);
 
     void deleteFriend(String userPk, FriendRequestDTO friendRequestDTO);
+
+    void deleteAll(String userPk, String userId);
 }
