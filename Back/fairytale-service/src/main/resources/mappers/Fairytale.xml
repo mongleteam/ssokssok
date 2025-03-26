@@ -31,6 +31,8 @@
                  LEFT JOIN user u ON p.friend_id = u.id
         WHERE p.fairytale_pk = #{fairytalePk}
           AND p.user_pk = #{userPk}
+        ORDER BY p.created_date DESC
+            LIMIT 3
     </select>
 
     <!--  전체 동화책 리스트 조회  -->
