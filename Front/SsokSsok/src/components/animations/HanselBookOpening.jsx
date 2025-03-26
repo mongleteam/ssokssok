@@ -5,14 +5,16 @@ import bookAnimation from "../../lottie/book.json";
 import bgImg from "../../assets/images/5181830.jpg";
 import "./BookOpening.css";
 import { bookInfoApi } from "../../apis/bookStartApi";
+import useAuthStore from "../../stores/authStore";
 
 
 const HanselBookOpening = () => {
-  const navigate = useNavigate();
-  const [start, setStart] = useState(false);
+  const navigate = useNavigate()
+  const [start, setStart] = useState(false)
+  const {logout} = useAuthStore()
 
   useEffect(() => {
-    const t1 = setTimeout(() => setStart(true), 100);
+    const t1 = setTimeout(() => setStart(true), 100)
 
     const t2 = setTimeout(() => {
       // ✅ API 호출
@@ -29,6 +31,8 @@ const HanselBookOpening = () => {
         .catch((err) => {
           console.error("❌ API 호출 실패:", err)
           alert("서버 오류가 발생했습니다.")
+          logout()
+          navigate("/login")
         })
     }, 2000)
 
