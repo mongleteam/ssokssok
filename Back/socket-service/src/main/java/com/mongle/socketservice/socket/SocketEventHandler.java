@@ -1,9 +1,9 @@
 package com.mongle.socketservice.socket;
-
 import com.corundumstudio.socketio.BroadcastOperations;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.mongle.socketservice.socket.dto.request.*;
+import com.mongle.socketservice.socket.dto.response.IsSuccessResponse;
 import com.mongle.socketservice.socket.dto.response.RoomStoneResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -44,15 +44,16 @@ public class SocketEventHandler {
         server.addEventListener("pageCount", RoomPageRequest.class, (client, data, ack)-> pageCount(data));
 
         // 본인 돌개수 전송
-        server.addEventListener("stoneCount", RoomStoneRequest.class,(client, data, ack) -> stoneCount(data));
+        server.addEventListener("objectCount", RoomObjectCountRequest.class,(client, data, ack) -> objectCount(data));
     }
 
     // 자기가 성공했는지 room에 있는 사람한테 전달한다.
     private void isSuccess(IsSuccessRequest data){
         String roomId = data.getRoomId();
         String message = data.getIsSuccess();
+        IsSuccessResponse isSuccessResponse = new IsSuccessResponse(data.getSenderName(), message);
 
-        server.getRoomOperations(roomId).sendEvent("isSuccess",message);
+        server.getRoomOperations(roomId).sendEvent("isSuccess", isSuccessResponse);
     }
 
     // 본인 페이지 전송
@@ -63,25 +64,14 @@ public class SocketEventHandler {
         server.getRoomOperations(roomId).sendEvent("pageCount",page);
     }
 
-    // 거절 시 로직
-    private void disconnectRoom(RoomDisconnectionRequest data){
+    // 숫자를 상대방 한테 보냅니다.
+    private void objectCount(RoomObjectCountRequest data){
         String roomId = data.getRoomId();
-        // 해당 roomId의 정보를 가져온다.
-        BroadcastOperations room = server.getRoomOperations(roomId);
-
-        // roomId에 해당하는 room에 있는 socket 연결을 모두 끊어버린다.
-        for(SocketIOClient client : room.getClients())
-            client.disconnect();
-    }
-
-    // 내꺼 돌 개수 상대방 한테 보내기
-    private void stoneCount(RoomStoneRequest data){
-        String roomId = data.getRoomId();
-        int stoneCount = data.getStoneCount();
+        int stoneCount = data.getObjectCount();
         String name = data.getSenderName();
 
         RoomStoneResponse roomStoneResponse = new RoomStoneResponse(name, stoneCount);
-        server.getRoomOperations(roomId).sendEvent("stoneCount", roomStoneResponse);
+        server.getRoomOperations(roomId).sendEvent("objectCount", roomStoneResponse);
     }
 
     // join broad casting group
@@ -97,5 +87,16 @@ public class SocketEventHandler {
 
         client.leaveRoom(roomId);
         client.disconnect();
+    }
+
+    // 거절 시 로직
+    private void disconnectRoom(RoomDisconnectionRequest data){
+        String roomId = data.getRoomId();
+        // 해당 roomId의 정보를 가져온다.
+        BroadcastOperations room = server.getRoomOperations(roomId);
+
+        // roomId에 해당하는 room에 있는 socket 연결을 모두 끊어버린다.
+        for(SocketIOClient client : room.getClients())
+            client.disconnect();
     }
 }
