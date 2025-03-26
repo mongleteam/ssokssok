@@ -19,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -130,6 +131,10 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<String> getNicknamesByUserId(List<String> idList) {
+        if (idList.size() == 0) {
+            return new ArrayList<>();
+        }
+
         return userMapper.findNicknamesByUserId(idList);
     }
 
