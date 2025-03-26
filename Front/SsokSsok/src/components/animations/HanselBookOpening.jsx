@@ -4,6 +4,8 @@ import Lottie from "lottie-react";
 import bookAnimation from "../../lottie/book.json";
 import bgImg from "../../assets/images/5181830.jpg";
 import "./BookOpening.css";
+import { bookInfoApi } from "../../apis/bookStartApi";
+
 
 const HanselBookOpening = () => {
   const navigate = useNavigate();
@@ -11,12 +13,30 @@ const HanselBookOpening = () => {
 
   useEffect(() => {
     const t1 = setTimeout(() => setStart(true), 100);
-    const t2 = setTimeout(() => navigate("/main/bookstart/hansel"), 2000);
+
+    const t2 = setTimeout(() => {
+      // ✅ API 호출
+      bookInfoApi()
+        .then((res) => {
+          console.log("📘 동화 정보 res.data:", res.data.data)
+
+          if (res.data.isSuccess) {
+            navigate("/main/bookstart/hansel", { state: res.data.data })
+          } else {
+            alert("동화 정보를 불러오는 데 실패했습니다.")
+          }
+        })
+        .catch((err) => {
+          console.error("❌ API 호출 실패:", err)
+          alert("서버 오류가 발생했습니다.")
+        })
+    }, 2000)
+
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [navigate]);
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
+  }, [navigate])
 
   return (
     <div
