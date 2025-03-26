@@ -106,7 +106,7 @@ const SingleStoryRenderer = ({ story, assets }) => {
 
       {/* 📘 대사 텍스트 */}
       {scriptText && (
-        <div className="mt-6 bg-white px-6 py-4 rounded-lg shadow max-w-2xl text-center text-lg font-cafe24 whitespace-pre-line">
+        <div className="mt-6 px-6 py-4 rounded-lg max-w-3xl text-center text-3xl font-whitechalk whitespace-pre-line">
           {scriptText}
         </div>
       )}
