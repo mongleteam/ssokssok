@@ -48,9 +48,7 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public void deleteFriendNotification(String userPk, FriendRequestDTO request) {
         try{
-            String friendPk = userServiceClient.getUUID(request.getFriendId());
-            String userId = userServiceClient.getId(userPk);
-            int cnt = notificationMapper.deleteByUserPkAndFriendId(friendPk, userId);
+            int cnt = notificationMapper.deleteByUserPkAndFriendId(userPk, request.getFriendId());
             if(cnt == 0){
                 throw new CustomException(ErroCode.INVALID_REQUEST);
             }
