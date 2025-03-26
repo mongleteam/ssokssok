@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import pageNextButton from "../../assets/images/pagenext_icon.png";
+import pagePreviousButton from "../../assets/images/pageprevious_icon.png";
+import SingleStoryIllustration from "../single/SingleStoryIllustration";
 
 const SingleStoryRenderer = ({ story, assets }) => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -37,12 +40,10 @@ const SingleStoryRenderer = ({ story, assets }) => {
 
       {/* 삽화 이미지 */}
       {page.image && (
-        <img
-          src={assets[page.image]}
-          alt="illustration"
-          className="w-[40rem] mb-4"
-        />
-      )}
+    <div className="relative w-[50rem] h-auto torn-effect mb-4">
+      <SingleStoryIllustration src={assets[page.image]} />
+    </div>
+    )}
 
       {/* TTS 오디오 */}
       {page.tts && (
@@ -66,25 +67,28 @@ const SingleStoryRenderer = ({ story, assets }) => {
       )}
 
       {/* 페이지 이동 버튼 */}
-      <div className="flex gap-4 mt-8">
-        <button
+      {/* 왼쪽 (이전) */}
+      {currentPage > 0 && (
+        <img
+          src={pagePreviousButton}
+          alt="이전"
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-          disabled={currentPage === 0}
-          className="px-6 py-2 bg-gray-400 text-white rounded disabled:opacity-50"
-        >
-          ⬅️ 이전
-        </button>
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 w-24 h-24 cursor-pointer"
+        />
+      )}
 
-        <button
+      {/* 오른쪽 (다음) */}
+      {currentPage < story.length - 1 && (
+        <img
+          src={pageNextButton}
+          alt="다음"
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, story.length - 1))
           }
-          disabled={currentPage === story.length - 1}
-          className="px-6 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          ➡️ 다음
-        </button>
-      </div>
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 w-24 h-24 cursor-pointer"
+        />
+      )}
+
     </div>
   );
 };
