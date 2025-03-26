@@ -1,6 +1,7 @@
 package com.mongle.userservice.service;
 
 
+import com.mongle.userservice.client.FriendServiceClient;
 import com.mongle.userservice.dto.request.FindIdRequestDTO;
 import com.mongle.userservice.dto.request.UpdateNameRequestDTO;
 import com.mongle.userservice.dto.request.UpdateNickNameRequestDTO;
@@ -28,6 +29,8 @@ public class UserServiceImpl implements UserService{
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
     private final AuthService authService;
+    private final FriendServiceClient friendServiceClient;
+
     @Override
     public void deleteUser(String userPk){
 
@@ -38,7 +41,11 @@ public class UserServiceImpl implements UserService{
             throw new CustomException(ErroCode.NOT_EXIST_MEMBER_ID);
         }
 
-        // 2. 유저가 존재하면 DB에서 삭제
+        // 2. 친구 관계 삭제
+        friendServiceClient.deleteFriend(userPk,user.getId());
+
+
+        // 3. 유저 DB에서 삭제
         userMapper.deleteUser(userPk);
 
     }
@@ -91,7 +98,7 @@ public class UserServiceImpl implements UserService{
     public void updateUserPassword(String userPk, UpdatePasswordRequestDTO request) {
         // 1. 빈칸 입력시 예외 처리
         if (request.getNewPassword() == null || request.getNewPassword().trim().isEmpty()
-        || request.getNewPassword() == null || request.getNewPassword().trim().isEmpty()) {
+                || request.getNewPassword() == null || request.getNewPassword().trim().isEmpty()) {
             throw new CustomException(ErroCode.INVALID_INPUT);
         }
 
