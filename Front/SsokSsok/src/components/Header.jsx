@@ -10,11 +10,14 @@ import MainModal from "./main/MainModal";
 import MyPageModal from "./main/MyPageModal";
 import AlarmModal from "./main/AlarmModal";
 import SettingsModal from "./main/SettingsModal";
+import { useAlarmStore } from "../stores/alarmStore";
 
 const Header = () => {
     const navigate = useNavigate();
     const [modalContent, setModalContent] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const alarmCount = useAlarmStore((state) => state.alarms.length)
 
     // 모달 열기
     const openModal = (Component) => {
@@ -63,15 +66,22 @@ const Header = () => {
                         transition={{ type: "spring", stiffness: 300 }}
                         onClick={() => openModal(MyPageModal)}
                     />
-                    <motion.img
-                        src={alarmIcon}
-                        alt="Alarm"
-                        className="w-[3.5rem] cursor-pointer object-contain"
-                        whileHover={{ scale: 1.15 }}
-                        whileTap={{ scale: 0.9 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                        onClick={() => openModal(AlarmModal)}
-                    />
+                    <motion.div className="relative">
+                        <motion.img
+                            src={alarmIcon}
+                            alt="Alarm"
+                            className="w-[3.5rem] cursor-pointer object-contain"
+                            whileHover={{ scale: 1.15 }}
+                            whileTap={{ scale: 0.9 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            onClick={() => openModal(AlarmModal)}
+                        />
+                        {alarmCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                            {alarmCount}
+                            </span>
+                        )}
+                        </motion.div>
                     <motion.img
                         src={settingsIcon}
                         alt="Settings"
