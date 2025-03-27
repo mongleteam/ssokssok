@@ -30,7 +30,7 @@ const CompleteModal = () => {
         <div className="flex gap-8">
           <button
             onClick={handleGoHome}
-            className="relative w-52 h-20 text-black font-whitechalk text-2xl"
+            className="relative w-52 h-20 text-black font-whitechalk text-2xl hover:scale-105 transition-transform duration-200"
           >
             <img
               src={greenButton}
@@ -42,7 +42,7 @@ const CompleteModal = () => {
 
           <button
             onClick={handleGoAlbum}
-            className="relative w-52 h-20 text-black font-whitechalk text-2xl"
+            className="relative w-52 h-20 text-black font-whitechalk text-2xl hover:scale-105 transition-transform duration-200"
           >
             <img
               src={greenButton}

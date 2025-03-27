@@ -22,7 +22,7 @@ const PauseModal = () => {
 
         <button
           onClick={() => navigate("/main")}
-          className="relative w-52 h-20 text-black font-whitechalk text-2xl"
+          className="relative w-52 h-20 text-black font-whitechalk text-2xl hover:scale-105 transition-transform duration-200"
         >
           <img
             src={greenButton}

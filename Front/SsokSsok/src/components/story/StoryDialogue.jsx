@@ -1,20 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Repeat } from "lucide-react";
 
 function StoryDialogue({ storyData }) {
-  const [scriptText, setScriptText] = useState(""); // 스크립트 텍스트 상태
-  const [audioSrc, setAudioSrc] = useState(null); // 일반 오디오 소스 상태
-  const [ttsAudioSrc, setTtsAudioSrc] = useState(null); // TTS 오디오 소스 상태
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false); // 일반 오디오 재생 상태
-  const [isTtsPlaying, setIsTtsPlaying] = useState(false); // TTS 오디오 재생 상태
-
-  useEffect(() => {
-    if (storyData?.audio) {
-      setAudioSrc(storyData.audio); // 일반 오디오 소스 설정
-    }
-    if (storyData?.tts) {
-      setTtsAudioSrc(storyData.tts); // TTS 오디오 소스 설정
-    }
-  }, [storyData]);
+  const [scriptText, setScriptText] = useState("");
+  const [isTtsEnded, setIsTtsEnded] = useState(false);
+  const audioRef = useRef(null); // ✅ 오디오 저장용 ref
 
   useEffect(() => {
     const fetchScript = async () => {
@@ -25,14 +15,7 @@ function StoryDialogue({ storyData }) {
 
       try {
         const scriptUrl = storyData.scriptFile || storyData.textFile;
-        if (!scriptUrl) {
-          throw new Error("대사 파일 URL이 없습니다.");
-        }
-
         const res = await fetch(scriptUrl);
-        if (!res.ok) { 
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
         const text = await res.text();
         setScriptText(text);
       } catch (e) {
@@ -45,61 +28,74 @@ function StoryDialogue({ storyData }) {
   }, [storyData]);
 
   useEffect(() => {
-    if (ttsAudioSrc) {
-      setTimeout(() => {
-        const ttsAudio = new Audio(ttsAudioSrc);
-        ttsAudio.play();
-        setIsTtsPlaying(true);
-      }, 1000); // 1초 후에 자동 재생
-    }
-  }, [ttsAudioSrc]);
+    if (!storyData?.tts) return;
 
-  useEffect(() => {
-    if (ttsAudioSrc) {
-      const ttsAudio = new Audio(ttsAudioSrc);
-      ttsAudio.onplay = () => {
-        setIsTtsPlaying(true);
-      };
-      ttsAudio.onpause = () => {
-        setIsTtsPlaying(false);
-      };
-      ttsAudio.onended = () => {
-        setIsTtsPlaying(false);
-      };
+    const ttsAudio = new Audio(storyData.tts);
+    audioRef.current = ttsAudio;
 
-      return () => {
-        ttsAudio.pause();
-        ttsAudio.currentTime = 0;
-      };
+    const timeout = setTimeout(() => {
+      ttsAudio.play();
+    }, 1000);
+
+    ttsAudio.onended = () => {
+      if (storyData.soundFiles?.length === 1) {
+        playSoundEffects([...storyData.soundFiles]);
+      } else {
+        setIsTtsEnded(true);
+      }
+    };
+
+    const playSoundEffects = (files) => {
+      if (files.length === 0) {
+        setIsTtsEnded(true);
+        return;
+      }
+
+      const effectAudio = new Audio(files[0]);
+      audioRef.current = effectAudio;
+      effectAudio.play();
+      effectAudio.onended = () => playSoundEffects(files.slice(1));
+    };
+
+    return () => {
+      clearTimeout(timeout);
+      ttsAudio.pause();
+      ttsAudio.currentTime = 0;
+    };
+  }, [storyData]);
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
     }
-  }, [isTtsPlaying, ttsAudioSrc]);
+  
+    const replayAudio = new Audio(storyData.tts);
+    audioRef.current = replayAudio;
+  
+    replayAudio.play().catch((err) => {
+      console.error("다시 듣기 재생 실패:", err);
+    });
+  };
 
   return (
-    <div className="flex items-center justify-center font-whitechalk text-3xl text-center w-full h-full">
-      {/* 스크립트 텍스트 출력 */}
+      <div className="relative flex items-center justify-center font-whitechalk text-3xl text-center w-full h-full flex-col">
       {scriptText && (
         <div className="m-4 px-6 py-4 max-w-2xl text-center whitespace-pre-line">
           {scriptText}
         </div>
       )}
-      
-      {/* TTS 오디오 플레이어 */}
-      {/* <audio controls src={ttsAudioSrc} /> */}
 
-      {/* {ttsAudioSrc && (
-        <button onClick={() => {
-          const ttsAudio = new Audio(ttsAudioSrc);
-          if (isTtsPlaying) {
-            ttsAudio.pause();
-            setIsTtsPlaying(false);
-          } else {
-            ttsAudio.play();
-            setIsTtsPlaying(true);
-          }
-        }}>
-          {isTtsPlaying ? "일시 정지" : "다시 듣기"}
-        </button>
-      )} */}
+      {/* ✅ 다시 듣기 버튼 - 애니메이션 포함 */}
+      {isTtsEnded && (
+        <button
+        onClick={handleReplay}
+        className="absolute top-4 right-4 p-2 transition hover:scale-110 group"
+        title="다시 듣기"
+      >
+        <Repeat className="w-5 h-5 text-black" />
+      </button>
+      )}
     </div>
   );
 }
