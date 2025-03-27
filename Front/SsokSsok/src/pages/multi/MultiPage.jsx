@@ -8,6 +8,8 @@ import PageNavigationButton from "../../components/story/PageNavigationButton"; 
 import JSZip from "jszip"; // JSZip 라이브러리 임포트
 import VideoP1 from "../../components/multi/VideoP1"
 import VideoP2 from "../../components/multi/VideoP2"
+import VideoContainer from '../../components/multi/video/VideoContainer';
+
 
 // 아이콘 경로
 import nextIcon from "../../assets/images/pagenext_icon.png"; // 다음 페이지 아이콘
@@ -148,8 +150,9 @@ useEffect(() => {
           {/* 우측 콘텐츠 */}
           <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
             {/* 비디오 및 기타 콘텐츠 */}
-            <VideoP1 />
-            <VideoP2 />
+            {/* <VideoP1 />
+            <VideoP2 /> */}
+            <VideoContainer />
           </div>
         </div>
   
