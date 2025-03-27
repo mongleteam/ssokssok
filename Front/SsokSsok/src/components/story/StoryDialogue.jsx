@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Repeat } from "lucide-react";
 
 function StoryDialogue({ storyData }) {
   const [scriptText, setScriptText] = useState("");
@@ -83,7 +84,7 @@ function StoryDialogue({ storyData }) {
   };
 
   return (
-    <div className="flex items-center justify-center font-whitechalk text-3xl text-center w-full h-full flex-col">
+      <div className="relative flex items-center justify-center font-whitechalk text-3xl text-center w-full h-full flex-col">
       {scriptText && (
         <div className="m-4 px-6 py-4 max-w-2xl text-center whitespace-pre-line">
           {scriptText}
@@ -93,11 +94,12 @@ function StoryDialogue({ storyData }) {
       {/* ✅ 다시 듣기 버튼 - 애니메이션 포함 */}
       {isTtsEnded && (
         <button
-          onClick={handleReplay}
-          className="mt-6 px-6 py-3 bg-white text-black rounded-2xl shadow-md font-bold animate-fade-in hover:scale-105 transition-all duration-300"
-        >
-          🔁 다시 듣기
-        </button>
+        onClick={handleReplay}
+        className="absolute top-4 right-4 p-2 transition hover:scale-110 group"
+        title="다시 듣기"
+      >
+        <Repeat className="w-5 h-5 text-black" />
+      </button>
       )}
     </div>
   );
