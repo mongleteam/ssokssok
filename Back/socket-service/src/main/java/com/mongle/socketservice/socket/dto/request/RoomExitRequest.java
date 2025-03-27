@@ -3,6 +3,7 @@ package com.mongle.socketservice.socket.dto.request;
 import lombok.Data;
 
 @Data
-public class RoomLeaveRequest {
+public class RoomExitRequest {
     private String roomId;
+    private String username;
 }

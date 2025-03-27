@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class RoomStoneResponse {
-    private String senderName;
-    private int stoneCount;
+public class RoomPageResponse {
+    private int page;
 }

@@ -5,5 +5,4 @@ import lombok.Data;
 @Data
 public class RoomJoinRequest {
     private String roomId;
-    private String username;
 }
