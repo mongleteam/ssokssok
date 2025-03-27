@@ -6,11 +6,6 @@ function StoryDialogue({ storyData }) {
   const [isTtsEnded, setIsTtsEnded] = useState(false);
   const audioRef = useRef(null); // ✅ 오디오 저장용 ref
 
-  // useEffect(() => {
-  //   console.log("TTS URL:", storyData.tts);
-  // }, [storyData]);
-  
-
   useEffect(() => {
     const fetchScript = async () => {
       if (!storyData?.textFile && !storyData?.scriptFile) {
