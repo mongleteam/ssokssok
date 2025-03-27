@@ -1,7 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 function StoryDialogue({ storyData }) {
-  const [scriptText, setScriptText] = useState(""); // 스크립트 텍스트 상태
+  const [scriptText, setScriptText] = useState("");
+  const [isTtsEnded, setIsTtsEnded] = useState(false);
+  const audioRef = useRef(null); // ✅ 오디오 저장용 ref
+
+  // useEffect(() => {
+  //   console.log("TTS URL:", storyData.tts);
+  // }, [storyData]);
+  
 
   useEffect(() => {
     const fetchScript = async () => {
@@ -9,11 +16,10 @@ function StoryDialogue({ storyData }) {
         setScriptText("대사 파일이 없습니다.");
         return;
       }
-  
+
       try {
         const scriptUrl = storyData.scriptFile || storyData.textFile;
         const res = await fetch(scriptUrl);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const text = await res.text();
         setScriptText(text);
       } catch (e) {
@@ -21,85 +27,78 @@ function StoryDialogue({ storyData }) {
         setScriptText("대사를 불러올 수 없습니다.");
       }
     };
-  
+
     fetchScript();
   }, [storyData]);
-  
 
   useEffect(() => {
     if (!storyData?.tts) return;
-  
+
     const ttsAudio = new Audio(storyData.tts);
-    let effectAudio = null;
-  
+    audioRef.current = ttsAudio;
+
     const timeout = setTimeout(() => {
       ttsAudio.play();
     }, 1000);
-  
+
     ttsAudio.onended = () => {
-      // ✅ 사운드가 1개일 때만 자동 재생
       if (storyData.soundFiles?.length === 1) {
         playSoundEffects([...storyData.soundFiles]);
+      } else {
+        setIsTtsEnded(true);
       }
     };
-  
+
     const playSoundEffects = (files) => {
-      if (files.length === 0) return;
-      effectAudio = new Audio(files[0]);
+      if (files.length === 0) {
+        setIsTtsEnded(true);
+        return;
+      }
+
+      const effectAudio = new Audio(files[0]);
+      audioRef.current = effectAudio;
       effectAudio.play();
       effectAudio.onended = () => playSoundEffects(files.slice(1));
     };
-  
+
     return () => {
       clearTimeout(timeout);
       ttsAudio.pause();
       ttsAudio.currentTime = 0;
-      if (effectAudio) {
-        effectAudio.pause();
-        effectAudio.currentTime = 0;
-      }
     };
   }, [storyData]);
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
   
+    const replayAudio = new Audio(storyData.tts);
+    audioRef.current = replayAudio;
   
-  
-  const playSoundEffects = (files) => {
-    if (files.length === 0) return;
-    const audio = new Audio(files[0]);
-    audio.play();
-    audio.onended = () => playSoundEffects(files.slice(1));
+    replayAudio.play().catch((err) => {
+      console.error("다시 듣기 재생 실패:", err);
+    });
   };
-  
-  
-  
-  
 
   return (
-    <div className="flex items-center justify-center font-whitechalk text-3xl text-center w-full h-full">
-      {/* 스크립트 텍스트 출력 */}
+    <div className="flex items-center justify-center font-whitechalk text-3xl text-center w-full h-full flex-col">
       {scriptText && (
         <div className="m-4 px-6 py-4 max-w-2xl text-center whitespace-pre-line">
           {scriptText}
         </div>
       )}
-      
-      {/* TTS 오디오 플레이어 */}
-      {/* <audio controls src={ttsAudioSrc} /> */}
 
-      {/* {ttsAudioSrc && (
-        <button onClick={() => {
-          const ttsAudio = new Audio(ttsAudioSrc);
-          if (isTtsPlaying) {
-            ttsAudio.pause();
-            setIsTtsPlaying(false);
-          } else {
-            ttsAudio.play();
-            setIsTtsPlaying(true);
-          }
-        }}>
-          {isTtsPlaying ? "일시 정지" : "다시 듣기"}
+      {/* ✅ 다시 듣기 버튼 - 애니메이션 포함 */}
+      {isTtsEnded && (
+        <button
+          onClick={handleReplay}
+          className="mt-6 px-6 py-3 bg-white text-black rounded-2xl shadow-md font-bold animate-fade-in hover:scale-105 transition-all duration-300"
+        >
+          🔁 다시 듣기
         </button>
-      )} */}
+      )}
     </div>
   );
 }

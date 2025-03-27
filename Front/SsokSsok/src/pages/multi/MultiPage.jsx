@@ -101,21 +101,22 @@ function MultiPage() {
 
   return (
     <div className="relative book-background-container flex flex-col items-center">
-      {/* 페이지 네비게이션 버튼 */}
-      <div className="absolute inset-y-0 w-full flex justify-between items-center px-8 z-100">
+      
+      <div className="absolute inset-y-0 w-full flex justify-between items-center px-8 z-100 pointer-events-none">
         <PageNavigationButton
           icon={previousIcon}
           altText="이전 페이지"
           onClick={handlePreviousPage}
           disabled={currentPage === 0 && !isMissionVisible}
-          />
+          className="pointer-events-auto"
+        />
         <PageNavigationButton
           icon={nextIcon}
           altText="다음 페이지"
           onClick={handleNextPage}
           disabled={currentPage === storyData.length - 1 && !isMissionVisible}
+          className="pointer-events-auto"
         />
-
       </div>
 
       {/* 상단 텍스트 */}
