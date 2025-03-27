@@ -73,7 +73,7 @@
 <br>
 
 ## ERD
-![alt text](img/mongle_erd.png)
+![alt text](img/erd_mongle.png)
 
 <br>
 
@@ -88,8 +88,8 @@
 <br>
 
 ## 기능명세서
-![alt text](img/img1.png)
-![alt text](img/img2.png)
+![alt text](img/img11.png)
+![alt text](img/img22.png)
 
 <br>
 
