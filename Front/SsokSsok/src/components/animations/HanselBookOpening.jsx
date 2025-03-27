@@ -42,7 +42,7 @@ const HanselBookOpening = () => {
       clearTimeout(t1)
       clearTimeout(t2)
     }
-  }, [navigate])
+  }, [logout, navigate])
 
   return (
     <div
