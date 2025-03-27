@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 function StoryDialogue({ storyData }) {
   const [scriptText, setScriptText] = useState(""); // 스크립트 텍스트 상태
-  const [audioSrc, setAudioSrc] = useState(null); // 일반 오디오 소스 상태
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false); // 일반 오디오 재생 상태
 
   useEffect(() => {
     const fetchScript = async () => {
@@ -31,17 +29,48 @@ function StoryDialogue({ storyData }) {
   useEffect(() => {
     if (!storyData?.tts) return;
   
-    const audio = new Audio(storyData.tts);
+    const ttsAudio = new Audio(storyData.tts);
+    let effectAudio = null;
+  
     const timeout = setTimeout(() => {
-      audio.play();
+      ttsAudio.play();
     }, 1000);
+  
+    ttsAudio.onended = () => {
+      // ✅ 사운드가 1개일 때만 자동 재생
+      if (storyData.soundFiles?.length === 1) {
+        playSoundEffects([...storyData.soundFiles]);
+      }
+    };
+  
+    const playSoundEffects = (files) => {
+      if (files.length === 0) return;
+      effectAudio = new Audio(files[0]);
+      effectAudio.play();
+      effectAudio.onended = () => playSoundEffects(files.slice(1));
+    };
   
     return () => {
       clearTimeout(timeout);
-      audio.pause();
-      audio.currentTime = 0;
+      ttsAudio.pause();
+      ttsAudio.currentTime = 0;
+      if (effectAudio) {
+        effectAudio.pause();
+        effectAudio.currentTime = 0;
+      }
     };
   }, [storyData]);
+  
+  
+  
+  const playSoundEffects = (files) => {
+    if (files.length === 0) return;
+    const audio = new Audio(files[0]);
+    audio.play();
+    audio.onended = () => playSoundEffects(files.slice(1));
+  };
+  
+  
   
   
 

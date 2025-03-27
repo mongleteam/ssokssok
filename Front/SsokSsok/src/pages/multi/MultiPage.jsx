@@ -59,6 +59,9 @@ function MultiPage() {
           page.tts = fileMap[page.tts];
           page.scriptFile = fileMap[page.script];
           page.hintImage = fileMap[page.hint];
+
+          // ✅ 전체 sound 배열을 fileMap 경로로 매핑
+          page.soundFiles = page.sound?.map((file) => fileMap[file]) || [];
         });
 
         setAssets(fileMap);
