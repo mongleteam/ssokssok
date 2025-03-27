@@ -14,4 +14,4 @@ const PageNavigationButton = ({ icon, altText, onClick, disabled, className = ""
 };
 
 
-export default PageNavigationButton; // ✅ 이 줄이 반드시 있어야 함!
+export default PageNavigationButton;

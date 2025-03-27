@@ -8,6 +8,7 @@ import MissionScreen from "../../components/story/MissionScreen";
 import PageNavigationButton from "../../components/story/PageNavigationButton";
 import CompleteModal from "../../components/story/CompleteModal";
 import PauseModal from "../../components/story/PauseModal";
+import PhotoModal from "../../components/story/PhotoModal";
 import JSZip from "jszip";
 import VideoP1 from "../../components/multi/VideoP1";
 import VideoP2 from "../../components/multi/VideoP2";
@@ -25,7 +26,7 @@ function MultiPage() {
   const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
   const [isMissionVisible, setIsMissionVisible] = useState(false); // 미션 화면 표시 여부
   const [viewedMissions, setViewedMissions] = useState({});        // 해당 페이지에서 미션을 본 적 있는지
-
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(true);
   
 
   const navigate = useNavigate(); // ✅ navigate 선언
@@ -101,9 +102,14 @@ function MultiPage() {
 
   return (
     <div className="relative book-background-container flex flex-col items-center">
+      {/* 진입 시 포토 모달 띄우기기 */}
+      {isPhotoModalOpen && (
+        <PhotoModal isOpen={isPhotoModalOpen} onClose={() => setIsPhotoModalOpen(false)} />
+      )}
+
       
-      <div className="absolute inset-y-0 w-full flex justify-between items-center px-8 z-100 pointer-events-none">
-        <PageNavigationButton
+      <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full flex justify-between px-8 z-40 pointer-events-none">
+      <PageNavigationButton
           icon={previousIcon}
           altText="이전 페이지"
           onClick={handlePreviousPage}
@@ -124,17 +130,29 @@ function MultiPage() {
 
       {/* 중앙 콘텐츠 */}
       <div className="flex w-full h-[75%] max-w-[1200px] px-4 lg:px-12">
-        <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
-          {storyData.length > 0 && (
-            <StoryIllustration storyData={storyData[currentPage]} />
-          )}
-          {isMissionVisible ? (
-            <MissionScreen storyData={storyData[currentPage]} assets={assets} />
-          ) : (
-            <StoryDialogue storyData={storyData[currentPage]} assets={assets} />
-          )}
+      <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
+        {storyData.length > 0 && (
+          <StoryIllustration storyData={storyData[currentPage]} />
+        )}
 
-        </div>
+        {/* ✅ 조건부 렌더링 (PhotoModal이 닫혔을 때만 대사 재생 시작) */}
+        {!isPhotoModalOpen && storyData.length > 0 && !isMissionVisible && (
+          <StoryDialogue
+            key={`dialogue-${currentPage}`}
+            storyData={storyData[currentPage]}
+            assets={assets}
+          />
+        )}
+
+        {/* ✅ 미션이 보일 때는 MissionScreen */}
+        {!isPhotoModalOpen && storyData.length > 0 && isMissionVisible && (
+          <MissionScreen
+            storyData={storyData[currentPage]}
+            assets={assets}
+          />
+        )}
+      </div>
+
 
         <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
           <VideoP1 />
@@ -168,7 +186,7 @@ function MultiPage() {
               // 저장 API 연결 예정
             }
           }}
-          className="fixed bottom-8 right-8 z-50 w-52 h-20 font-cafe24 text-xl"
+          className="fixed bottom-8 right-8 z-50 w-52 h-20 font-cafe24 text-xl hover:scale-110 transition-transform duration-200"
         >
           <img
             src={pauseButton}
