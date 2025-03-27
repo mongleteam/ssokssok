@@ -6,6 +6,7 @@ import bgImg from "../../assets/images/5181830.jpg";
 import "./BookOpening.css";
 import { bookInfoApi } from "../../apis/bookStartApi";
 import useAuthStore from "../../stores/authStore";
+import useBgmStore from "../../stores/bgmStore";
 
 
 const HanselBookOpening = () => {
@@ -14,6 +15,7 @@ const HanselBookOpening = () => {
   const {logout} = useAuthStore()
 
   useEffect(() => {
+    useBgmStore.getState().stopBgm()
     const t1 = setTimeout(() => setStart(true), 100)
 
     const t2 = setTimeout(() => {
