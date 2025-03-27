@@ -129,9 +129,11 @@ Infra
 
 ## 아키텍쳐 구조도
 
-<img src="./etc/architecture.png" alt="아키텍쳐 구조도" >
+![alt text](img/Architecture_mongle.png)
 
 <br>
+
+---
 
 
 
