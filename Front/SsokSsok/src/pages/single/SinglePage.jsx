@@ -6,7 +6,7 @@ import SingleStoryRenderer from "../../components/single/SingleStoryRenderer";
 import JSZip from "jszip";
 
 function SinglePage() {
-    const [ showModal, setShowModal ] = useState(true); // 진입 시 자동 오픈픈
+    const [showModal, setShowModal ] = useState(true); // 진입 시 자동 오픈픈
     const [story, setStory] = useState(null); // ✅ 추가
     const [assets, setAssets] = useState(null); // ✅ 추가
     
@@ -54,7 +54,7 @@ function SinglePage() {
         <PhotoModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
         <div className="content-container">
-            <h1 className="font-cafe24">싱글 모드</h1>
+            <h1 className="font-cafe24 text-center">싱글 모드</h1>
             {/* 삽화, 미션, 힌트 등 하위 컴포넌트 */}
             {!showModal && story && assets && (
         <SingleStoryRenderer story={story} assets={assets} />
