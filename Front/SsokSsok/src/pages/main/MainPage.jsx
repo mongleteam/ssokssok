@@ -18,7 +18,6 @@ import useAuthStore from "../../stores/authStore";
 import { isTokenExpired } from "../../utils/tokenUtils";
 import HanselBookOpening from "../../components/animations/HanselBookOpening";
 import lockImg from "../../assets/images/lock.png";
-import useBgmStore from "../../stores/bgmStore";
 
 
 const books = [
@@ -36,20 +35,12 @@ const MainPage = () => {
     const { accessToken } = useAuthStore()
     const navigate = useNavigate()
     useEffect(() => {
+
         if (!accessToken || isTokenExpired(accessToken)) {
             alert("로그인이 필요합니다.")
             navigate("/login")
         }
-        // 클릭하면 BGM 시작
-        const handleClick = () => {
-            useBgmStore.getState().initBgm();
-            window.removeEventListener("click", handleClick)
-        }
-        window.addEventListener("click", handleClick)
-        return () => {
-            useBgmStore.getState().stopBgm()
-            window.removeEventListener("click", handleClick)
-        }
+
     }, [accessToken, navigate])
 
     const [openHansel, setOpenHansel] = useState(false)
