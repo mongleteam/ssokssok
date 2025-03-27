@@ -5,6 +5,7 @@ import StoryIllustration from "../../components/story/StoryIllustration"; // 삽
 import StoryDialogue from "../../components/story/StoryDialogue"; // 대사 컴포넌트 임포트
 import MissionScreen from "../../components/story/MissionScreen";
 import PageNavigationButton from "../../components/story/PageNavigationButton"; // 페이지 네비게이션 버튼 컴포넌트 임포트
+import CompleteModal from "../../components/story/CompleteModal"; // 모달 import
 import JSZip from "jszip"; // JSZip 라이브러리 임포트
 import VideoP1 from "../../components/multi/VideoP1"
 import VideoP2 from "../../components/multi/VideoP2"
@@ -12,6 +13,7 @@ import VideoP2 from "../../components/multi/VideoP2"
 // 아이콘 경로
 import nextIcon from "../../assets/images/pagenext_icon.png"; // 다음 페이지 아이콘
 import previousIcon from "../../assets/images/pageprevious_icon.png"; // 이전 페이지 아이콘
+
 
 // MultiPage 컴포넌트
 function MultiPage() {
@@ -22,7 +24,8 @@ function MultiPage() {
   const [assets, setAssets] = useState({}); // 파일 URL을 저장할 상태
   // 지시사항 표시 여부 상태
   const [showInstruction, setShowInstruction] = useState(false);
-
+  const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  
   // 데이터 로딩 useEffect
 useEffect(() => {
   const loadStoryData = async () => {
@@ -113,18 +116,19 @@ useEffect(() => {
       <div className="relative book-background-container flex flex-col items-center">
         {/* 페이지 네비게이션 버튼 */}
         <div className="absolute inset-y-0 w-full flex justify-between items-center px-8 z-100">
-          {/* 이전 버튼 */}
+          {/* 이전/다음 버튼 */}
           <PageNavigationButton
             icon={previousIcon}
             altText="이전 페이지"
             onClick={handlePreviousPage}
+            disabled={currentPage === 0 && !showInstruction}
           />
-  
-          {/* 다음 버튼 */}
+
           <PageNavigationButton
             icon={nextIcon}
             altText="다음 페이지"
             onClick={handleNextPage}
+            disabled={currentPage === storyData.length - 1 && !showInstruction}
           />
         </div>
   
@@ -152,7 +156,23 @@ useEffect(() => {
             <VideoP2 />
           </div>
         </div>
-  
+        {/* 마지막 페이지일 때 독서 완료 버튼 보여주기 */}
+        {currentPage === storyData.length - 1 && !showInstruction && (
+          <button
+            className="absolute bottom-10 right-10 bg-green-600 text-white px-6 py-3 rounded-xl text-xl font-bold hover:bg-green-700 transition"
+            onClick={() => setIsCompleteModalOpen(true)}
+          >
+            독서 완료
+          </button>
+        )}
+
+        {/* CompleteModal 출력 */}
+        {isCompleteModalOpen && (
+        <div className="absolute inset-0 flex items-center justify-center z-50">
+          <CompleteModal />
+        </div>
+)}
+
       </div>
     );
   }

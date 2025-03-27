@@ -1,14 +1,18 @@
+// PageNavigationButton.jsx
 import React from "react";
 
-const PageNavigationButton = ({ icon, altText, onClick }) => {
+const PageNavigationButton = ({ icon, altText, onClick, disabled }) => {
   return (
     <button
       onClick={onClick}
-      className="w-24 h-24 flex items-center justify-center bg-transparent hover:scale-110 transition-transform"
+      disabled={disabled}
+      className={`w-24 h-24 flex items-center justify-center bg-transparent transition-transform ${
+        disabled ? 'opacity-30 cursor-not-allowed' : 'hover:scale-110'
+      }`}
     >
       <img src={icon} alt={altText} className="w-full h-full" />
     </button>
   );
 };
 
-export default PageNavigationButton;
+export default PageNavigationButton; // ✅ 이 줄이 반드시 있어야 함!
