@@ -21,9 +21,12 @@ function MultiPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [storyData, setStoryData] = useState([]);
   const [assets, setAssets] = useState({});
-  const [showInstruction, setShowInstruction] = useState(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
   const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
+  const [isMissionVisible, setIsMissionVisible] = useState(false); // 미션 화면 표시 여부
+  const [viewedMissions, setViewedMissions] = useState({});        // 해당 페이지에서 미션을 본 적 있는지
+
+  
 
   const navigate = useNavigate(); // ✅ navigate 선언
 
@@ -69,33 +72,29 @@ function MultiPage() {
   }, []);
 
   const handleNextPage = () => {
-    if (showInstruction) {
-      setShowInstruction(false);
-      setCurrentPage(currentPage + 1);
+    const currentData = storyData[currentPage];
+  
+    if (isMissionVisible) {
+      setIsMissionVisible(false);
+      setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
+      setCurrentPage((prev) => prev + 1);
+    } else if (currentData.instructions && !viewedMissions[currentPage]) {
+      setIsMissionVisible(true);
     } else {
-      if (currentPage < storyData.length - 1) {
-        const currentPageData = storyData[currentPage];
-        if (currentPageData.instructions) {
-          setShowInstruction(true);
-        } else {
-          setCurrentPage(currentPage + 1);
-          const ttsAudio = new Audio(storyData[currentPage].tts);
-          ttsAudio.pause();
-          ttsAudio.currentTime = 0;
-        }
-      }
+      setCurrentPage((prev) => prev + 1);
     }
   };
+  
+  
 
   const handlePreviousPage = () => {
-    if (showInstruction) {
-      setShowInstruction(false);
-    } else {
-      if (currentPage > 0) {
-        setCurrentPage(currentPage - 1);
-      }
+    if (isMissionVisible) {
+      setIsMissionVisible(false);
+    } else if (currentPage > 0) {
+      setCurrentPage((prev) => prev - 1);
     }
   };
+  
 
   return (
     <div className="relative book-background-container flex flex-col items-center">
@@ -105,14 +104,15 @@ function MultiPage() {
           icon={previousIcon}
           altText="이전 페이지"
           onClick={handlePreviousPage}
-          disabled={currentPage === 0 && !showInstruction}
-        />
+          disabled={currentPage === 0 && !isMissionVisible}
+          />
         <PageNavigationButton
           icon={nextIcon}
           altText="다음 페이지"
           onClick={handleNextPage}
-          disabled={currentPage === storyData.length - 1 && !showInstruction}
+          disabled={currentPage === storyData.length - 1 && !isMissionVisible}
         />
+
       </div>
 
       {/* 상단 텍스트 */}
@@ -124,11 +124,12 @@ function MultiPage() {
           {storyData.length > 0 && (
             <StoryIllustration storyData={storyData[currentPage]} />
           )}
-          {showInstruction ? (
+          {isMissionVisible ? (
             <MissionScreen storyData={storyData[currentPage]} assets={assets} />
           ) : (
             <StoryDialogue storyData={storyData[currentPage]} assets={assets} />
           )}
+
         </div>
 
         <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
@@ -151,7 +152,7 @@ function MultiPage() {
         </div>
       )}
 
-      {!showInstruction && (
+      {!isMissionVisible && (
         <button
           onClick={() => {
             if (currentPage === storyData.length - 1) {
