@@ -4,7 +4,9 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.mongle.socketservice.socket.dto.request.*;
 import com.mongle.socketservice.socket.dto.response.IsSuccessResponse;
-import com.mongle.socketservice.socket.dto.response.RoomStoneResponse;
+import com.mongle.socketservice.socket.dto.response.RoomExitResponse;
+import com.mongle.socketservice.socket.dto.response.RoomObjectCountResponse;
+import com.mongle.socketservice.socket.dto.response.RoomPageResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,9 @@ public class SocketEventHandler {
 
         // 본인 돌개수 전송
         server.addEventListener("objectCount", RoomObjectCountRequest.class,(client, data, ack) -> objectCount(data));
+
+        // 게임에서 나갈 시 알리는 이벤트
+        server.addEventListener("leaveGame", RoomExitRequest.class, (client, data, ack) -> leaveGame(client, data));
     }
 
     // 자기가 성공했는지 room에 있는 사람한테 전달한다.
@@ -53,15 +58,16 @@ public class SocketEventHandler {
         String message = data.getIsSuccess();
         IsSuccessResponse isSuccessResponse = new IsSuccessResponse(data.getSenderName(), message);
 
+
         server.getRoomOperations(roomId).sendEvent("isSuccess", isSuccessResponse);
     }
 
     // 본인 페이지 전송
     private void pageCount(RoomPageRequest data){
         String roomId = data.getRoomId();
-        int page = data.getPage();
+        RoomPageResponse roomPageResponse = new RoomPageResponse(data.getPage());
 
-        server.getRoomOperations(roomId).sendEvent("pageCount",page);
+        server.getRoomOperations(roomId).sendEvent("pageCount",roomPageResponse);
     }
 
     // 숫자를 상대방 한테 보냅니다.
@@ -70,7 +76,7 @@ public class SocketEventHandler {
         int stoneCount = data.getObjectCount();
         String name = data.getSenderName();
 
-        RoomStoneResponse roomStoneResponse = new RoomStoneResponse(name, stoneCount);
+        RoomObjectCountResponse roomStoneResponse = new RoomObjectCountResponse(name, stoneCount);
         server.getRoomOperations(roomId).sendEvent("objectCount", roomStoneResponse);
     }
 
@@ -99,4 +105,16 @@ public class SocketEventHandler {
         for(SocketIOClient client : room.getClients())
             client.disconnect();
     }
+
+    // 자신이 나갔을 때 상대방에게 알려줍니다.
+    private void leaveGame(SocketIOClient client, RoomExitRequest data){
+        String roomId = data.getRoomId();
+        RoomExitResponse response = new RoomExitResponse(data.getUsername(), "상대방이 나갔습니다.");
+
+        server.getRoomOperations(roomId).sendEvent("leaveGame", response);
+
+        client.leaveRoom(roomId);
+        client.disconnect();
+    }
+
 }
