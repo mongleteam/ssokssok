@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BeeAnimation from "../../components/animations/BeeAnimation";
 import FlowerAnimation from "../../components/animations/FlowerAnimation";
 import LoginBoard from "../../assets/images/login_board_icon.png"
 import "../../styles/auth/signup_input_container.css";
-import { useNavigate } from "react-router-dom";
+import { useBeforeUnload, useNavigate } from "react-router-dom";
 import { loginApi } from "../../apis/authApi";
 import { jwtDecode } from "jwt-decode";
 import useAuthStore from "../../stores/authStore";
 import { mypageInfoApi } from "../../apis/myPageApi";
-
 
 const LoginPage = () => {
 
@@ -30,12 +29,6 @@ const LoginPage = () => {
           const { accessToken, refreshToken } = res.data.data
           useAuthStore.getState().setAccessToken(accessToken)
 
-          // // user가 있다면 저장
-          // if (user) {
-          //   useAuthStore.getState().setUser(user);
-          // } else {
-          //   console.warn("❌ 로그인 응답에 user 정보 없음!");
-          // }
           if (!accessToken || !refreshToken) {
             alert("서버로부터 토큰을 받지 못했습니다.")
             return
@@ -58,6 +51,7 @@ const LoginPage = () => {
           alert("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.")
         }
       }
+      
 
     return (
         <>
