@@ -7,6 +7,7 @@ import StoryDialogue from "../../components/story/StoryDialogue";
 import MissionScreen from "../../components/story/MissionScreen";
 import PageNavigationButton from "../../components/story/PageNavigationButton";
 import CompleteModal from "../../components/story/CompleteModal";
+import PauseModal from "../../components/story/PauseModal";
 import JSZip from "jszip";
 import VideoP1 from "../../components/multi/VideoP1";
 import VideoP2 from "../../components/multi/VideoP2";
@@ -22,6 +23,8 @@ function MultiPage() {
   const [assets, setAssets] = useState({});
   const [showInstruction, setShowInstruction] = useState(false);
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+  const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
+
   const navigate = useNavigate(); // ✅ navigate 선언
 
   useEffect(() => {
@@ -141,6 +144,13 @@ function MultiPage() {
         </div>
       )}
 
+      {/* 일시 정지 모달 */}
+      {isPauseModalOpen && (
+        <div className="absolute inset-0 flex items-center justify-center z-50">
+          <PauseModal />
+        </div>
+      )}
+
       {!showInstruction && (
         <button
           onClick={() => {
@@ -149,7 +159,8 @@ function MultiPage() {
               setIsCompleteModalOpen(true);
             } else {
               console.log("그만 읽기 클릭! 추후 저장 로직 연결 예정");
-              // navigate("/main");
+              setIsPauseModalOpen(true);
+              // 저장 API 연결 예정
             }
           }}
           className="fixed bottom-8 right-8 z-50 w-52 h-20 font-cafe24 text-xl"
