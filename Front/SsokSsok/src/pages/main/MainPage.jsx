@@ -18,6 +18,8 @@ import useAuthStore from "../../stores/authStore";
 import { isTokenExpired } from "../../utils/tokenUtils";
 import HanselBookOpening from "../../components/animations/HanselBookOpening";
 import lockImg from "../../assets/images/lock.png";
+import useBgmStore from "../../stores/bgmStore";
+
 
 const books = [
     { title: "헨젤과 그레텔", image: bookHansel },
@@ -38,6 +40,16 @@ const MainPage = () => {
             alert("로그인이 필요합니다.")
             navigate("/login")
         }
+        // 클릭하면 BGM 시작
+        const handleClick = () => {
+            useBgmStore.getState().initBgm();
+            window.removeEventListener("click", handleClick)
+        }
+        window.addEventListener("click", handleClick)
+        return () => {
+            useBgmStore.getState().stopBgm()
+            window.removeEventListener("click", handleClick)
+        }
     }, [accessToken, navigate])
 
     const [openHansel, setOpenHansel] = useState(false)
@@ -49,6 +61,8 @@ const MainPage = () => {
         }
     }
     if (openHansel) return <HanselBookOpening />
+
+    
 
     return (
         <>
@@ -69,8 +83,8 @@ const MainPage = () => {
                                 <motion.img 
                                     src={book.image} 
                                     alt={book.title} 
-                                    className={`w-full ${isLocked ? "opacity-60" : ""}`}
-                                    whileHover={{ scale: isLocked ? 1 : 1.1, y: isLocked ? 0 : -10 }}
+                                    className={`w-full`}
+                                    whileHover={{ scale: 1.1 }}
                                     onClick={() => handleBookClick(book.title)}
                                     transition={{ type: "spring", stiffness: 200 }}
                                 />
@@ -101,8 +115,8 @@ const MainPage = () => {
                                 <motion.img 
                                     src={book.image} 
                                     alt={book.title} 
-                                    className={`w-full ${isLocked ? "opacity-60" : ""}`}
-                                    whileHover={{ scale: isLocked ? 1 : 1.1, y: isLocked ? 0 : -10 }}
+                                    className={`w-full`}
+                                    whileHover={{ scale: 1.1 }}
                                     onClick={() => handleBookClick(book.title)}
                                     transition={{ type: "spring", stiffness: 200 }}
                                 />
