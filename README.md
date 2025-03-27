@@ -131,8 +131,6 @@ Infra
 
 ![alt text](img/Architecture_mongle.png)
 
-<br>
-
 ---
 
 
