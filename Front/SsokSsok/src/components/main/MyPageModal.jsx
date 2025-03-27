@@ -3,14 +3,26 @@ import MyPageBoard from "../../assets/images/mypage_board_icon.png";
 import MyFriendIcon from "../../assets/images/friend_icon.png";
 import LogoutIcon from "../../assets/images/logout_icon.png";
 import useAuthStore from "../../stores/authStore";
-import { mypageInfoApi, updateNicknameApi } from "../../apis/myPageApi";
+import { deleteUserApi, mypageInfoApi, updateNicknameApi } from "../../apis/myPageApi";
 import FriendModal from "./FriendModal";
+import { useNavigate } from "react-router-dom";
+import DeleteMemberIcon from "../../assets/images/delete_member_icon.png"
+import {motion} from "framer-motion"
 
 const MyPageModal = ({openModal}) => {
   const [myInfo, setMyInfo] = useState(null)
   const [editing, setEditing] = useState(false)
   const [nickname, setNickname] = useState("")
   const { logout } = useAuthStore()
+  const navigate = useNavigate()
+  const [runAwayPos, setRunAwayPos] = useState({ x: 0, y: 0 });
+  const [runCount, setRunCount] = useState(0);
+  const runDirections = [
+    { x: -680, y: -450 }, // 왼쪽 위
+    { x: 0, y: -450 },  // 오른쪽 위
+    { x: -680, y: 0 },  // 왼쪽 아래
+    { x: 0, y: 0 },   // 오른쪽 아래
+  ];
 
   useEffect(() => { 
     const fetchMyInfo = async () => {
@@ -48,6 +60,27 @@ const MyPageModal = ({openModal}) => {
       const errorMessage = err?.response?.data?.message || "닉네임 수정에 실패했습니다."
       alert(errorMessage)
       console.error("닉네임 수정 실패", err)
+    }
+  }
+
+  // 회원탈퇴
+  const handleDeleteUser = async () => {
+    const confirmed = window.confirm("정말 탈퇴하시겠습니까? 🥲")
+  
+    if (!confirmed) return
+  
+    try {
+      await deleteUserApi()
+      alert("회원 탈퇴가 완료되었습니다.")
+  
+      // 전역 상태 초기화 (Zustand)
+      useAuthStore.getState().logout()
+  
+      // 초기화면으로 이동
+      navigate("/")
+    } catch (error) {
+      console.error(error)
+      alert("회원 탈퇴에 실패했습니다.")
     }
   }
   
@@ -117,6 +150,23 @@ const MyPageModal = ({openModal}) => {
           onClick={handleLogout}
         />
       </div>
+
+      <motion.img
+        src={DeleteMemberIcon}
+        alt="deleteMemberIcon"
+        className="absolute w-[9rem] h-auto max-w-none cursor-pointer"
+        style={{ bottom: "1.5rem", right: "1.5rem" }}
+        animate={{ x: runAwayPos.x, y: runAwayPos.y }}
+        transition={{ type: "spring", stiffness: 500, damping: 15 }}
+        onMouseEnter={() => {
+          if (runCount >= 4) return; // 4번까지 도망가고 그 뒤로는 멈춤
+          setRunAwayPos(runDirections[runCount]);
+          setRunCount((prev) => prev + 1);
+        }}
+        onClick={handleDeleteUser}
+      />
+
+
     </div>
   );
 };

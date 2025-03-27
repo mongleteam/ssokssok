@@ -9,3 +9,8 @@ export const mypageInfoApi = () => {
 export const updateNicknameApi = (newNickName) => {
     return authApi.put("/user/nickname", {newNickName})
 }
+
+// 회원 탈퇴
+export const deleteUserApi = () => {
+    return authApi.delete("/user")
+}
