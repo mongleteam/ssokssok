@@ -9,12 +9,14 @@ import OpenBookImg from "../../assets/images/openbook.png";
 import modeBoard from "../../assets/images/board1_icon.png";
 import "./BookStartPage.css";
 import continueBtn from "../../assets/images/again_icon.png";
-import WoodTexture from "../../assets/images/wood_texture.png"
+import WoodTexture from "../../assets/images/wood_texture.png";
+import { useNavigate } from "react-router-dom";
 
 const BookStartPage = () => {
   const [bookData, setBookData] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate();
 
   useEffect(() => {
     bookInfoApi()
@@ -59,7 +61,8 @@ const BookStartPage = () => {
           {/* 싱글모드 */}
           <div className="w-1/2 h-full flex flex-col items-center">
             <h2 className="text-3xl font-whitechalk">혼자서도 즐겨요!</h2>
-            <div className="relative group w-[15rem] mb-4">
+            <div className="relative group w-[15rem] mb-4 cursor-pointer"
+             onClick={() => navigate("/single")}>
               <img src={modeBoard} alt="modeBoard" className="w-full transition shake-hover" />
               <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 font-whitechalk text-3xl text-white drop-shadow-md">
                 싱글 모드
@@ -91,7 +94,7 @@ const BookStartPage = () => {
                 </div>
               ))
             ) : (
-              <p className="text-white mt-2">싱글모드를 시작해보세요!</p>
+              <p className="font-whitechalk mt-2">싱글모드를 시작해보세요!</p>
             )}
           </div>
 
@@ -130,7 +133,7 @@ const BookStartPage = () => {
                 </div>
               ))
             ) : (
-              <p className="text-white mt-2">멀티모드를 시작해보세요!</p>
+              <p className="font-whitechalk mt-2">멀티모드를 시작해보세요!</p>
             )}
           </div>
         </div>
