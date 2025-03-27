@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -39,15 +40,33 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserServiceClient userServiceClient;
 
     public SseEmitter connect(String userPk, String lastEventId) {
-        String eventId = userPk + "-" + System.currentTimeMillis();
-        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-        emitters.put(eventId, emitter);
+        // 중복 연결 방지 하기 위해서 이전 emitter 제거
+        if (emitters.containsKey(userPk)) {
+            emitters.remove(userPk);
+        }
+        // 1. userPk를 키로 사용하여 emitter 저장
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        emitters.put(userPk, emitter);
 
-        emitter.onCompletion(() -> emitters.remove(eventId));
-        emitter.onTimeout(() -> emitters.remove(eventId));
+        // 2. 연결 종료나 타임아웃 시 userPk 키로 제거
+        emitter.onCompletion(() -> emitters.remove(userPk));
+        emitter.onTimeout(() -> emitters.remove(userPk));
+        emitter.onError((e) -> emitters.remove(userPk));
+
+        // 3. 연결 직후 "연결 성공" 이벤트(heartbeat) 전송 – 프론트에서 JSON 파싱 가능하도록 JSON 형식으로 보내기
+        try {
+            Map<String, Object> initData = new HashMap<>();
+            initData.put("message", "connected");
+            emitter.send(SseEmitter.event()
+                    .name("connect")
+                    .data(initData));
+        } catch (IOException e) {
+            emitters.remove(userPk);
+        }
 
         return emitter;
     }
+
     @Override
     public String createNotification(String userPk, String friendId, boolean isMulti) {
         Long timestamp = System.currentTimeMillis();
@@ -86,7 +105,9 @@ public class NotificationServiceImpl implements NotificationService {
         SseEmitter emitter = emitters.get(userPk);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().name("notification").data("새로운 알림이 도착했습니다!"));
+                Map<String, String> payload = new HashMap<>();
+                payload.put("message", "새로운 알림이 도착했습니다!");
+                emitter.send(SseEmitter.event().name("notification").data(payload));
             } catch (IOException e) {
                 emitters.remove(userPk);
             }
@@ -165,6 +186,21 @@ public class NotificationServiceImpl implements NotificationService {
         private String friendId;
         private Long timestamp;
         private String roomId;
+    }
+
+    @Scheduled(fixedRate = 20000)
+    public void sendHeartbeatToAll() {
+        for (Map.Entry<String, SseEmitter> entry : emitters.entrySet()) {
+            String userPk = entry.getKey();
+            SseEmitter emitter = entry.getValue();
+            try {
+                emitter.send(SseEmitter.event().name("heartbeat").data("ping"));
+                System.out.println("💓 heartbeat sent to user: " + userPk);
+            } catch (IOException e) {
+                System.err.println("💔 failed to send heartbeat to user: " + userPk);
+                emitters.remove(userPk);
+            }
+        }
     }
 
 

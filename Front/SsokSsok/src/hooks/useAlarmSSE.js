@@ -25,11 +25,22 @@ const useAlarmSSE = (accessToken) => {
     console.log("✅ SSE 연결 URL:", import.meta.env.VITE_SPRING_API_URL);
     console.log("🚀 AccessToken 확인:", accessToken);
 
-    eventSource.onmessage = (event) => {
+    // 🔹 connect 이벤트 처리
+    eventSource.addEventListener("connect", (event) => {
+      const data = JSON.parse(event.data);
+      console.log("🟢 SSE 연결 완료 메시지:", data);
+    });
+
+    // 🔹 notification 이벤트 처리
+    eventSource.addEventListener("notification", (event) => {
       const data = JSON.parse(event.data);
       console.log("📨 새 알림 도착:", data);
       addAlarm(data);
-    };
+    });
+
+    eventSource.addEventListener("heartbeat", (event) => {
+      console.log("💓 heartbeat:", event.data);
+    });
 
     eventSource.onerror = (err) => {
       console.error("❌ SSE 연결 오류:", err);
