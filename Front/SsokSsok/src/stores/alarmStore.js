@@ -12,14 +12,9 @@ export const useAlarmStore = create((set) => ({
     console.log("📨 addAlarm 호출됨:", alarm);
     set((state) => ({ alarms: [...state.alarms, alarm] }));
   },
-  removeAlarmById: (id) => {
-    console.log("🗑️ removeAlarmById 호출됨:", id);
-    set((state) => ({
-      alarms: state.alarms.filter((alarm) => alarm.id !== id),
-    }));
-  },
   clearAlarms: () => {
     console.log("🧹 clearAlarms 호출됨");
     set({ alarms: [], isLoaded: false });
   },
+  reset: () => set({ alarms: [], isLoaded: false }),
 }));

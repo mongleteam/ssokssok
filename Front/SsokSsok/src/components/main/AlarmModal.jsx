@@ -12,19 +12,6 @@ const AlarmModal = () => {
   const myAlarm = useAlarmStore((state) => state.alarms);
   const setAlarms = useAlarmStore((state) => state.setAlarms);
 
-  // useEffect(() => {
-  //   const fetchMyAlarm = async () => {
-  //     try {
-  //       const res = await notiListApi()
-  //       console.log("✅ 알림 API 응답", res.data.data.notifications);
-  //       setAlarms(res.data.data.notifications)
-  //     } catch (err) {
-  //       console.error("알람 조회 실패", err)
-  //     }
-  //   }
-  //   fetchMyAlarm()
-  // }, []) // [] 두번째 인자 없으면 무한 불러옴 -> 막힘 (중요)
-
   const fetchMyAlarm = async () => {
     try {
       const res = await notiListApi();
