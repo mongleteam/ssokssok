@@ -24,6 +24,9 @@ const BookStartPage = () => {
   const [multiStep, setMultiStep] = useState(null); // 'role' | 'friend' | 'confirm' | 'waiting' 등
   const [selectedRole, setSelectedRole] = useState(null);
   const [selectedFriend, setSelectedFriend] = useState(null);
+  const [roomId, setRoomId] = useState(null);
+  const [showWaiting, setShowWaiting] = useState(false);
+
 
 
   useEffect(() => {
@@ -171,16 +174,26 @@ const BookStartPage = () => {
 
         {multiStep === "confirm" && (
           <InviteConfirmModal
-            friend={selectedFriend}
-            onConfirm={() => setMultiStep("waiting")}
-            onCancel={() => setMultiStep(null)}
-          />
+          friend={selectedFriend.friendId}             // API 요청용
+          nickname={
+            selectedFriend.from === "friend"
+              ? selectedFriend.nickname                // 닉네임 보여주기
+              : selectedFriend.friendId                // 검색일 경우 아이디 보여주기
+          }
+          onConfirm={(roomId) => {
+            setRoomId(roomId);
+            setMultiStep("waiting");
+          }}
+          onClose={() => setMultiStep(null)}
+        />
+        
         )}
 
         {multiStep === "waiting" && (
           <WaitingModal
             friend={selectedFriend}
             role={selectedRole}
+            roomId={roomId}                   // 이걸 전달해줘야 소켓 연결 가능
             onTimeout={() => {
               alert("시간이 초과되어 초대가 취소되었습니다.");
               setMultiStep(null);

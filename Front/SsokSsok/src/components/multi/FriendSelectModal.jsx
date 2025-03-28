@@ -16,6 +16,8 @@ const FriendSelectModal = ({ onSelectFriend, onClose }) => {
     const fetchFriends = async () => {
       try {
         const res = await myFriendApi();
+        // console.log("📦 친구 목록 전체 응답:", res); // 여기에 찍기!
+
         const friendList = res.data.data.friendList; // ✅ 여기서 추출
         setFriendList(friendList);
       } catch (err) {
@@ -77,7 +79,7 @@ const FriendSelectModal = ({ onSelectFriend, onClose }) => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSearchFriend(); // ✅ 엔터 감지
+                    if (e.key === "Enter") handleSearchFriend(); // 엔터 감지
                 }}
                 placeholder="아이디를 검색하세요"
                 className="w-[20rem] px-3 py-1 rounded-md text-black font-whitechalk"
@@ -97,8 +99,14 @@ const FriendSelectModal = ({ onSelectFriend, onClose }) => {
                         searchResultList.map((id) => (
                         <button
                             key={id}
-                            onClick={() => setSelectedFriend(id)}
-                            className={`friend-button ${selectedFriend === id ? "selected" : ""}`}
+                            onClick={() =>
+                                setSelectedFriend({
+                                  friendId: id, // 검색 결과는 id 문자열
+                                  from: "search",
+                                })
+                              }
+                              
+                            className={`friend-button ${selectedFriend?.friendId === id ? "selected" : ""}`}
                         >
                             {id}
                         </button>
@@ -125,10 +133,18 @@ const FriendSelectModal = ({ onSelectFriend, onClose }) => {
               friendList.map((friend) => (
                 <button
                   key={friend.friendId}
-                  onClick={() => setSelectedFriend(friend.nickname)}
-                  className={`friend-button ${selectedFriend === friend.nickname ? "selected" : ""}`}
-                >
-                {friend.nickname}
+                  onClick={() =>
+                    setSelectedFriend({
+                      friendId: friend.friendId,
+                      nickname: friend.friendNickname,
+                      from: "friend",
+                    })
+                  }
+                  className={`friend-button ${
+                    selectedFriend?.friendId === friend.friendId ? "selected" : ""
+                  }`}
+                                    >
+                {friend.friendNickname}
                 </button>
                 ))
             ) : (

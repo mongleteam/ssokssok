@@ -4,14 +4,16 @@ import "../../styles/multi/start_modal.css";
 import modalBg from "../../assets/images/board3.png";
 
 const WaitingModal = ({ friend, role, onTimeout, onClose }) => {
-  const [timeLeft, setTimeLeft] = useState(10); // for 3분 타이머
+  const [timeLeft, setTimeLeft] = useState(180); // for 3분 타이머
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          onTimeout?.();
+          setTimeout(() => {
+            onTimeout?.(); // 렌더링 끝난 뒤 실행되도록
+          }, 0);
           return 0;
         }
         return prev - 1;
@@ -19,6 +21,8 @@ const WaitingModal = ({ friend, role, onTimeout, onClose }) => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+  
+  
 
   const formatTime = (sec) => {
     const min = Math.floor(sec / 60);
@@ -40,7 +44,7 @@ const WaitingModal = ({ friend, role, onTimeout, onClose }) => {
 
           {/* 메시지 */}
           <h2 className="font-whitechalk text-4xl text-center leading-relaxed">
-            {friend}님께 초대 요청을 보냈습니다.<br />
+            {friend.nickname || friend.friendId}님께 초대 요청을 보냈습니다.<br />
             ⏳잠시만 기다려주세요...
           </h2>
 
