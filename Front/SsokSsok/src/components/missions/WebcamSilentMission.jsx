@@ -60,7 +60,7 @@ const WebcamSilentMission = ({ data, onComplete }) => {
     // ✅ 부모 컴포넌트에게 미션 성공 알려줌!
     if (onComplete) {
         setTimeout(() => {
-          onComplete(); // 👉 이게 핵심!
+          onComplete("미션 성공!"); // 👉 이게 핵심!
         }, 100); // (선택) 살짝 딜레이 주면 안정적
       }
     }
@@ -69,16 +69,16 @@ const WebcamSilentMission = ({ data, onComplete }) => {
   return (
     <>
       {/* ✅ 완전히 삽화와 동일한 구조 */}
-      <div className="relative w-[40rem] h-auto torn-effect mt-6 mb-3 overflow-hidden">
+      <div className="relative w-[56rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
         <video
           ref={videoRef}
           autoPlay
           muted
-          className="w-full h-auto object-cover scale-x-[-1]"
+          className="w-full h-full object-cover scale-x-[-1]"
         />
       </div>
 
-      {/* ✅ 미션 설명 UI는 아래쪽에 */}
+      {/* ✅ 미션 설명 UI는 아래쪽에
       <div className="flex flex-col items-center gap-2 mt-4">
         <div className="text-xl text-white bg-black/50 px-4 py-2 rounded-md">
           {status}
@@ -100,7 +100,7 @@ const WebcamSilentMission = ({ data, onComplete }) => {
         {isSuccess && (
           <div className="text-xl text-green-400 font-bold mt-2">✅ 미션 완료!</div>
         )}
-      </div>
+      </div> */}
     </>
   );
 };

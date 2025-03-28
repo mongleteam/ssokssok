@@ -99,7 +99,7 @@ const SingleStoryRenderer = ({ story, assets }) => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-6xl mx-auto space-y-4">
+    <div className="flex flex-col items-center w-full max-w-6xl mx-auto space-y-4 mt-8">
       {/* 👁️ 시각 영역 */}
       <div className="w-full">
         {showMission && MissionComponent ? (
@@ -118,10 +118,12 @@ const SingleStoryRenderer = ({ story, assets }) => {
       <div className="w-full">
         {showMission && MissionComponent ? (
           <MissionBlock
-            MissionComponent={() => null}
-            onComplete={() => {}}
-            hintImage={page.hintImage}
-          />
+          MissionComponent={() => null}
+          onComplete={() => {}}
+          hintImage={page.mission?.hintImage}
+          instructionFile={page.mission?.instructions}
+          assets={assets}
+        />
         ) : (
           <StoryDialogueBlock text={scriptText} />
         )}
