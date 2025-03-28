@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -88,7 +89,8 @@ public class NotificationServiceImpl implements NotificationService {
                 NotificationListResponseDTO redisNotification = new NotificationListResponseDTO("multi", userId, timestamp, roomId);
                 String json = objectMapper.writeValueAsString(redisNotification);
 
-                redisTemplate.opsForValue().set(REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId, json);
+                redisTemplate.opsForValue().set(
+                        REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId, json,5, TimeUnit.MINUTES);
             } catch (Exception e) {
                 e.printStackTrace();
             }
