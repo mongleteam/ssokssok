@@ -1,58 +1,60 @@
 package com.mongle.meetingservice.controller;
 
-import io.openvidu.java.client.*;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+
 
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.web.bind.annotation.*;
+
+import io.livekit.server.AccessToken;
+import io.livekit.server.RoomJoin;
+import io.livekit.server.RoomName;
+import io.livekit.server.WebhookReceiver;
+import livekit.LivekitWebhook.WebhookEvent;
 
 @RestController
 @RequestMapping("/api/meeting")
 public class MeetingContoller {
 
-    @Value("${OPENVIDU_URL}")
-    private String OPENVIDU_URL;
+    @Value("${livekit.api.key}")
+    private String LIVEKIT_API_KEY;
 
-    @Value("${OPENVIDU_SECRET}")
-    private String OPENVIDU_SECRET;
-
-    private OpenVidu openvidu;
-
-    @PostConstruct
-    public void init() {
-        this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
-    }
+    @Value("${livekit.api.secret}")
+    private String LIVEKIT_API_SECRET;
 
     /**
-     * @param params The Session properties
-     * @return The Session ID
+     * @param params JSON object with roomName and participantName
+     * @return JSON object with the JWT token
      */
-    @PostMapping("/sessions")
-    public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        SessionProperties properties = SessionProperties.fromJson(params).build();
-        Session session = openvidu.createSession(properties);
-        return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
-    }
+    @PostMapping(value = "/token")
+    public ResponseEntity<Map<String, String>> createToken(@RequestBody Map<String, String> params) {
+        String roomName = params.get("roomName");
+        String participantName = params.get("participantName");
 
-    /**
-     * @param sessionId The Session in which to create the Connection
-     * @param params    The Connection properties
-     * @return The Token associated to the Connection
-     */
-    @PostMapping("/sessions/{sessionId}/connections")
-    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-                                                   @RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        Session session = openvidu.getActiveSession(sessionId);
-        if (session == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (roomName == null || participantName == null) {
+            return ResponseEntity.badRequest().body(Map.of("errorMessage", "roomName and participantName are required"));
         }
-        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
-        Connection connection = session.createConnection(properties);
-        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
+
+        AccessToken token = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
+        token.setName(participantName);
+        token.setIdentity(participantName);
+        token.addGrants(new RoomJoin(true), new RoomName(roomName));
+
+        return ResponseEntity.ok(Map.of("token", token.toJwt()));
+    }
+
+    @PostMapping(value = "/livekit/webhook", consumes = "application/webhook+json")
+    public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
+        WebhookReceiver webhookReceiver = new WebhookReceiver(LIVEKIT_API_KEY, LIVEKIT_API_SECRET);
+        try {
+            WebhookEvent event = webhookReceiver.receive(body, authHeader);
+            System.out.println("LiveKit Webhook: " + event.toString());
+        } catch (Exception e) {
+            System.err.println("Error validating webhook event: " + e.getMessage());
+        }
+        return ResponseEntity.ok("ok");
     }
 }
