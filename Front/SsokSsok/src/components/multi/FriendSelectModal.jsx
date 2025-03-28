@@ -159,7 +159,7 @@ const FriendSelectModal = ({ onSelectFriend, onClose }) => {
             <button
               disabled={!selectedFriend}
               onClick={() => onSelectFriend(selectedFriend)}
-              className="confirm-button"
+              className="multi-confirm-button"
             >
               확인
             </button>

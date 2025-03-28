@@ -39,7 +39,7 @@ const InviteConfirmModal = ({ friend, nickname, onConfirm, onClose }) => {
           </h2>
 
           <div className="flex gap-8 mb-12">
-            <button className="confirm-button" onClick={handleInvite}>
+            <button className="multi-confirm-button" onClick={handleInvite}>
               요청 보내기
             </button>
           </div>
