@@ -85,7 +85,7 @@ public class NotificationServiceImpl implements NotificationService {
         // Redis에 저장 (multi 상태)
         if (isMulti) {
             try {
-                NotificationListResponseDTO redisNotification = new NotificationListResponseDTO("multi", friendId, timestamp, roomId);
+                NotificationListResponseDTO redisNotification = new NotificationListResponseDTO("multi", userId, timestamp, roomId);
                 String json = objectMapper.writeValueAsString(redisNotification);
 
                 redisTemplate.opsForValue().set(REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId, json);
