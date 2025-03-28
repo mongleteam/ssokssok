@@ -85,7 +85,7 @@
     text-shadow: 1px 1px 2px black;
   }
   
-  .confirm-button {
+  .multi-confirm-button {
     all: unset; /* 기본 버튼 스타일 제거 */
     width: 12rem;
     height: 5rem;
@@ -105,7 +105,7 @@
     transition: transform 0.2s ease;
   }
   
-  .confirm-button:hover {
+  .multi-confirm-button:hover {
     background-image: url("/src/assets/images/btn_green.png");
     background-color: transparent;
     background-position: center;
