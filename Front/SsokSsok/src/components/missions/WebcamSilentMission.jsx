@@ -67,39 +67,41 @@ const WebcamSilentMission = ({ data, onComplete }) => {
   }, [quietDuration, isSuccess, onComplete]);
 
   return (
-    <div className="flex flex-col items-center gap-4 torn-effect">
-      {/* 사용자 웹캠 */}
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        className="w-80 h-60 rounded-lg border border-white shadow scale-x-[-1]"
-      />
-
-      {/* 상태 메시지 */}
-      <div className="text-xl text-white bg-black/50 px-4 py-2 rounded-md">
-        {status}
-      </div>
-
-      {/* 진행 상황 바 */}
-      <div className="w-80 h-4 bg-gray-300 rounded-full overflow-hidden mt-2">
-        <div
-          className="h-full bg-green-400 transition-all duration-100"
-          style={{
-            width: `${Math.min((quietDuration / REQUIRED_DURATION) * 100, 100)}%`,
-          }}
+    <>
+      {/* ✅ 완전히 삽화와 동일한 구조 */}
+      <div className="relative w-[40rem] h-auto torn-effect mt-6 mb-3 overflow-hidden">
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          className="w-full h-auto object-cover scale-x-[-1]"
         />
       </div>
 
-      {/* 볼륨 시각화 */}
-      <p className="text-sm text-white mt-2">
-        현재 볼륨: {volume.toFixed(3)} / 기준: {QUIET_THRESHOLD}
-      </p>
+      {/* ✅ 미션 설명 UI는 아래쪽에 */}
+      <div className="flex flex-col items-center gap-2 mt-4">
+        <div className="text-xl text-white bg-black/50 px-4 py-2 rounded-md">
+          {status}
+        </div>
 
-      {isSuccess && (
-        <div className="text-2xl text-green-400 font-bold mt-4">✅ 미션 완료!</div>
-      )}
-    </div>
+        <div className="w-96 h-4 bg-gray-300 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-green-400 transition-all duration-100"
+            style={{
+              width: `${Math.min((quietDuration / REQUIRED_DURATION) * 100, 100)}%`,
+            }}
+          />
+        </div>
+
+        <p className="text-sm text-white">
+          현재 볼륨: {volume.toFixed(3)} / 기준: {QUIET_THRESHOLD}
+        </p>
+
+        {isSuccess && (
+          <div className="text-xl text-green-400 font-bold mt-2">✅ 미션 완료!</div>
+        )}
+      </div>
+    </>
   );
 };
 
