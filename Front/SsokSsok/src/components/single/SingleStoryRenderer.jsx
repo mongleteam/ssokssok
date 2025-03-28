@@ -1,15 +1,18 @@
+// ✅ 리팩토링된 SingleStoryRenderer.jsx
 import React, { useState, useEffect, useRef } from "react";
 import pageNextButton from "../../assets/images/pagenext_icon.png";
 import pagePreviousButton from "../../assets/images/pageprevious_icon.png";
 import SingleStoryIllustration from "../single/SingleStoryIllustration";
 import { missionMap } from "../missions";
+import StoryDialogueBlock from "../single/StroyDialogueBlock";
+import MissionBlock from "../single/MissionBlock";
 
 const SingleStoryRenderer = ({ story, assets }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [scriptText, setScriptText] = useState("");
-  const [missionReady, setMissionReady] = useState(false); // 미션 진입 가능 여부
-  const [showMission, setShowMission] = useState(false);   // 미션 실제로 보여주는지
-  const [missionComplete, setMissionComplete] = useState(false); // 성공 여부
+  const [missionReady, setMissionReady] = useState(false);
+  const [showMission, setShowMission] = useState(false);
+  const [missionComplete, setMissionComplete] = useState(false);
   const audioRef = useRef(null);
   const [isAudioEnded, setIsAudioEnded] = useState(false);
 
@@ -21,17 +24,11 @@ const SingleStoryRenderer = ({ story, assets }) => {
   const hasMission = !!page.mission;
   const MissionComponent = hasMission ? missionMap[page.mission.type] : null;
 
-  // 대사 텍스트 가져오기 (미션 중이면 instructions 사용)
+  // 대사 or 미션 지시사항 불러오기기
   useEffect(() => {
     const fetchText = async () => {
-      const textFile = showMission
-        ? page.mission?.instructions
-        : page.script;
-
-      if (!textFile || !assets[textFile]) {
-        setScriptText("");
-        return;
-      }
+      const textFile = showMission ? page.mission?.instructions : page.script;
+      if (!textFile || !assets[textFile]) return setScriptText("");
 
       try {
         const res = await fetch(assets[textFile]);
@@ -49,44 +46,26 @@ const SingleStoryRenderer = ({ story, assets }) => {
   // TTS 자동 재생
   useEffect(() => {
     if (!page.tts || !assets[page.tts]) return;
-
     const timeout = setTimeout(() => {
-      if (audioRef.current) {
-        audioRef.current.play().catch((e) => {
-          console.warn("자동 재생 실패(브라우저 정책):", e);
-        });
-      }
-    }, 1200);
-
+      audioRef.current?.play().catch(() => {});
+    }, 1000);
     return () => clearTimeout(timeout);
   }, [page.tts, assets]);
 
-  // TTS 종료 감지
+  // 오디오 종료 감지
   useEffect(() => {
     setIsAudioEnded(false);
-
     const audio = audioRef.current;
+
     if (!audio) return;
-
-    const handleEnded = () => {
-      setIsAudioEnded(true);
-    };
-
+    const handleEnded = () => setIsAudioEnded(true);
     audio.addEventListener("ended", handleEnded);
-    return () => audio.removeEventListener("ended", handleEnded);
-  }, [page.tts, assets]);
-  // ✅ 상태 추적용 로그
-useEffect(() => {
-  console.log("🧪 상태 변화 추적 >>>", {
-    missionComplete,
-    missionReady,
-    showMission,
-    isAudioEnded,
-    currentPage,
-  });
-}, [missionComplete, missionReady, showMission, isAudioEnded, currentPage]);
 
-  // TTS 끝난 후 미션 준비 상태로 전환
+    return () => audio.removeEventListener("ended", handleEnded);
+  }, [page.tts]);
+
+
+  // tts 끝나고 미션 진입 가능 여부 설정
   useEffect(() => {
     if (hasMission && isAudioEnded && !showMission) {
       setMissionReady(true);
@@ -94,20 +73,14 @@ useEffect(() => {
   }, [hasMission, isAudioEnded, showMission]);
 
 
-
-  // 다음 버튼 클릭 처리
+  // 다음
   const handleNext = () => {
-    // 1. 미션 준비 상태면 → 미션 진입
     if (missionReady && !showMission) {
       setShowMission(true);
       setMissionReady(false);
       return;
     }
-
-    // 2. 미션 중이면 → 미션 완료되어야 넘어감
     if (showMission && !missionComplete) return;
-
-    // 3. 다음 페이지로 이동
     setCurrentPage((prev) => prev + 1);
     setShowMission(false);
     setMissionComplete(false);
@@ -115,10 +88,10 @@ useEffect(() => {
     setIsAudioEnded(false);
   };
 
-  // 이전 버튼
+  // 이전
   const handlePrevious = () => {
     if (currentPage === 0) return;
-    setCurrentPage((prev) => Math.max(prev - 1, 0));
+    setCurrentPage((prev) => prev - 1);
     setShowMission(false);
     setMissionComplete(false);
     setMissionReady(false);
@@ -126,63 +99,60 @@ useEffect(() => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-10">
-      <h2 className="text-xl font-bold mb-2">{page.id}</h2>
+    <div className="flex flex-col items-center w-full max-w-6xl mx-auto space-y-4">
+      {/* 👁️ 시각 영역 */}
+      <div className="w-full">
+        {showMission && MissionComponent ? (
+          <MissionComponent
+            onComplete={() => {
+              setMissionComplete(true);
+              setTimeout(() => console.log("✅ 미션 완료"), 100);
+            }}
+          />
+        ) : (
+          <SingleStoryIllustration src={assets[page.illustration]} />
+        )}
+      </div>
 
-      {/* 삽화 또는 미션 */}
-      {showMission && MissionComponent ? (
-        <MissionComponent
-        onComplete={() => {
-          setMissionComplete(true);
-      
-          // 살짝 딜레이를 주고 버튼 상태 변화 기다리기
-          setTimeout(() => {
-            console.log("✅ 미션 완료 후 상태 갱신 완료");
-          }, 100); // 100ms 후 다음 렌더에서 버튼 조건 적용됨
-        }}
-      />
-      ) : (
-        <SingleStoryIllustration src={assets[page.illustration]} />
-      )}
+      {/* 📝 콘텐츠 영역 */}
+      <div className="w-full">
+        {showMission && MissionComponent ? (
+          <MissionBlock
+            MissionComponent={() => null}
+            onComplete={() => {}}
+            hintImage={page.hintImage}
+          />
+        ) : (
+          <StoryDialogueBlock text={scriptText} />
+        )}
+      </div>
 
-      {/* TTS 오디오 */}
+      {/* TTS */}
       {page.tts && (
         <audio ref={audioRef} src={assets[page.tts]} style={{ display: "none" }} />
       )}
 
-      {/* 효과음 */}
-      {page.sounds && page.sounds.length > 0 && (
-        <div className="flex flex-col gap-2 mb-4">
-          {page.sounds.map((soundFile, idx) => (
-            <audio key={idx} controls src={assets[soundFile]} />
-          ))}
-        </div>
-      )}
-
-      {/* 대사 */}
-      {scriptText && (
-        <div className="mt-6 px-6 py-4 rounded-lg max-w-4xl text-center text-4xl font-whitechalk whitespace-pre-line">
-          {scriptText}
-        </div>
-      )}
-
-      {/* 이전 버튼 */}
-      {currentPage > 0 && (
+      {/* 🔽 이전/다음 페이지 네비게이션 버튼 */}
+      <div className="absolute inset-y-0 left-0 right-0 flex justify-between items-center px-8 z-20 pointer-events-none">
+      {/* 왼쪽: 이전 버튼 or placeholder */}
+      {currentPage > 0 ? (
         <img
           src={pagePreviousButton}
-          alt="이전"
+          alt="이전 페이지"
           onClick={handlePrevious}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 w-24 h-24 cursor-pointer"
+          className="w-20 h-20 cursor-pointer pointer-events-auto"
         />
+      ) : (
+        <div className="w-20 h-20" /> // 👈 placeholder!
       )}
 
-      {/* 다음 버튼 */}
-      {currentPage < story.length - 1 && (
+      {/* 오른쪽: 다음 버튼 or placeholder */}
+      {currentPage < story.length - 1 ? (
         <img
           src={pageNextButton}
-          alt="다음"
+          alt="다음 페이지"
           onClick={handleNext}
-          className={`absolute right-4 top-1/2 transform -translate-y-1/2 w-24 h-24 cursor-pointer transition-opacity duration-300 ${
+          className={`w-20 h-20 cursor-pointer pointer-events-auto transition-opacity duration-300 ${
             (!hasMission && isAudioEnded) ||
             (missionReady && !showMission) ||
             (showMission && missionComplete)
@@ -190,10 +160,12 @@ useEffect(() => {
               : "opacity-30 pointer-events-none grayscale"
           }`}
         />
+      ) : (
+        <div className="w-20 h-20" /> // 👈 placeholder!
       )}
+    </div>
     </div>
   );
 };
 
 export default SingleStoryRenderer;
-
