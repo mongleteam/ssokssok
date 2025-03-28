@@ -102,14 +102,7 @@ const SingleStoryRenderer = ({ story, assets }) => {
     <div className="flex flex-col items-center w-full max-w-6xl mx-auto space-y-4 mt-8">
       {/* 👁️ 시각 영역 */}
       <div className="w-full">
-        {showMission && MissionComponent ? (
-          <MissionComponent
-            onComplete={() => {
-              setMissionComplete(true);
-              setTimeout(() => console.log("✅ 미션 완료"), 100);
-            }}
-          />
-        ) : (
+        {showMission && MissionComponent ? null : (
           <SingleStoryIllustration src={assets[page.illustration]} />
         )}
       </div>
@@ -118,8 +111,11 @@ const SingleStoryRenderer = ({ story, assets }) => {
       <div className="w-full">
         {showMission && MissionComponent ? (
           <MissionBlock
-          MissionComponent={() => null}
-          onComplete={() => {}}
+          MissionComponent={MissionComponent}
+          onComplete={() => {
+            setMissionComplete(true);
+            setTimeout(() => console.log("✅ 미션 완료"), 100);
+          }}
           hintImage={page.mission?.hintImage}
           instructionFile={page.mission?.instructions}
           assets={assets}
