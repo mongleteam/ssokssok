@@ -11,12 +11,20 @@ import "./BookStartPage.css";
 import continueBtn from "../../assets/images/again_icon.png";
 import WoodTexture from "../../assets/images/wood_texture.png";
 import { useNavigate } from "react-router-dom";
+import RoleSelectModal from "../../components/multi/RoleSelectModal";
+import FriendSelectModal from "../../components/multi/FriendSelectModal";
+import InviteConfirmModal from "../../components/multi/InviteConfirmModal";
+import WaitingModal from "../../components/multi/WaitingModal";
 
 const BookStartPage = () => {
   const [bookData, setBookData] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate();
+  const [multiStep, setMultiStep] = useState(null); // 'role' | 'friend' | 'confirm' | 'waiting' 등
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedFriend, setSelectedFriend] = useState(null);
+
 
   useEffect(() => {
     bookInfoApi()
@@ -101,7 +109,10 @@ const BookStartPage = () => {
           {/* 멀티모드 */}
           <div className="w-1/2 h-full flex flex-col items-center">
             <h2 className="text-3xl font-whitechalk">함께 즐겨요!</h2>
-            <div className="relative group w-[15rem] mb-4">
+            <div
+              className="relative group w-[15rem] mb-4 cursor-pointer"
+              onClick={() => setMultiStep("role")}
+            >
               <img src={modeBoard} alt="modeBoard" className="w-full transition shake-hover" />
               <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 font-whitechalk text-3xl text-white drop-shadow-md">
                 멀티 모드
@@ -137,6 +148,47 @@ const BookStartPage = () => {
             )}
           </div>
         </div>
+        {multiStep === "role" && (
+          <RoleSelectModal
+            roleOptions={{ first: fairytale.first, second: fairytale.second }}
+            onSelect={(role) => {
+              setSelectedRole(role);
+              setMultiStep("friend");
+            }}
+            onClose={() => setMultiStep(null)}
+          />
+        )}
+
+        {multiStep === "friend" && (
+          <FriendSelectModal
+            onSelectFriend={(friend) => {
+              setSelectedFriend(friend);
+              setMultiStep("confirm");
+            }}
+            onClose={() => setMultiStep(null)}
+          />
+        )}
+
+        {multiStep === "confirm" && (
+          <InviteConfirmModal
+            friend={selectedFriend}
+            onConfirm={() => setMultiStep("waiting")}
+            onCancel={() => setMultiStep(null)}
+          />
+        )}
+
+        {multiStep === "waiting" && (
+          <WaitingModal
+            friend={selectedFriend}
+            role={selectedRole}
+            onTimeout={() => {
+              alert("시간이 초과되어 초대가 취소되었습니다.");
+              setMultiStep(null);
+            }}
+            onClose={() => setMultiStep(null)}
+          />
+        )}
+
       </div>
     </>
   )
