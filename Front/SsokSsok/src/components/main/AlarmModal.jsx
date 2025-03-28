@@ -4,7 +4,7 @@ import { notiListApi } from "../../apis/notificationApi";
 import NotificationBoard from "../../assets/images/alarm_board_img.png"
 import CheckIcon from "../../assets/images/check_icon.png"
 import DeleteIcon from "../../assets/images/remove_icon.png"
-import { acceptFriendApi, rejectFriendApi } from "../../apis/FriendApi";
+import { acceptFriendApi, acceptGameApi, rejectFriendApi, rejectGameApi } from "../../apis/FriendApi";
 import { useAlarmStore } from "../../stores/alarmStore";
 
 const AlarmModal = () => {
@@ -56,7 +56,8 @@ const AlarmModal = () => {
           await acceptFriendApi(item.friendId)
           console.log("친구 요청 수락 완료")
         } else if (item.state === "multi") {
-          console.log("게임 초대 수락 (API 아직 없음)", item.friendId)
+          await acceptGameApi(item.friendId)
+          console.log("게임 초대 수락")
         }
         await fetchMyAlarm()
       } catch (err) {
@@ -70,7 +71,8 @@ const AlarmModal = () => {
           await rejectFriendApi(item.friendId)
           console.log("친구 요청 거절 완료")
         } else if (item.state === "multi") {
-          console.log("게임 초대 거절 (API 아직 없음)", item.friendId)
+          await rejectGameApi(item.friendId)
+          console.log("게임 초대 거절")
         }
         await fetchMyAlarm()
       } catch (err) {
