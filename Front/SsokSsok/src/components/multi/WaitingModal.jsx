@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import closeIcon from "../../assets/images/remove_icon.png";
 import "../../styles/multi/start_modal.css";
 import modalBg from "../../assets/images/board3.png";
 
 const WaitingModal = ({ friend, role, onTimeout, onClose }) => {
-  const [timeLeft, setTimeLeft] = useState(180); // for 3분 타이머
+  const [timeLeft, setTimeLeft] = useState(10); // for 3분 타이머
+  const hasTimedOutRef = useRef(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          setTimeout(() => {
-            onTimeout?.(); // 렌더링 끝난 뒤 실행되도록
-          }, 0);
+          if (!hasTimedOutRef.current) {
+            hasTimedOutRef.current = true;
+            setTimeout(() => {
+              onTimeout?.(); // 한 번만 실행
+            }, 0);
+          }
           return 0;
         }
         return prev - 1;
