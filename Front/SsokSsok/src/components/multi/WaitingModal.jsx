@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import closeIcon from "../../assets/images/remove_icon.png";
 import "../../styles/multi/start_modal.css";
-import board3 from "../../assets/images/board3.png";
+import modalBg from "../../assets/images/board3.png";
 
 const WaitingModal = ({ friend, role, onTimeout, onClose }) => {
   const [timeLeft, setTimeLeft] = useState(10); // for 3분 타이머
@@ -29,7 +29,7 @@ const WaitingModal = ({ friend, role, onTimeout, onClose }) => {
   return (
     <div className="modal-wrapper">
       <div className="relative w-[70rem]">
-        <img src={board3} alt="모달 배경" className="w-full h-auto" />
+        <img src={modalBg} alt="모달 배경" className="w-full h-auto" />
 
         {/* 오버레이 레이어 */}
         <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center px-10">

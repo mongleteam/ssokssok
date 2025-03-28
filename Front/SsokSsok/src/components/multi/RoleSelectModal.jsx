@@ -1,6 +1,6 @@
 import React from "react";
 import closeIcon from "../../assets/images/remove_icon.png";
-import board3 from "../../assets/images/board3.png"; // ⭐️ 널빤지 이미지 import
+import modalBg from "../../assets/images/board3.png"; // ⭐️ 널빤지 이미지 import
 import roleBtn from "../../assets/images/board5.png";
 
 const RoleSelectModal = ({ onSelect, onClose, roleOptions }) => {
@@ -10,7 +10,7 @@ const RoleSelectModal = ({ onSelect, onClose, roleOptions }) => {
     <div className="modal-wrapper">
       {/* 널빤지 이미지 전체 */}
       <div className="relative w-[70rem]">
-        <img src={board3} alt="모달 배경" className="w-full h-auto" />
+        <img src={modalBg} alt="모달 배경" className="w-full h-auto" />
 
         {/* 내용 덮기 레이어 */}
         <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
