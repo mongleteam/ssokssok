@@ -27,7 +27,6 @@ const FriendSelectModal = ({ onSelectFriend, onClose }) => {
   }, []);
   
   
-
   const handleSearchFriend = async () => {
     if (!searchInput.trim()) return;
   
