@@ -18,11 +18,15 @@ const Header = () => {
     const [modalContent, setModalContent] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
-    const alarmCount = useAlarmStore((state) => state.alarms.length)
-    const isLoaded = useAlarmStore((state) => state.isLoaded)
-    console.log("🧷 Header 렌더링 - 알림 개수:", alarmCount, "로딩완료:", isLoaded)
+    // useInitialAlarmLoad()
 
+    // 🔥 상태 각각 구독해야 함!
+    const alarms = useAlarmStore((state) => state.alarms);
+    const isLoaded = useAlarmStore((state) => state.isLoaded);
+    console.log("🧷 Header 렌더링 - 알림 개수:", alarms, "로딩완료:", isLoaded)
 
+    
+    
     // 모달 열기
     const openModal = (Component) => {
         const isMyPage = Component == MyPageModal
@@ -80,10 +84,13 @@ const Header = () => {
                             transition={{ type: "spring", stiffness: 300 }}
                             onClick={() => openModal(AlarmModal)}
                         />
-                        {isLoaded && alarmCount > 0 && (
+                        {isLoaded && alarms.length > 0 && (
+                        <>
+                            {console.log("✅ 뱃지 렌더링!")}
                             <span className="absolute -top-0 -right-0 bg-red-500 text-white text-2xl w-6 h-6 flex items-center justify-center rounded-full font-bold font-dodam">
-                            {alarmCount}
+                            {alarms.length}
                             </span>
+                        </>
                         )}
                         </motion.div>
                     <motion.img

@@ -19,6 +19,7 @@ import { isTokenExpired } from "../../utils/tokenUtils";
 import HanselBookOpening from "../../components/animations/HanselBookOpening";
 import lockImg from "../../assets/images/lock.png";
 import useInitialAlarmLoad from "../../hooks/useInitialAlarmLoad";
+import { useAlarmStore } from "../../stores/alarmStore";
 
 const books = [
     { title: "헨젤과 그레텔", image: bookHansel },
@@ -32,6 +33,7 @@ const books = [
 ]
 
 const MainPage = () => {
+    const reset = useAlarmStore((state) => state.reset);
     const { accessToken } = useAuthStore()
     const navigate = useNavigate()
     useEffect(() => {
@@ -51,6 +53,11 @@ const MainPage = () => {
             alert("서비스 추후 준비중입니다 🥹")
         }
     }
+    
+    useEffect(() => {
+        reset(); // ✅ 페이지 새로 들어올 때 상태 초기화
+      }, []);
+
     useInitialAlarmLoad()
     if (openHansel) return <HanselBookOpening />
     
