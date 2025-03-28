@@ -29,3 +29,13 @@ export const myFriendApi = () => {
 export const deleteFriendApi = (friendId) => {
     return authApi.post('/friend/delete', {friendId})
 }
+
+// 게임 초대 요청 수락
+export const acceptGameApi = (friendId) => {
+    return authApi.post('/multi/accept', {friendId})
+}
+
+// 게임 초대 요청 거절
+export const rejectGameApi = (friendId) => {
+    return authApi.post('/multi/reject', {friendId})
+}

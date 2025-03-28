@@ -11,13 +11,17 @@ import MyPageModal from "./main/MyPageModal";
 import AlarmModal from "./main/AlarmModal";
 import SettingsModal from "./main/SettingsModal";
 import { useAlarmStore } from "../stores/alarmStore";
+import useInitialAlarmLoad from "../hooks/useInitialAlarmLoad";
 
 const Header = () => {
     const navigate = useNavigate();
-    const [modalContent, setModalContent] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalContent, setModalContent] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const alarmCount = useAlarmStore((state) => state.alarms.length)
+    const isLoaded = useAlarmStore((state) => state.isLoaded)
+    console.log("🧷 Header 렌더링 - 알림 개수:", alarmCount, "로딩완료:", isLoaded)
+
 
     // 모달 열기
     const openModal = (Component) => {
@@ -76,8 +80,8 @@ const Header = () => {
                             transition={{ type: "spring", stiffness: 300 }}
                             onClick={() => openModal(AlarmModal)}
                         />
-                        {alarmCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold">
+                        {isLoaded && alarmCount > 0 && (
+                            <span className="absolute -top-0 -right-0 bg-red-500 text-white text-2xl w-6 h-6 flex items-center justify-center rounded-full font-bold font-dodam">
                             {alarmCount}
                             </span>
                         )}
