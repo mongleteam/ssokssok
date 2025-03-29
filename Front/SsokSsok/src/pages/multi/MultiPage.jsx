@@ -170,7 +170,7 @@ function MultiPage() {
         )}
 
         {/* ✅ 조건부 렌더링 (PhotoModal이 닫혔을 때만 대사 재생 시작) */}
-        {!isPhotoModalOpen && storyData.length > 0 && !isMissionVisible && (
+        {!showWaiting && !isPhotoModalOpen && storyData.length > 0 && !isMissionVisible && (
           <StoryDialogue
             key={`dialogue-${currentPage}`}
             storyData={storyData[currentPage]}
