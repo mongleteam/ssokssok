@@ -128,9 +128,11 @@ function MultiPage() {
             navigate("/main");
           }}
           onClose={() => {
-            setShowWaiting(false);
-            setIsPhotoModalOpen(true); // 포토 모달로 전환
-          }}
+            const confirmed = window.confirm("읽기 요청을 취소하시겠습니까?");
+            if (confirmed) {
+              navigate("/main");
+            }
+          }}          
         />
       )}
 
