@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import * as handpose from "@mediapipe/hands"; // or custom hook
-import {useHandPose} from "../../hooks/useHandPose"; // 네가 이미 만든 훅이 있다면 그거 사용
-
+import { useHandPose } from "../../hooks/useHandPose";
 
 const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
   const videoRef = useRef(null);
   const [collected, setCollected] = useState(0);
   const [stones, setStones] = useState([]);
+  const [hoveredStoneId, setHoveredStoneId] = useState(null);
+  const [lastHoveredStoneId, setLastHoveredStoneId] = useState(null);
+  const [missionMessage, setMissionMessage] = useState("");
 
-  const targetImage = missionProps.instructionImages?.[0]; // 조약돌 이미지
+  const targetImage = missionProps.instructionImages?.[0];
   const soundSrc = missionProps.soundEffect?.[0];
   const MAX_STONES = 5;
 
-  // 손 위치 가져오기
-  const { handPosition, isGrabbing } = useHandPose(videoRef);
+  const { getHandCenter, isHandOpen, isHandClosed } = useHandPose(videoRef);
 
-  // 웹캠 설정
   useEffect(() => {
     const setupCam = async () => {
       try {
@@ -24,65 +23,105 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
-        console.error("웹캠 접근 실패:", err);
+        console.error("포트 접근 실패:", err);
       }
     };
     setupCam();
   }, []);
 
-  // 조약돌 랜덤 배치
   useEffect(() => {
     if (!assets[targetImage]) return;
 
-    const newStones = Array.from({ length: MAX_STONES }).map((_, i) => ({
-      id: i,
-      x: Math.random() * 80 + 10, // 화면 % 기준
-      y: Math.random() * 60 + 20,
-      collected: false,
-    }));
+    const newStones = [];
+    const minDistance = 22; // 최소 거리 (percent 기준)
+
+    while (newStones.length < MAX_STONES) {
+      const newStone = {
+        id: newStones.length,
+        x: Math.random() * 80 + 10,
+        y: Math.random() * 60 + 20,
+        collected: false,
+      };
+
+      const tooClose = newStones.some(
+        (s) =>
+          Math.abs(s.x - newStone.x) < minDistance &&
+          Math.abs(s.y - newStone.y) < minDistance
+      );
+
+      if (!tooClose) newStones.push(newStone);
+    }
+
     setStones(newStones);
   }, [assets, targetImage]);
 
-  // 조약돌 수집 체크
   useEffect(() => {
-    if (!handPosition || !isGrabbing) return;
+    const center = getHandCenter();
+    if (!center || !isHandOpen()) {
+      setHoveredStoneId(null);
+      return;
+    }
 
-    setStones((prev) =>
-      prev.map((stone) => {
-        if (
-          !stone.collected &&
-          Math.abs(stone.x - handPosition.x) < 10 &&
-          Math.abs(stone.y - handPosition.y) < 10
-        ) {
-          if (soundSrc) collectSound(assets[soundSrc]);
-          setCollected((c) => c + 1);
-          return { ...stone, collected: true };
-        }
-        return stone;
-      })
+    const hovered = stones.find(
+      (stone) =>
+        !stone.collected &&
+        Math.abs(stone.x / 100 - (1 - center.x)) < 0.05 &&
+        Math.abs(stone.y / 100 - center.y) < 0.05
     );
-  }, [handPosition, isGrabbing, soundSrc, assets]);
+
+    if (hovered) {
+      setHoveredStoneId(hovered.id);
+      setLastHoveredStoneId(hovered.id);
+    } else {
+      setHoveredStoneId(null);
+    }
+  }, [stones, getHandCenter, isHandOpen]);
+
+  useEffect(() => {
+    const center = getHandCenter();
+    if (!center || !isHandClosed() || lastHoveredStoneId === null) return;
+
+    setStones((prev) => {
+      const updated = [...prev];
+      const idx = updated.findIndex((stone) => stone.id === lastHoveredStoneId && !stone.collected);
+      if (idx !== -1) {
+        if (soundSrc && assets[soundSrc]) {
+          const audio = new Audio(assets[soundSrc]);
+          audio.play().catch(() => {});
+        }
+        updated[idx].collected = true;
+        setCollected((c) => c + 1);
+        setLastHoveredStoneId(null);
+      }
+      return updated;
+    });
+  }, [lastHoveredStoneId, isHandClosed, getHandCenter, soundSrc, assets]);
 
   useEffect(() => {
     if (collected >= MAX_STONES) {
+      setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
       onComplete?.();
     }
   }, [collected, onComplete]);
 
-  // 상태 UI 넘기기
   useEffect(() => {
     if (!setStatusContent) return;
-    const ui = (
-      <div className="text-3xl text-center font-bold text-stone-900">
+    const ui = missionMessage ? (
+      <div className="text-3xl text-center font-bold text-green-700 animate-pulse">
+        {missionMessage}
+      </div>
+    ) : (
+      <div className="text-5xl font-cafe24 text-center font-bold text-stone-900">
         {collected} / {MAX_STONES}
       </div>
     );
     setStatusContent(ui);
-  }, [collected]);
+  }, [collected, missionMessage]);
 
   return (
     <div className="relative w-[56rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
       <video ref={videoRef} autoPlay muted className="w-full h-full object-cover scale-x-[-1]" />
+      <div id="hand-debug-layer" className="absolute inset-0 pointer-events-none z-50" />
       {stones.map(
         (stone) =>
           !stone.collected && (
