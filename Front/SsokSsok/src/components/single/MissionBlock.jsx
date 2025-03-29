@@ -68,7 +68,7 @@ const MissionBlock = ({
           {/* 힌트 버튼 */}
           {hintImage && (
             <button
-              className="absolute top-3 right-4 w-10 h-10 hover:scale-110 transition-transform"
+              className="absolute top-12 right-12 w-14 h-14 hover:scale-110 transition-transform"
               onClick={() => setIsHintModalOpen(true)}
             >
               <img src={hintIcon} alt="힌트" className="w-full h-full" />
@@ -80,7 +80,7 @@ const MissionBlock = ({
       {/* 힌트 모달 */}
       {isHintModalOpen && (
         <HintModal
-          hintImage={hintImage}
+          hintImage={assets[hintImage]}
           onClose={() => setIsHintModalOpen(false)}
         />
       )}

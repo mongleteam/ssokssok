@@ -23,7 +23,7 @@ const ContentArea = ({ page, showMission, MissionComponent, assets, onMissionCom
   }, [page, showMission, assets]);
 
   useEffect(() => {
-    console.log("📦 statusContent 상태:", statusContent);
+    // console.log("📦 statusContent 상태:", statusContent);
   }, [statusContent]);
 
   if (showMission && MissionComponent) {
