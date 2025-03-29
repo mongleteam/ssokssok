@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/book_background.css";
 import StoryHeader from "../../components/StoryHeader";
 import StoryIllustration from "../../components/story/StoryIllustration";
@@ -12,6 +12,10 @@ import PhotoModal from "../../components/story/PhotoModal";
 import JSZip from "jszip";
 import VideoP1 from "../../components/multi/VideoP1";
 import VideoP2 from "../../components/multi/VideoP2";
+import WaitingModal from "../../components/multi/WaitingModal";
+
+import { connectSocket, disconnectSocket } from "../../services/socket";
+
 
 // 아이콘 경로
 import nextIcon from "../../assets/images/pagenext_icon.png";
@@ -26,10 +30,22 @@ function MultiPage() {
   const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
   const [isMissionVisible, setIsMissionVisible] = useState(false); // 미션 화면 표시 여부
   const [viewedMissions, setViewedMissions] = useState({});        // 해당 페이지에서 미션을 본 적 있는지
-  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(true);
-  
+
+  const location = useLocation();
+  const { roomId, role, friend, from } = location.state || {};
+
+  const [showWaiting, setShowWaiting] = useState(from === "inviter");
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(from !== "inviter");
+ 
 
   const navigate = useNavigate(); // ✅ navigate 선언
+
+  useEffect(() => {
+    if (roomId) {
+      connectSocket(roomId); // 만약 BookStartPage에서 연결 안 했으면 여기서도 가능
+    }
+  }, [roomId]);
+  
 
   useEffect(() => {
     const loadStoryData = async () => {
@@ -102,6 +118,24 @@ function MultiPage() {
 
   return (
     <div className="relative book-background-container flex flex-col items-center">
+      {showWaiting && (
+        <WaitingModal
+          friend={friend}
+          role={role}
+          roomId={roomId}
+          onTimeout={() => {
+            alert("시간 초과로 연결이 종료되었습니다.");
+            navigate("/main");
+          }}
+          onClose={() => {
+            setShowWaiting(false);
+            setIsPhotoModalOpen(true); // 포토 모달로 전환
+          }}
+        />
+      )}
+
+
+
       {/* 진입 시 포토 모달 띄우기기 */}
       {isPhotoModalOpen && (
         <PhotoModal isOpen={isPhotoModalOpen} onClose={() => setIsPhotoModalOpen(false)} />
@@ -186,14 +220,14 @@ function MultiPage() {
               // 저장 API 연결 예정
             }
           }}
-          className="fixed bottom-8 right-8 z-50 w-52 h-20 font-cafe24 text-xl hover:scale-110 transition-transform duration-200"
+          className="fixed bottom-8 right-8 z-10 w-52 h-20 font-cafe24 text-xl hover:scale-110 transition-transform duration-200"
         >
           <img
             src={pauseButton}
             alt="그만 읽기"
             className="absolute inset-0 w-full h-full object-contain"
           />
-          <span className="relative z-10">
+          <span className="relative">
             {currentPage === storyData.length - 1 ? "읽기 완료" : "그만 읽기"}
           </span>
         </button>
