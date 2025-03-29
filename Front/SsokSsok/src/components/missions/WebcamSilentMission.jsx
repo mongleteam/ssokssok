@@ -61,18 +61,20 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
 
   useEffect(() => {
     if (!setStatusContent) return;
-
+  
     const statusUI = (
       <div className="flex flex-col items-center justify-center gap-4 mt-6">
-        {missionMessage ? (
-          <div className="text-3xl font-bold text-green-700 animate-pulse">{missionMessage}</div>
+        {isSuccess ? (
+          <div className="text-3xl font-bold text-green-700 animate-pulse mb-8">
+            ✅ 성공! 다음 페이지로 넘어가세요.
+          </div>
         ) : (
           <div className="flex items-start justify-center gap-16">
             <div className="w-24 h-24 -mt-5 rounded-full border-4 border-black flex items-center justify-center text-5xl font-bold">
               {secondsLeft}
             </div>
             <div className="flex items-center gap-2">
-              <img src={speackIcon} alt="\uc18c\ub9ac \uc544\uc774\uce58" className="w-14 h-14" />
+              <img src={speackIcon} alt="소리 아이콘" className="w-14 h-14" />
               <div className="flex items-end gap-[7px] -mt-5">
                 {Array.from({ length: 12 }, (_, i) => {
                   const level = Math.pow(i / 12, 2);
@@ -93,9 +95,10 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
         )}
       </div>
     );
-
+  
     setStatusContent(statusUI);
-  }, [volume, secondsLeft, setStatusContent, missionMessage]);
+  }, [volume, secondsLeft, isSuccess]);
+  
 
   useEffect(() => {
     if (overlayCount > 0) {

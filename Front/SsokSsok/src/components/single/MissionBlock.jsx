@@ -4,10 +4,16 @@ import hintIcon from "../../assets/images/hint_icon.png";
 import HintModal from "../../components/story/HintModal";
 import titleImage from "../../assets/images/mission_title.png";
 
-const MissionBlock = ({ MissionComponent, onComplete, hintImage, instructionFile, assets }) => {
+const MissionBlock = ({
+  onComplete,
+  hintImage,
+  instructionFile,
+  assets,
+  missionProps,
+  statusContent // ✅ props로 받도록 변경!
+}) => {
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
   const [instructionText, setInstructionText] = useState("");
-  const [statusContent, setStatusContent] = useState(null);
 
   useEffect(() => {
     const fetchInstructions = async () => {
@@ -29,14 +35,9 @@ const MissionBlock = ({ MissionComponent, onComplete, hintImage, instructionFile
     fetchInstructions();
   }, [instructionFile, assets]);
 
-  if (!MissionComponent) return null;
-
   return (
     <div className="w-full flex flex-col items-center relative">
-      {/* 👁️ 1. 미션 콘텐츠 (웹캠 등) */}
-      <MissionComponent onComplete={onComplete} setStatusContent={setStatusContent} />
-
-      {/* 🪵 2. 나무판자 (지시사항 + 상태 UI) */}
+      {/* 🪵 지시사항 + 상태 UI */}
       <div className="w-full max-w-6xl px-4 relative">
         {/* 제목 이미지 */}
         <img
@@ -59,10 +60,11 @@ const MissionBlock = ({ MissionComponent, onComplete, hintImage, instructionFile
 
           {/* 👇 상태 UI (데시벨, 카운트다운 등) */}
           <div className="mt-8 mb-5 min-h-[100px] flex items-center justify-center">
-          {statusContent ?? (
-            <div className="text-center text-gray-400">[상태 UI 없음]</div>
-          )}
+            {statusContent ?? (
+              <div className="text-center text-gray-400">[상태 UI 없음]</div>
+            )}
           </div>
+
           {/* 힌트 버튼 */}
           {hintImage && (
             <button
