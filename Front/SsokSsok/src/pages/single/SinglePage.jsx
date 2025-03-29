@@ -54,7 +54,7 @@ function SinglePage() {
         <PhotoModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
         <div className="content-container">
-            <h1 className="font-cafe24 text-center">싱글 모드</h1>
+           
             {/* 삽화, 미션, 힌트 등 하위 컴포넌트 */}
             {!showModal && story && assets && (
         <SingleStoryRenderer story={story} assets={assets} />
