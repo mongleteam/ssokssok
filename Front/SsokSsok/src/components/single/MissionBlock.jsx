@@ -47,10 +47,11 @@ const MissionBlock = ({
         />
 
         <div
-          className="relative w-full px-8 py-6 bg-no-repeat bg-center bg-contain min-h-[220px] mt-12"
+          className="relative w-full px-8 py-6 bg-no-repeat bg-center bg-contain mt-12"
           style={{
             backgroundImage: `url(${boardImage})`,
             backgroundSize: "100% 100%",
+            height: "300px"
           }}
         >
           {/* 지시사항 텍스트 */}
@@ -59,7 +60,7 @@ const MissionBlock = ({
           </div>
 
           {/* 👇 상태 UI (데시벨, 카운트다운 등) */}
-          <div className="mt-8 mb-5 min-h-[100px] flex items-center justify-center">
+          <div className="mt-2 mb-5 min-h-[100px] flex items-center justify-center">
             {statusContent ?? (
               <div className="text-center text-gray-400">[상태 UI 없음]</div>
             )}
