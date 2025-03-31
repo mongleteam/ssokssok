@@ -14,7 +14,7 @@ import VideoP1 from "../../components/multi/VideoP1";
 import VideoP2 from "../../components/multi/VideoP2";
 import WaitingModal from "../../components/multi/WaitingModal";
 
-import { connectSocket, disconnectSocket } from "../../services/socket";
+import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
 
 
 // 아이콘 경로
@@ -32,19 +32,55 @@ function MultiPage() {
   const [viewedMissions, setViewedMissions] = useState({});        // 해당 페이지에서 미션을 본 적 있는지
 
   const location = useLocation();
-  const { roomId, role, friend, from } = location.state || {};
+  const { roomId, friend, from, fairytale } = location.state || {};
+  const [role, setRole] = useState(location.state?.role || null);
 
   const [showWaiting, setShowWaiting] = useState(from === "inviter");
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(from !== "inviter");
+  const [showConfirmStartModal, setShowConfirmStartModal] = useState(false);
+
  
 
-  const navigate = useNavigate(); // ✅ navigate 선언
+  const navigate = useNavigate();
 
+  // 초대자 입장 시
   useEffect(() => {
-    if (roomId) {
-      connectSocket(roomId); // 만약 BookStartPage에서 연결 안 했으면 여기서도 가능
-    }
-  }, [roomId]);
+    if (from !== "inviter" || !roomId || !role || !fairytale) return;
+  
+    connectSocket();               // 소켓 연결
+    joinRoom(roomId);              // 방 조인
+    sendMessage("sendStartInfo", { // 시작 정보 전송
+      roomId,
+      inviterRole: role,
+      inviteeRole: role === fairytale.first ? fairytale.second : fairytale.first,
+      pageIndex: 1
+    });
+  }, [from, roomId, role, fairytale]);
+  
+  // 수락자 입장: 소켓 연결 + 방 입장 + 입장 알림
+  useEffect(() => {
+    if (from !== "invitee" || !roomId) return;
+
+    connectSocket();
+    joinRoom(roomId);
+    sendMessage("inviteeJoined", { roomId });
+  }, [from, roomId]);
+
+  // 수락자: startInfo 수신
+  useEffect(() => {
+    if (from !== "invitee") return;
+
+    onSocketEvent("startInfo", ({ role, pageIndex }) => {
+      console.log("📦 역할 정보 수신:", role, pageIndex);
+      setRole(role);
+      setCurrentPage(pageIndex);
+    });
+
+    return () => {
+      offSocketEvent("startInfo");
+    };
+  }, [from]);
+  
   
 
   useEffect(() => {
@@ -120,6 +156,7 @@ function MultiPage() {
     <div className="relative book-background-container flex flex-col items-center">
       {showWaiting && (
         <WaitingModal
+          mode="waiting"
           friend={friend}
           role={role}
           roomId={roomId}
@@ -127,16 +164,32 @@ function MultiPage() {
             alert("시간 초과로 연결이 종료되었습니다.");
             navigate("/main");
           }}
-          onClose={() => {
-            const confirmed = window.confirm("읽기 요청을 취소하시겠습니까?");
-            if (confirmed) {
-              navigate("/main");
+          onClose={(auto) => {
+            if (auto) {
+              // 자동 종료 (상대방 입장)
+              setShowWaiting(false);
+              setShowConfirmStartModal(true);
+            } else {
+              // 수동 취소
+              const confirmed = window.confirm("함께 읽기 요청을 취소하시겠습니까?");
+              if (confirmed) {
+                navigate("/main");
+              }
             }
-          }}          
+          }}
         />
       )}
 
-
+      {showConfirmStartModal && (
+        <WaitingModal
+          mode="confirmed"
+          friend={friend}
+          onClose={() => {
+            setShowConfirmStartModal(false);
+            setIsPhotoModalOpen(true);
+          }}
+        />
+      )}
 
       {/* 진입 시 포토 모달 띄우기기 */}
       {isPhotoModalOpen && (

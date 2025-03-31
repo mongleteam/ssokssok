@@ -15,7 +15,6 @@ import RoleSelectModal from "../../components/multi/RoleSelectModal";
 import FriendSelectModal from "../../components/multi/FriendSelectModal";
 import InviteConfirmModal from "../../components/multi/InviteConfirmModal";
 import WaitingModal from "../../components/multi/WaitingModal";
-import { connectSocket, disconnectSocket } from "../../services/socket";
 
 const BookStartPage = () => {
   const [bookData, setBookData] = useState(null)
@@ -27,17 +26,6 @@ const BookStartPage = () => {
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [showWaiting, setShowWaiting] = useState(false);
-
-  useEffect(() => {
-    if (!roomId) return;
-  
-    // 소켓 연결
-    connectSocket(roomId);
-  
-    return () => {
-      disconnectSocket();
-    };
-  }, [roomId]);
   
   useEffect(() => {
     bookInfoApi()
@@ -191,13 +179,13 @@ const BookStartPage = () => {
                 : selectedFriend.friendId
             }
             onConfirm={(roomId) => {
-              connectSocket(roomId); // ✅ 소켓 연결 먼저!
               navigate("/multi", {
                 state: {
                   roomId,
                   role: selectedRole,
                   friend: selectedFriend,
                   from: "inviter",
+                  fairytale,  // 동화책 정보 추가 전달
                 },
               }); // ✅ 멀티 페이지 이동 + 데이터 전달
             }}
