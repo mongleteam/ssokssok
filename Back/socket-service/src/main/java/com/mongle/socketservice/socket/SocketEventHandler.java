@@ -53,6 +53,15 @@ public class SocketEventHandler {
 
         // 초대자가 초대받는 사람에게 역할을 부여합니다.
         server.addEventListener("sendStartInfo", RoomStartInfoRequest.class, (client, data, ack) -> sendStartInfo(data));
+
+        server.addEventListener("prevNext", RoomNextPrevRequest.class, (client, data, ack) ->
+                prevNext(data));
+    }
+
+
+    private void prevNext(RoomNextPrevRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("prevNext", new RoomNextPrevResponse(data.getNext(), data.getPrev()));
     }
 
     // 초대자가 초대받는 사람에게 역할을 부여합니다.
