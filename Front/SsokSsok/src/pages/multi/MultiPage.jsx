@@ -14,7 +14,7 @@ import VideoP1 from "../../components/multi/VideoP1";
 import VideoP2 from "../../components/multi/VideoP2";
 import WaitingModal from "../../components/multi/WaitingModal";
 
-import { createProgressApi } from "../../apis/multiApi";
+import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
 import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
 
 
@@ -40,19 +40,20 @@ function MultiPage() {
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(from !== "inviter");
   const [showConfirmStartModal, setShowConfirmStartModal] = useState(false);
   const [pageIndex, setPageIndex] = useState(1); // 기본값 1 = 새로 읽기
-
- 
+  const [progressPk, setProgressPk] = useState(location.state?.progressPk || null);
+  const [startReady, setStartReady] = useState(from !== "invitee"); // 초대한 쪽은 바로 시작
 
   const navigate = useNavigate();
 
-  // 이어 읽기인 경우, 시작 페이지 갱신
   useEffect(() => {
+    console.log("📦 location.state:", location.state); // 페이지 진입 시 상태 확인
+  
     const index = location.state?.pageIndex;
     if (typeof index === "number" && index >= 1) {
+      console.log("이어읽기 시작 페이지:", index); // 잘 받아왔는지 확인
       setPageIndex(index);
     }
   }, []);
-
 
   // 초대자 입장 시
   useEffect(() => {
@@ -76,10 +77,11 @@ function MultiPage() {
     if (from !== "invitee") return;
   
     onSocketEvent("sendStartInfo", ({ inviteeRole, pageIndex }) => {
-      console.log("📦 역할 정보 수신:", inviteeRole, pageIndex);
+      console.log("📦 역할/페이지 정보 수신:", inviteeRole, pageIndex);
       setRole(inviteeRole);
-      setCurrentPage(pageIndex);
-      setPageIndex(pageIndex); // 이거 추가!
+      setCurrentPage(pageIndex - 1); // 배열 인덱스 기준이라 -1 해줘야 원하는대로 작동함..
+      setPageIndex(pageIndex);
+      setStartReady(true); // 페이지 정보 수신 후 시작 가능 플래그 설정
     });
   
     return () => {
@@ -134,19 +136,44 @@ function MultiPage() {
     loadStoryData();
   }, []);
 
-  const handleNextPage = () => {
+  const handleNextPage = async () => {
     const currentData = storyData[currentPage];
+    const nextPage = currentPage + 1;
+  
+    const shouldSave =
+      location.state?.from === "inviter" &&
+      !isMissionVisible &&
+      progressPk;
   
     if (isMissionVisible) {
+      // ✅ 미션 끝나고 페이지 넘기는 경우 —> 저장 OK
       setIsMissionVisible(false);
       setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(nextPage);
+  
+      if (shouldSave) {
+        await updateProgressApi(progressPk, {
+          nowPage: nextPage,
+          finish: false,
+        });
+        console.log("✅ 진행상황 업데이트 (미션 종료):", nextPage);
+      }
     } else if (currentData.instructions && !viewedMissions[currentPage]) {
+      // ✅ 미션 페이지 진입 → 저장 X
       setIsMissionVisible(true);
     } else {
-      setCurrentPage((prev) => prev + 1);
+      // ✅ 일반 페이지 → 저장 OK
+      setCurrentPage(nextPage);
+  
+      if (shouldSave) {
+        await updateProgressApi(progressPk, {
+          nowPage: nextPage,
+          finish: false,
+        });
+      }
     }
   };
+  
 
   const handleInviteeJoined = async () => {
     sendMessage("sendStartInfo", {
@@ -159,18 +186,24 @@ function MultiPage() {
     setShowWaiting(false);
     setShowConfirmStartModal(true);
   
-    // ✅ 진행상황 생성은 오직 pageIndex === 1일 때만!
-    if (pageIndex === 1) {
-      try {
-        await createProgressApi({
-          mode: "MULTI",
-          friendId: friend.friendId,
-          nowPage: pageIndex,
-          fairytalePk: fairytale.fairytalePk,
-          role: role === fairytale.first ? "FIRST" : "SECOND",
-        });
+    // ✅ 진행상황 생성은 오직 새로 읽기면서 pageIndex === 1일 때만!
+    if (pageIndex === 1 && location.state?.from === "inviter" && !location.state?.isResume) {
+        try {
+          const res = await createProgressApi({
+            mode: "MULTI",
+            friendId: friend.friendId,
+            nowPage: pageIndex,
+            fairytalePk: fairytale.fairytalePk,
+            role: role === fairytale.first ? "FIRST" : "SECOND",
+          });
 
-        console.log("진행상황 등록 완료!");
+          const newPk = res.data?.data?.progressPk;
+          if (newPk) {
+            setProgressPk(newPk); // ✅ 상태 저장!
+          }
+
+          console.log("진행상황 등록 완료!");
+
       } catch (err) {
         console.error("❌ 진행상황 등록 실패:", err);
       }
@@ -255,12 +288,11 @@ function MultiPage() {
       {/* 중앙 콘텐츠 */}
       <div className="flex w-full h-[75%] max-w-[1200px] px-4 lg:px-12">
       <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
-        {storyData.length > 0 && (
+        {storyData.length > 0 && startReady && (
           <StoryIllustration storyData={storyData[currentPage]} />
         )}
 
-        {/* ✅ 조건부 렌더링 (PhotoModal이 닫혔을 때만 대사 재생 시작) */}
-        {!showWaiting && !isPhotoModalOpen && storyData.length > 0 && !isMissionVisible && (
+        {!showWaiting && !isPhotoModalOpen && storyData.length > 0 && !isMissionVisible && startReady && (
           <StoryDialogue
             key={`dialogue-${currentPage}`}
             storyData={storyData[currentPage]}
@@ -268,8 +300,7 @@ function MultiPage() {
           />
         )}
 
-        {/* ✅ 미션이 보일 때는 MissionScreen */}
-        {!isPhotoModalOpen && storyData.length > 0 && isMissionVisible && (
+        {!isPhotoModalOpen && storyData.length > 0 && isMissionVisible && startReady && (
           <MissionScreen
             storyData={storyData[currentPage]}
             assets={assets}

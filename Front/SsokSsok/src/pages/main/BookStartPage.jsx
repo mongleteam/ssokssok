@@ -237,6 +237,8 @@ const BookStartPage = () => {
                   from: "inviter",
                   fairytale,
                   pageIndex: selectedProgress.nowPage,
+                  isResume: true, // 이어 읽기라는 플래그 추가!
+                  progressPk: selectedProgress.progressPk, // 진행상호아 pk 포함 전달
                 },
               });
             }}
