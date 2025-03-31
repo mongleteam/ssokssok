@@ -50,8 +50,16 @@ public class SocketEventHandler {
 
         //수락자가 입장했음을 초대자에게 알림
         server.addEventListener("inviteeJoined", RoomInviteeRequest.class, (client, data, ack) -> inviteeJoined(data));
+
+        // 초대자가 초대받는 사람에게 역할을 부여합니다.
+        server.addEventListener("sendStartInfo", RoomStartInfoRequest.class, (client, data, ack) -> sendStartInfo(data));
     }
 
+    // 초대자가 초대받는 사람에게 역할을 부여합니다.
+    private void sendStartInfo(RoomStartInfoRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("sendStartInfo", new RoomStartInfoResponse(data.getInviteRole(), data.getInviteeRole(), data.getPageIndex()));
+    }
     //수락자가 입장했음을 초대자에게 알림
     private void inviteeJoined(RoomInviteeRequest data){
         String roomId = data.getRoomId();
