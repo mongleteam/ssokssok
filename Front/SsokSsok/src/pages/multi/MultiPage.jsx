@@ -45,6 +45,15 @@ function MultiPage() {
 
   const navigate = useNavigate();
 
+  // 이어 읽기인 경우, 시작 페이지 갱신
+  useEffect(() => {
+    const index = location.state?.pageIndex;
+    if (typeof index === "number" && index >= 1) {
+      setPageIndex(index);
+    }
+  }, []);
+
+
   // 초대자 입장 시
   useEffect(() => {
     if (from !== "inviter" || !roomId || !role || !fairytale) return;
@@ -70,6 +79,7 @@ function MultiPage() {
       console.log("📦 역할 정보 수신:", inviteeRole, pageIndex);
       setRole(inviteeRole);
       setCurrentPage(pageIndex);
+      setPageIndex(pageIndex); // 이거 추가!
     });
   
     return () => {
@@ -168,9 +178,6 @@ function MultiPage() {
   };
   
   
-  
-  
-
   const handlePreviousPage = () => {
     if (isMissionVisible) {
       setIsMissionVisible(false);

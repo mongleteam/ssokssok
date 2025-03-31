@@ -26,6 +26,10 @@ const BookStartPage = () => {
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [showWaiting, setShowWaiting] = useState(false);
+
+  const [showContinueModal, setShowContinueModal] = useState(false);
+  const [selectedProgress, setSelectedProgress] = useState(null);
+ 
   
   useEffect(() => {
     bookInfoApi()
@@ -52,6 +56,12 @@ const BookStartPage = () => {
   const { fairytale, progressList } = bookData
   const singleProgress = progressList.filter((p) => p.mode === "SINGLE")
   const multiProgress = progressList.filter((p) => p.mode === "MULTI")
+
+  const handleClickContinueMulti = (progress) => {
+    setSelectedProgress(progress);
+    setShowContinueModal(true);
+  };
+
 
   return (
     <>
@@ -132,7 +142,7 @@ const BookStartPage = () => {
                     >
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-whitechalk text-xl text-black">{progress.friendNickname}님과</p>
-                    <img src={continueBtn} alt="이어하기" className="w-[6rem] cursor-pointer" />
+                    <img src={continueBtn} alt="이어하기" className="w-[6rem] cursor-pointer" onClick={() => handleClickContinueMulti(progress)} />
                   </div>
                   <div className="flex gap-1">
                     {[...Array(fairytale.count)].slice(0, 5).map((_, i) => (
@@ -204,6 +214,32 @@ const BookStartPage = () => {
               setMultiStep(null);
             }}
             onClose={() => setMultiStep(null)}
+          />
+        )}
+
+        {showContinueModal && selectedProgress && (
+          <InviteConfirmModal
+            friend={selectedProgress.friendId}
+            nickname={selectedProgress.friendNickname}
+            mode="continue"
+            onClose={() => setShowContinueModal(false)}
+            onConfirm={(roomId) => {
+              const role = selectedProgress.role === "FIRST" ? fairytale.first : fairytale.second;
+
+              navigate("/multi", {
+                state: {
+                  roomId,
+                  role,
+                  friend: {
+                    friendId: selectedProgress.friendId,
+                    nickname: selectedProgress.friendNickname,
+                  },
+                  from: "inviter",
+                  fairytale,
+                  pageIndex: selectedProgress.nowPage,
+                },
+              });
+            }}
           />
         )}
 
