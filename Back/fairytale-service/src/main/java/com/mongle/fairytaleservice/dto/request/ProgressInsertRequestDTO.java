@@ -11,6 +11,5 @@ public class ProgressInsertRequestDTO {
     private String friendId;
     private Integer fairytalePk;
     private Integer nowPage;
-    private String userPk;
     private String role;
 }

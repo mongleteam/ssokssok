@@ -53,8 +53,7 @@ public class FairytaleController {
             @RequestBody ProgressInsertRequestDTO requestDTO,
             @RequestHeader("X-User-Id") String userPk
     ){
-        requestDTO.setUserPk(userPk);
-        int newPk = fairytaleService.createProgress(requestDTO);
+        int newPk = fairytaleService.createProgress(requestDTO,userPk);
 
         return ResponseEntity.ok(new ApiResponseJson(true,200,"진행상황 생성에 성공했습니다.", newPk));
     }
