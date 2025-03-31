@@ -56,9 +56,20 @@ public class SocketEventHandler {
 
         server.addEventListener("prevNext", RoomNextPrevRequest.class, (client, data, ack) ->
                 prevNext(data));
+
+        // 본인이 제거한 돌의 위치를 보냅니다.
+        server.addEventListener("removeStone", StoneLocRequest.class, (client, data, ack) ->
+                removeStone(data) );
     }
 
 
+    // 본인이 제거한 돌의 위치를 보냅니다.
+    private void removeStone(StoneLocRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("removeStone", new StoneLocResponse(data.getSenderName(), data.getX(), data.getY()));
+    }
+
+    // 왼쪽인지 오른쪽인지
     private void prevNext(RoomNextPrevRequest data){
         String roomId = data.getRoomId();
         server.getRoomOperations(roomId).sendEvent("prevNext", new RoomNextPrevResponse(data.getNext(), data.getPrev()));
