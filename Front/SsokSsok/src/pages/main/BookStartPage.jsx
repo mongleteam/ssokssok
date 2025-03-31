@@ -15,7 +15,7 @@ import RoleSelectModal from "../../components/multi/RoleSelectModal";
 import FriendSelectModal from "../../components/multi/FriendSelectModal";
 import InviteConfirmModal from "../../components/multi/InviteConfirmModal";
 import WaitingModal from "../../components/multi/WaitingModal";
-import { connectSocket, disconnectSocket } from "../../services/socket"; // 소켓 import
+import { connectSocket, disconnectSocket } from "../../services/socket";
 
 const BookStartPage = () => {
   const [bookData, setBookData] = useState(null)
@@ -184,20 +184,27 @@ const BookStartPage = () => {
 
         {multiStep === "confirm" && (
           <InviteConfirmModal
-          friend={selectedFriend.friendId}             // API 요청용
-          nickname={
-            selectedFriend.from === "friend"
-              ? selectedFriend.nickname                // 닉네임 보여주기
-              : selectedFriend.friendId                // 검색일 경우 아이디 보여주기
-          }
-          onConfirm={(roomId) => {
-            setRoomId(roomId);
-            setMultiStep("waiting");
-          }}
-          onClose={() => setMultiStep(null)}
-        />
-        
+            friend={selectedFriend.friendId}
+            nickname={
+              selectedFriend.from === "friend"
+                ? selectedFriend.nickname
+                : selectedFriend.friendId
+            }
+            onConfirm={(roomId) => {
+              connectSocket(roomId); // ✅ 소켓 연결 먼저!
+              navigate("/multi", {
+                state: {
+                  roomId,
+                  role: selectedRole,
+                  friend: selectedFriend,
+                  from: "inviter",
+                },
+              }); // ✅ 멀티 페이지 이동 + 데이터 전달
+            }}
+            onClose={() => setMultiStep(null)}
+          />
         )}
+
 
         {multiStep === "waiting" && (
           <WaitingModal

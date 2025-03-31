@@ -10,7 +10,7 @@ export const connectSocket = (roomId) => {
   if (socket) return; // 중복 연결 방지
 
   socket = io("ws://3.36.67.192:9092/", {
-    path: "/socket.io", // 백엔드에서 특별한 path 설정했으면 수정
+    path: "/socket.io",
     query: { roomId },   // 쿼리로 roomId 전달
     transports: ["websocket"],
     withCredentials: true,
@@ -18,6 +18,7 @@ export const connectSocket = (roomId) => {
 
   socket.on("connect", () => {
     console.log("✅ 소켓 연결 성공:", socket.id);
+    sendMessage("joinRoom", { roomId }); // 소켓 연결 성공 시 바로 방 조인 요청
   });
 
   socket.on("disconnect", () => {
