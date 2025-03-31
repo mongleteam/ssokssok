@@ -11,7 +11,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-// cicd test1
+// cicd test12
 @Component
 @RequiredArgsConstructor
 @Slf4j
