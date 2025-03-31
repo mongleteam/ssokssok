@@ -49,12 +49,12 @@ function MultiPage() {
   
     connectSocket();               // 소켓 연결
     joinRoom(roomId);              // 방 조인
-    sendMessage("sendStartInfo", { // 시작 정보 전송
-      roomId,
-      inviterRole: role,
-      inviteeRole: role === fairytale.first ? fairytale.second : fairytale.first,
-      pageIndex: 1
-    });
+    // sendMessage("sendStartInfo", { // 시작 정보 전송
+    //   roomId,
+    //   inviterRole: role,
+    //   inviteeRole: role === fairytale.first ? fairytale.second : fairytale.first,
+    //   pageIndex: 1
+    // });
   }, [from, roomId, role, fairytale]);
   
   // 수락자 입장: 소켓 연결 + 방 입장 + 입장 알림
@@ -69,17 +69,18 @@ function MultiPage() {
   // 수락자: startInfo 수신
   useEffect(() => {
     if (from !== "invitee") return;
-
-    onSocketEvent("startInfo", ({ role, pageIndex }) => {
-      console.log("📦 역할 정보 수신:", role, pageIndex);
-      setRole(role);
+  
+    onSocketEvent("sendStartInfo", ({ inviteeRole, pageIndex }) => {
+      console.log("📦 역할 정보 수신:", inviteeRole, pageIndex);
+      setRole(inviteeRole);
       setCurrentPage(pageIndex);
     });
-
+  
     return () => {
-      offSocketEvent("startInfo");
+      offSocketEvent("sendStartInfo");
     };
   }, [from]);
+  
   
   
 
@@ -140,6 +141,19 @@ function MultiPage() {
       setCurrentPage((prev) => prev + 1);
     }
   };
+
+  const handleInviteeJoined = () => {
+    sendMessage("sendStartInfo", {
+      roomId,
+      inviterRole: role,
+      inviteeRole: role === fairytale.first ? fairytale.second : fairytale.first,
+      pageIndex: 5,
+    });
+  
+    setShowWaiting(false);
+    setShowConfirmStartModal(true);
+  };
+  
   
   
 
@@ -166,9 +180,8 @@ function MultiPage() {
           }}
           onClose={(auto) => {
             if (auto) {
-              // 자동 종료 (상대방 입장)
-              setShowWaiting(false);
-              setShowConfirmStartModal(true);
+              // 상대방 입장 시 sendStartInfo 실행!
+              handleInviteeJoined();
             } else {
               // 수동 취소
               const confirmed = window.confirm("함께 읽기 요청을 취소하시겠습니까?");
@@ -177,6 +190,7 @@ function MultiPage() {
               }
             }
           }}
+          
         />
       )}
 
