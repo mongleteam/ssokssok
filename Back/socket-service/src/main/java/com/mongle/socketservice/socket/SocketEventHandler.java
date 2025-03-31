@@ -3,10 +3,7 @@ import com.corundumstudio.socketio.BroadcastOperations;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.mongle.socketservice.socket.dto.request.*;
-import com.mongle.socketservice.socket.dto.response.IsSuccessResponse;
-import com.mongle.socketservice.socket.dto.response.RoomExitResponse;
-import com.mongle.socketservice.socket.dto.response.RoomObjectCountResponse;
-import com.mongle.socketservice.socket.dto.response.RoomPageResponse;
+import com.mongle.socketservice.socket.dto.response.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +47,24 @@ public class SocketEventHandler {
 
         // 게임에서 나갈 시 알리는 이벤트
         server.addEventListener("leaveGame", RoomExitRequest.class, (client, data, ack) -> leaveGame(client, data));
+
+        //수락자가 입장했음을 초대자에게 알림
+        server.addEventListener("inviteeJoined", RoomInviteeRequest.class, (client, data, ack) -> inviteeJoined(data));
+
+        // 초대자가 초대받는 사람에게 역할을 부여합니다.
+        server.addEventListener("sendStartInfo", RoomStartInfoRequest.class, (client, data, ack) -> sendStartInfo(data));
+    }
+
+    // 초대자가 초대받는 사람에게 역할을 부여합니다.
+    private void sendStartInfo(RoomStartInfoRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("sendStartInfo", new RoomStartInfoResponse(data.getInviteRole(), data.getInviteeRole(), data.getPageIndex()));
+    }
+    //수락자가 입장했음을 초대자에게 알림
+    private void inviteeJoined(RoomInviteeRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("inviteeJoined", new RoomInviteeResponse(data.getSenderName(), data.getIsJoin()));
+
     }
 
     // 자기가 성공했는지 room에 있는 사람한테 전달한다.
