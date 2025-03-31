@@ -14,6 +14,7 @@ import VideoP1 from "../../components/multi/VideoP1";
 import VideoP2 from "../../components/multi/VideoP2";
 import WaitingModal from "../../components/multi/WaitingModal";
 
+import { createProgressApi } from "../../apis/multiApi";
 import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
 
 
@@ -38,6 +39,7 @@ function MultiPage() {
   const [showWaiting, setShowWaiting] = useState(from === "inviter");
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(from !== "inviter");
   const [showConfirmStartModal, setShowConfirmStartModal] = useState(false);
+  const [pageIndex, setPageIndex] = useState(1); // 기본값 1 = 새로 읽기
 
  
 
@@ -49,12 +51,6 @@ function MultiPage() {
   
     connectSocket();               // 소켓 연결
     joinRoom(roomId);              // 방 조인
-    // sendMessage("sendStartInfo", { // 시작 정보 전송
-    //   roomId,
-    //   inviterRole: role,
-    //   inviteeRole: role === fairytale.first ? fairytale.second : fairytale.first,
-    //   pageIndex: 1
-    // });
   }, [from, roomId, role, fairytale]);
   
   // 수락자 입장: 소켓 연결 + 방 입장 + 입장 알림
@@ -142,17 +138,35 @@ function MultiPage() {
     }
   };
 
-  const handleInviteeJoined = () => {
+  const handleInviteeJoined = async () => {
     sendMessage("sendStartInfo", {
       roomId,
       inviterRole: role,
       inviteeRole: role === fairytale.first ? fairytale.second : fairytale.first,
-      pageIndex: 5,
+      pageIndex,
     });
   
     setShowWaiting(false);
     setShowConfirmStartModal(true);
+  
+    // ✅ 진행상황 생성은 오직 pageIndex === 1일 때만!
+    if (pageIndex === 1) {
+      try {
+        await createProgressApi({
+          mode: "MULTI",
+          friendId: friend.friendId,
+          nowPage: pageIndex,
+          fairytalePk: fairytale.fairytalePk,
+          role: role === fairytale.first ? "FIRST" : "SECOND",
+        });
+
+        console.log("진행상황 등록 완료!");
+      } catch (err) {
+        console.error("❌ 진행상황 등록 실패:", err);
+      }
+    }
   };
+  
   
   
   
