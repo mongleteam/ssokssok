@@ -20,5 +20,5 @@ public interface UserService {
     List<String> getNicknamesByUserId(List<String> idList);
     String getUUID(String id);
     String getId(String uuid);
-    List<String> getIdList(String id);
+    List<String> getIdList(String id, String userPk);
 }
