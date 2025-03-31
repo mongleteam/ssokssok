@@ -11,8 +11,8 @@ WORKDIR /app
 COPY ${JAR_FILE} app.jar
 
 # 컨테이너가 사용할 포트 설정
-EXPOSE 8085
-EXPOSE 9092
+EXPOSE 8089
+EXPOSE 19092
 
 # 컨테이너 실행 시 Spring Boot 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
