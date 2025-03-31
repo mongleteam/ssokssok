@@ -149,8 +149,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<String> getIdList(String id) {
-        return userMapper.getIdList(id);
+    public List<String> getIdList(String id, String userPk) {
+        String currentUserId = userMapper.getId(userPk);
+
+        return userMapper.getIdList(id,currentUserId,userPk);
     }
 
 

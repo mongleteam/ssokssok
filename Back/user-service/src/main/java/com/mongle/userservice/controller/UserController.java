@@ -91,7 +91,9 @@ public class UserController {
     }
 
     @GetMapping("/id-list")
-    public List<String> getIdList(@RequestParam("id") String id){
-        return userService.getIdList(id);
+    public List<String> getIdList(
+            @RequestHeader("X-User-Id") String userPk,
+            @RequestParam("id") String id){
+        return userService.getIdList(id,userPk);
     }
 }
