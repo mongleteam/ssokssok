@@ -1,8 +1,10 @@
 package com.mongle.userservice.service;
 
 
+import com.mongle.userservice.dto.request.FindIdRequestDTO;
 import com.mongle.userservice.dto.request.LoginRequestDTO;
 import com.mongle.userservice.dto.request.RegisterRequestDTO;
+import com.mongle.userservice.dto.response.FindIdResponseDTO;
 import com.mongle.userservice.dto.response.LoginResponseDTO;
 import com.mongle.userservice.dto.response.RegisterResponseDTO;
 import com.mongle.userservice.entity.User;
@@ -91,19 +93,19 @@ public class AuthServicempl implements AuthService {
     }
 
     @Override
-    public void logout(String userPk, HttpServletResponse response) {
-        // 1. Redis에서 Refresh Token 삭제
-        redisTemplate.delete("RT:" + userPk);
+    public FindIdResponseDTO findId(FindIdRequestDTO request) {
+        // 1.이메일 추출
+        String email = request.getEmail();
 
-        // 2. 클라이언트의 Refresh Token 쿠키 삭제
-        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0); // 쿠키 즉시 만료
-        response.addCookie(refreshTokenCookie);
-
+        // 2. 이메일을 이용하여 아이디 조회 (UserMapper.findIdByEmail가 String 반환)
+        String foundUserId = userMapper.findIdByEmail(email);
+        if (foundUserId == null) {
+            throw new CustomException(ErroCode.NOT_EXIST_MEMBER_EMAIL);
+        }
+        // 3. FindIdResponseDTO 생성하여 반환
+        return new FindIdResponseDTO(foundUserId);
     }
+
 
     // 리프레시 토큰 쿠키에서 가져오기
     @Override
@@ -159,5 +161,21 @@ public class AuthServicempl implements AuthService {
         // 7. 새로운 JWT 반환
         return new LoginResponseDTO(newAccessToken, newRefreshToken);
     }
+
+    @Override
+    public boolean checkId(String id) {
+        return userMapper.countById(id) > 0;
+    }
+
+    @Override
+    public boolean checkNickname(String nickname) {
+        return userMapper.countByNickname(nickname) > 0;
+    }
+
+    @Override
+    public boolean checkEmail(String email) {
+        return userMapper.countByEmail(email) > 0;
+    }
+
 
 }

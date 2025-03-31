@@ -4,6 +4,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.mongle.userservice.entity.User;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
     void signup(User user);
@@ -30,6 +32,11 @@ public interface UserMapper {
 
     void updateUserPassword(@Param("userId") String userId, @Param("newPassword") String newPassword);
 
+    List<String> findNicknamesByUserId(@Param("idList") List<String> idList);
 
+    String getUUID(@Param("id") String id);
 
+    String getId(@Param("uuid") String uuid);
+
+    List<String> getIdList(@Param("id") String id);
 }

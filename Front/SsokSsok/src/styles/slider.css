@@ -1,0 +1,35 @@
+/* slider.css */
+
+.custom-slider {
+    appearance: none;
+    height: 20px;
+    background-color: #8B5A2B; /* 짙은 나무색 */
+    border-radius: 9999px;
+    outline: none;
+  }
+  
+  .custom-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    background-color: #E6B17E; /* 밝은 원목 느낌 */
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #5c3a1e;
+    transition: transform 0.2s ease-in-out;
+    margin-top: -2px; /* thumb 위치 보정 */
+  }
+  
+  .custom-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+  
+  .custom-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    background-color: #E6B17E;
+    border-radius: 50%;
+    border: 2px solid #5c3a1e;
+    cursor: pointer;
+  }
+  

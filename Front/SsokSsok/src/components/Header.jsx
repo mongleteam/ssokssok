@@ -10,17 +10,36 @@ import MainModal from "./main/MainModal";
 import MyPageModal from "./main/MyPageModal";
 import AlarmModal from "./main/AlarmModal";
 import SettingsModal from "./main/SettingsModal";
+import { useAlarmStore } from "../stores/alarmStore";
+import useInitialAlarmLoad from "../hooks/useInitialAlarmLoad";
 
 const Header = () => {
     const navigate = useNavigate();
-    const [modalContent, setModalContent] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalContent, setModalContent] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
+    // useInitialAlarmLoad()
+
+    // 🔥 상태 각각 구독해야 함!
+    const alarms = useAlarmStore((state) => state.alarms);
+    const isLoaded = useAlarmStore((state) => state.isLoaded);
+    console.log("🧷 Header 렌더링 - 알림 개수:", alarms, "로딩완료:", isLoaded)
+
+    
+    
     // 모달 열기
     const openModal = (Component) => {
-        setModalContent(<Component />);
-        setIsModalOpen(true);
-    };
+        const isMyPage = Component == MyPageModal
+
+        setModalContent(
+            isMyPage ? (
+              <MyPageModal openModal={openModal} />
+            ) : (
+              <Component />
+            )
+          )
+          setIsModalOpen(true)
+    }
 
     return (
         <>
@@ -29,7 +48,7 @@ const Header = () => {
                     <motion.img
                         src={SsokSsokLogo}
                         alt="SsokSsokLogo"
-                        className="w-[7rem] cursor-pointer" // 로고만 키우기
+                        className="w-[7rem] cursor-pointer object-contain" // 로고만 키우기
                         whileHover={{ scale: 1.1 }}
                         transition={{ type: "spring", stiffness: 300 }}
                         onClick={() => navigate("/main")}
@@ -40,7 +59,7 @@ const Header = () => {
                     <motion.img
                         src={mybookIcon}
                         alt="My Album"
-                        className="w-[3.5rem] cursor-pointer"
+                        className="w-[3.5rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}
@@ -49,25 +68,35 @@ const Header = () => {
                     <motion.img
                         src={myPageIcon}
                         alt="My Page"
-                        className="w-[3.5rem] cursor-pointer"
+                        className="w-[3.5rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}
                         onClick={() => openModal(MyPageModal)}
                     />
-                    <motion.img
-                        src={alarmIcon}
-                        alt="Alarm"
-                        className="w-[3.5rem] cursor-pointer"
-                        whileHover={{ scale: 1.15 }}
-                        whileTap={{ scale: 0.9 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                        onClick={() => openModal(AlarmModal)}
-                    />
+                    <motion.div className="relative">
+                        <motion.img
+                            src={alarmIcon}
+                            alt="Alarm"
+                            className="w-[3.5rem] cursor-pointer object-contain"
+                            whileHover={{ scale: 1.15 }}
+                            whileTap={{ scale: 0.9 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            onClick={() => openModal(AlarmModal)}
+                        />
+                        {isLoaded && alarms.length > 0 && (
+                        <>
+                            {console.log("✅ 뱃지 렌더링!")}
+                            <span className="absolute -top-0 -right-0 bg-red-500 text-white text-2xl w-6 h-6 flex items-center justify-center rounded-full font-bold font-dodam">
+                            {alarms.length}
+                            </span>
+                        </>
+                        )}
+                        </motion.div>
                     <motion.img
                         src={settingsIcon}
                         alt="Settings"
-                        className="w-[3.5rem] cursor-pointer"
+                        className="w-[3.5rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}

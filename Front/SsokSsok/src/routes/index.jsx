@@ -7,6 +7,7 @@ import LoginPage from "../pages/auth/LoginPage";
 import MainRoutes from "./MainRoutes";
 import MultiRoutes from "./MultiRoutes";
 import SingleRoutes from "./SingleRoutes";
+import MagicStarPage from "../pages/MagicStarPage";
 
 const AppRoutes = () => {
   return (
@@ -20,6 +21,8 @@ const AppRoutes = () => {
       <Route path="/main/*" element={<MainRoutes />} />
       <Route path="/multi/*" element={<MultiRoutes />} />
       <Route path="/single/*" element={<SingleRoutes />} />
+      {/* 미션 실험용 */}
+      <Route path="/magicstar" element={<MagicStarPage />} />
     </Routes>
   );
 };

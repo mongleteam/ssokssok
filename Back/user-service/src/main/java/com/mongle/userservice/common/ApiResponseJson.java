@@ -7,6 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class ApiResponseJson {
+    // cicd test
     public Boolean isSuccess;
     public String message;
     public int code;

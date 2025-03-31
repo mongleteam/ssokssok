@@ -1,6 +1,7 @@
 package com.mongle.userservice.service;
 
 
+import com.mongle.userservice.client.FriendServiceClient;
 import com.mongle.userservice.dto.request.FindIdRequestDTO;
 import com.mongle.userservice.dto.request.UpdateNameRequestDTO;
 import com.mongle.userservice.dto.request.UpdateNickNameRequestDTO;
@@ -11,9 +12,15 @@ import com.mongle.userservice.entity.User;
 import com.mongle.userservice.exception.CustomException;
 import com.mongle.userservice.exception.ErroCode;
 import com.mongle.userservice.mapper.UserMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +28,9 @@ public class UserServiceImpl implements UserService{
 
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final AuthService authService;
+    private final FriendServiceClient friendServiceClient;
 
     @Override
     public void deleteUser(String userPk){
@@ -32,7 +42,11 @@ public class UserServiceImpl implements UserService{
             throw new CustomException(ErroCode.NOT_EXIST_MEMBER_ID);
         }
 
-        // 2. 유저가 존재하면 DB에서 삭제
+        // 2. 친구 관계 삭제
+        friendServiceClient.deleteFriend(userPk,user.getId());
+
+
+        // 3. 유저 DB에서 삭제
         userMapper.deleteUser(userPk);
 
     }
@@ -50,35 +64,42 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void logout(String userPk, HttpServletResponse response) {
+        // 1. Redis에서 Refresh Token 삭제
+        redisTemplate.delete("RT:" + userPk);
+
+        // 2. 클라이언트의 Refresh Token 쿠키 삭제
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0); // 쿠키 즉시 만료
+        response.addCookie(refreshTokenCookie);
+
+    }
+
+    @Override
     public void updateUserNickName(String userPk, UpdateNickNameRequestDTO request){
         // 1. 빈칸을 입력할 경우 에러 처리
         if (request.getNewNickName() == null || request.getNewNickName().trim().isEmpty()) {
             throw new CustomException(ErroCode.INVALID_INPUT);
         }
 
-
-        userMapper.updateUserNickName(userPk, request.getNewNickName());
-    }
-
-    @Override
-    public FindIdResponseDTO findId(FindIdRequestDTO request) {
-        // 1.이메일 추출
-        String email = request.getEmail();
-
-        // 2. 이메일을 이용하여 아이디 조회 (UserMapper.findIdByEmail가 String 반환)
-        String foundUserId = userMapper.findIdByEmail(email);
-        if (foundUserId == null) {
-            throw new CustomException(ErroCode.NOT_EXIST_MEMBER_EMAIL);
+        boolean isSuccess = authService.checkNickname(request.getNewNickName());
+        if (isSuccess) {
+            throw new CustomException(ErroCode.DUPLICATE_MEMBER_NICKNAME);
+        }else {
+            userMapper.updateUserNickName(userPk, request.getNewNickName());
         }
-        // 3. FindIdResponseDTO 생성하여 반환
-        return new FindIdResponseDTO(foundUserId);
     }
+
+
 
     @Override
     public void updateUserPassword(String userPk, UpdatePasswordRequestDTO request) {
         // 1. 빈칸 입력시 예외 처리
         if (request.getNewPassword() == null || request.getNewPassword().trim().isEmpty()
-        || request.getNewPassword() == null || request.getNewPassword().trim().isEmpty()) {
+                || request.getNewPassword() == null || request.getNewPassword().trim().isEmpty()) {
             throw new CustomException(ErroCode.INVALID_INPUT);
         }
 
@@ -106,6 +127,30 @@ public class UserServiceImpl implements UserService{
         }
         // 3. DTO로 변환하여 반환
         return new GetUserInfoResponseDTO(user.getId(), user.getName(), user.getNickname(), user.getEmail());
+    }
+
+    @Override
+    public List<String> getNicknamesByUserId(List<String> idList) {
+        if (idList.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        return userMapper.findNicknamesByUserId(idList);
+    }
+
+    @Override
+    public String getUUID(String id) {
+        return userMapper.getUUID(id);
+    }
+
+    @Override
+    public String getId(String uuid) {
+        return userMapper.getId(uuid);
+    }
+
+    @Override
+    public List<String> getIdList(String id) {
+        return userMapper.getIdList(id);
     }
 
 

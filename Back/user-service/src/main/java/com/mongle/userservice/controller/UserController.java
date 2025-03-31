@@ -9,9 +9,12 @@ import com.mongle.userservice.dto.request.UpdatePasswordRequestDTO;
 import com.mongle.userservice.dto.response.FindIdResponseDTO;
 import com.mongle.userservice.dto.response.GetUserInfoResponseDTO;
 import com.mongle.userservice.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -45,14 +48,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "닉네임이 변경되었습니다.", null));
     }
 
-    @PostMapping("/id")
-    public ResponseEntity<ApiResponseJson> findId(
-            @RequestBody FindIdRequestDTO request
-    ){
-        FindIdResponseDTO response = userService.findId(request);
 
-        return ResponseEntity.ok(new ApiResponseJson(true, 200, "아이디 찾기에 성공하였습니다.", response));
-    }
 
     @PutMapping("/password")
     public ResponseEntity<ApiResponseJson> updateUserPassword(
@@ -69,5 +65,33 @@ public class UserController {
     ){
       GetUserInfoResponseDTO response = userService.getUserInfo(userPk);
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "회원정보 조회에 성공하였습니다.", response));
+    }
+    @GetMapping("/nicknameList")
+    public List<String> getNincknameList(@RequestParam("idList") List<String> idList){
+        return userService.getNicknamesByUserId(idList);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponseJson> logout(
+            @RequestHeader("X-User-Id") String userPk,
+            HttpServletResponse response
+    ){
+        userService.logout(userPk, response);
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "로그아웃에 성공하였습니다", null));
+    }
+
+    @GetMapping("/getUUID")
+    public String getUUID(@RequestParam("id") String id){
+        return userService.getUUID(id);
+    }
+
+    @GetMapping("/getId")
+    public String getId(@RequestParam("uuid") String uuid){
+        return userService.getId(uuid);
+    }
+
+    @GetMapping("/id-list")
+    public List<String> getIdList(@RequestParam("id") String id){
+        return userService.getIdList(id);
     }
 }
