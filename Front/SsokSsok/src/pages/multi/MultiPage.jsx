@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/book_background.css";
 import StoryHeader from "../../components/StoryHeader";
@@ -45,6 +45,114 @@ function MultiPage() {
 
   const navigate = useNavigate();
 
+  const handleNextPage = useCallback(async () => {
+    const currentData = storyData[currentPage];
+    const nextPage = currentPage + 1;
+  
+    const shouldSave =
+      from === "inviter" &&
+      !isMissionVisible &&
+      progressPk;
+  
+    // ✅ 미션 종료 후 → 다음 페이지 이동 + 저장
+    if (isMissionVisible) {
+      setIsMissionVisible(false);
+      setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
+      setCurrentPage(nextPage);
+      setPageIndex(nextPage + 1);
+  
+      if (from === "inviter") {
+        sendMessage("prevNext", { roomId, next: true, prev: false });
+  
+        if (shouldSave) {
+          await updateProgressApi(progressPk, {
+            nowPage: nextPage + 1,
+            finish: false,
+          });
+          console.log("✅ 저장 완료 (미션 종료):", nextPage + 1);
+        }
+      }
+  
+      return;
+    }
+  
+    // ✅ 미션 진입
+    const isMission = currentData.instructions && !viewedMissions[currentPage];
+    if (isMission) {
+      setIsMissionVisible(true);
+  
+      if (from === "inviter") {
+        sendMessage("prevNext", { roomId, next: true, prev: false });
+      }
+  
+      return;
+    }
+  
+    // ✅ 일반 페이지
+    setCurrentPage(nextPage);
+    setPageIndex(nextPage + 1);
+  
+    if (from === "inviter") {
+      sendMessage("prevNext", { roomId, next: true, prev: false });
+  
+      if (shouldSave) {
+        await updateProgressApi(progressPk, {
+          nowPage: nextPage + 1,
+          finish: false,
+        });
+        console.log("✅ 저장 완료 (일반):", nextPage + 1);
+      }
+    }
+  }, [
+    currentPage,
+    from,
+    isMissionVisible,
+    viewedMissions,
+    progressPk,
+    storyData,
+    roomId,
+  ]);
+  
+  
+  const handlePreviousPage = useCallback(() => {
+    const prevPage = currentPage - 1;
+  
+    if (isMissionVisible) {
+      setIsMissionVisible(false);
+      setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
+  
+      // ✅ 미션 종료하고 바로 이전 페이지로 이동
+      setCurrentPage(prevPage);
+      setPageIndex(prevPage + 1);
+  
+      if (from === "inviter") {
+        sendMessage("prevNext", {
+          roomId,
+          next: false,
+          prev: true,
+        });
+      }
+  
+      return;
+    }
+  
+    if (currentPage > 0) {
+      setCurrentPage(prevPage);
+      setPageIndex(prevPage + 1);
+  
+      if (from === "inviter") {
+        sendMessage("prevNext", {
+          roomId,
+          next: false,
+          prev: true,
+        });
+      }
+    }
+  }, [currentPage, isMissionVisible, from, roomId]);
+  
+
+  
+
   useEffect(() => {
     console.log("📦 location.state:", location.state); // 페이지 진입 시 상태 확인
   
@@ -54,7 +162,7 @@ function MultiPage() {
       setPageIndex(index);
       setCurrentPage(index - 1); // ✅ 초기 진입 시도 보정
     }
-  }, []);
+  }, [location.state]);
 
   // 초대자 입장 시
   useEffect(() => {
@@ -89,9 +197,6 @@ function MultiPage() {
       offSocketEvent("sendStartInfo");
     };
   }, [from]);
-  
-  
-  
 
   useEffect(() => {
     const loadStoryData = async () => {
@@ -137,44 +242,18 @@ function MultiPage() {
     loadStoryData();
   }, []);
 
-  const handleNextPage = async () => {
-    const currentData = storyData[currentPage];
-    const nextPage = currentPage + 1;
+  useEffect(() => {
+    if (from === "inviter") return;
   
-    const shouldSave =
-      location.state?.from === "inviter" &&
-      !isMissionVisible &&
-      progressPk;
+    onSocketEvent("prevNext", async ({ next, prev }) => {
+      if (next) await handleNextPage();
+      if (prev) handlePreviousPage();
+    });
   
-    if (isMissionVisible) {
-      // ✅ 미션 끝나고 페이지 넘기는 경우 —> 저장 OK
-      setIsMissionVisible(false);
-      setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
-      setCurrentPage(nextPage);
-  
-      if (shouldSave) {
-        await updateProgressApi(progressPk, {
-          nowPage: nextPage,
-          finish: false,
-        });
-        console.log("✅ 진행상황 업데이트 (미션 종료):", nextPage);
-      }
-    } else if (currentData.instructions && !viewedMissions[currentPage]) {
-      // ✅ 미션 페이지 진입 → 저장 X
-      setIsMissionVisible(true);
-    } else {
-      // ✅ 일반 페이지 → 저장 OK
-      setCurrentPage(nextPage);
-  
-      if (shouldSave) {
-        await updateProgressApi(progressPk, {
-          nowPage: nextPage,
-          finish: false,
-        });
-        console.log("✅ 진행상황 업데이트 (일반 페이지):", nextPage);
-      }
-    }
-  };
+    return () => {
+      offSocketEvent("prevNext");
+    };
+  }, [from, handleNextPage, handlePreviousPage]);
   
 
   const handleInviteeJoined = async () => {
@@ -213,13 +292,7 @@ function MultiPage() {
   };
   
   
-  const handlePreviousPage = () => {
-    if (isMissionVisible) {
-      setIsMissionVisible(false);
-    } else if (currentPage > 0) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
+  
   
 
   return (
