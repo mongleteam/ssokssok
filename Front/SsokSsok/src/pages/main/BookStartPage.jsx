@@ -15,7 +15,6 @@ import RoleSelectModal from "../../components/multi/RoleSelectModal";
 import FriendSelectModal from "../../components/multi/FriendSelectModal";
 import InviteConfirmModal from "../../components/multi/InviteConfirmModal";
 import WaitingModal from "../../components/multi/WaitingModal";
-import { connectSocket, disconnectSocket } from "../../services/socket";
 
 const BookStartPage = () => {
   const [bookData, setBookData] = useState(null)
@@ -28,16 +27,9 @@ const BookStartPage = () => {
   const [roomId, setRoomId] = useState(null);
   const [showWaiting, setShowWaiting] = useState(false);
 
-  useEffect(() => {
-    if (!roomId) return;
-  
-    // 소켓 연결
-    connectSocket(roomId);
-  
-    return () => {
-      disconnectSocket();
-    };
-  }, [roomId]);
+  const [showContinueModal, setShowContinueModal] = useState(false);
+  const [selectedProgress, setSelectedProgress] = useState(null);
+ 
   
   useEffect(() => {
     bookInfoApi()
@@ -64,6 +56,12 @@ const BookStartPage = () => {
   const { fairytale, progressList } = bookData
   const singleProgress = progressList.filter((p) => p.mode === "SINGLE")
   const multiProgress = progressList.filter((p) => p.mode === "MULTI")
+
+  const handleClickContinueMulti = (progress) => {
+    setSelectedProgress(progress);
+    setShowContinueModal(true);
+  };
+
 
   return (
     <>
@@ -144,7 +142,7 @@ const BookStartPage = () => {
                     >
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-whitechalk text-xl text-black">{progress.friendNickname}님과</p>
-                    <img src={continueBtn} alt="이어하기" className="w-[6rem] cursor-pointer" />
+                    <img src={continueBtn} alt="이어하기" className="w-[6rem] cursor-pointer" onClick={() => handleClickContinueMulti(progress)} />
                   </div>
                   <div className="flex gap-1">
                     {[...Array(fairytale.count)].slice(0, 5).map((_, i) => (
@@ -191,13 +189,13 @@ const BookStartPage = () => {
                 : selectedFriend.friendId
             }
             onConfirm={(roomId) => {
-              connectSocket(roomId); // ✅ 소켓 연결 먼저!
               navigate("/multi", {
                 state: {
                   roomId,
                   role: selectedRole,
                   friend: selectedFriend,
                   from: "inviter",
+                  fairytale,  // 동화책 정보 추가 전달
                 },
               }); // ✅ 멀티 페이지 이동 + 데이터 전달
             }}
@@ -216,6 +214,34 @@ const BookStartPage = () => {
               setMultiStep(null);
             }}
             onClose={() => setMultiStep(null)}
+          />
+        )}
+
+        {showContinueModal && selectedProgress && (
+          <InviteConfirmModal
+            friend={selectedProgress.friendId}
+            nickname={selectedProgress.friendNickname}
+            mode="continue"
+            onClose={() => setShowContinueModal(false)}
+            onConfirm={(roomId) => {
+              const role = selectedProgress.role === "FIRST" ? fairytale.first : fairytale.second;
+
+              navigate("/multi", {
+                state: {
+                  roomId,
+                  role,
+                  friend: {
+                    friendId: selectedProgress.friendId,
+                    nickname: selectedProgress.friendNickname,
+                  },
+                  from: "inviter",
+                  fairytale,
+                  pageIndex: selectedProgress.nowPage,
+                  isResume: true, // 이어 읽기라는 플래그 추가!
+                  progressPk: selectedProgress.progressPk, // 진행상호아 pk 포함 전달
+                },
+              });
+            }}
           />
         )}
 

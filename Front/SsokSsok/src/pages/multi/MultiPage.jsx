@@ -14,7 +14,8 @@ import VideoP1 from "../../components/multi/VideoP1";
 import VideoP2 from "../../components/multi/VideoP2";
 import WaitingModal from "../../components/multi/WaitingModal";
 
-import { connectSocket, disconnectSocket } from "../../services/socket";
+import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
+import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
 
 
 // 아이콘 경로
@@ -32,19 +33,64 @@ function MultiPage() {
   const [viewedMissions, setViewedMissions] = useState({});        // 해당 페이지에서 미션을 본 적 있는지
 
   const location = useLocation();
-  const { roomId, role, friend, from } = location.state || {};
+  const { roomId, friend, from, fairytale } = location.state || {};
+  const [role, setRole] = useState(location.state?.role || null);
 
   const [showWaiting, setShowWaiting] = useState(from === "inviter");
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(from !== "inviter");
- 
+  const [showConfirmStartModal, setShowConfirmStartModal] = useState(false);
+  const [pageIndex, setPageIndex] = useState(1); // 기본값 1 = 새로 읽기
+  const [progressPk, setProgressPk] = useState(location.state?.progressPk || null);
+  const [startReady, setStartReady] = useState(from !== "invitee"); // 초대한 쪽은 바로 시작
 
-  const navigate = useNavigate(); // ✅ navigate 선언
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (roomId) {
-      connectSocket(roomId); // 만약 BookStartPage에서 연결 안 했으면 여기서도 가능
+    console.log("📦 location.state:", location.state); // 페이지 진입 시 상태 확인
+  
+    const index = location.state?.pageIndex;
+    if (typeof index === "number" && index >= 1) {
+      console.log("이어읽기 시작 페이지:", index); // 잘 받아왔는지 확인
+      setPageIndex(index);
+      setCurrentPage(index - 1); // ✅ 초기 진입 시도 보정
     }
-  }, [roomId]);
+  }, []);
+
+  // 초대자 입장 시
+  useEffect(() => {
+    if (from !== "inviter" || !roomId || !role || !fairytale) return;
+  
+    connectSocket();               // 소켓 연결
+    joinRoom(roomId);              // 방 조인
+  }, [from, roomId, role, fairytale]);
+  
+  // 수락자 입장: 소켓 연결 + 방 입장 + 입장 알림
+  useEffect(() => {
+    if (from !== "invitee" || !roomId) return;
+
+    connectSocket();
+    joinRoom(roomId);
+    sendMessage("inviteeJoined", { roomId });
+  }, [from, roomId]);
+
+  // 수락자: startInfo 수신
+  useEffect(() => {
+    if (from !== "invitee") return;
+  
+    onSocketEvent("sendStartInfo", ({ inviteeRole, pageIndex }) => {
+      console.log("📦 역할/페이지 정보 수신:", inviteeRole, pageIndex);
+      setRole(inviteeRole);
+      setPageIndex(pageIndex);
+      setCurrentPage(pageIndex - 1);
+      setStartReady(true); // 페이지 정보 수신 후 시작 가능 플래그 설정
+    });
+  
+    return () => {
+      offSocketEvent("sendStartInfo");
+    };
+  }, [from]);
+  
+  
   
 
   useEffect(() => {
@@ -91,22 +137,82 @@ function MultiPage() {
     loadStoryData();
   }, []);
 
-  const handleNextPage = () => {
+  const handleNextPage = async () => {
     const currentData = storyData[currentPage];
+    const nextPage = currentPage + 1;
+  
+    const shouldSave =
+      location.state?.from === "inviter" &&
+      !isMissionVisible &&
+      progressPk;
   
     if (isMissionVisible) {
+      // ✅ 미션 끝나고 페이지 넘기는 경우 —> 저장 OK
       setIsMissionVisible(false);
       setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(nextPage);
+  
+      if (shouldSave) {
+        await updateProgressApi(progressPk, {
+          nowPage: nextPage,
+          finish: false,
+        });
+        console.log("✅ 진행상황 업데이트 (미션 종료):", nextPage);
+      }
     } else if (currentData.instructions && !viewedMissions[currentPage]) {
+      // ✅ 미션 페이지 진입 → 저장 X
       setIsMissionVisible(true);
     } else {
-      setCurrentPage((prev) => prev + 1);
+      // ✅ 일반 페이지 → 저장 OK
+      setCurrentPage(nextPage);
+  
+      if (shouldSave) {
+        await updateProgressApi(progressPk, {
+          nowPage: nextPage,
+          finish: false,
+        });
+        console.log("✅ 진행상황 업데이트 (일반 페이지):", nextPage);
+      }
+    }
+  };
+  
+
+  const handleInviteeJoined = async () => {
+    sendMessage("sendStartInfo", {
+      roomId,
+      inviterRole: role,
+      inviteeRole: role === fairytale.first ? fairytale.second : fairytale.first,
+      pageIndex,
+    });
+  
+    setShowWaiting(false);
+    setShowConfirmStartModal(true);
+  
+    // ✅ 진행상황 생성은 오직 새로 읽기면서 pageIndex === 1일 때만!
+    if (pageIndex === 1 && location.state?.from === "inviter" && !location.state?.isResume) {
+        try {
+          const res = await createProgressApi({
+            mode: "MULTI",
+            friendId: friend.friendId,
+            nowPage: pageIndex,
+            fairytalePk: fairytale.fairytalePk,
+            role: role === fairytale.first ? "FIRST" : "SECOND",
+          });
+
+          const newPk = res.data?.data?.progressPk;
+          if (newPk) {
+            setProgressPk(newPk); // ✅ 상태 저장!
+          }
+
+          console.log("진행상황 등록 완료!");
+
+      } catch (err) {
+        console.error("❌ 진행상황 등록 실패:", err);
+      }
     }
   };
   
   
-
   const handlePreviousPage = () => {
     if (isMissionVisible) {
       setIsMissionVisible(false);
@@ -120,6 +226,7 @@ function MultiPage() {
     <div className="relative book-background-container flex flex-col items-center">
       {showWaiting && (
         <WaitingModal
+          mode="waiting"
           friend={friend}
           role={role}
           roomId={roomId}
@@ -127,16 +234,32 @@ function MultiPage() {
             alert("시간 초과로 연결이 종료되었습니다.");
             navigate("/main");
           }}
-          onClose={() => {
-            const confirmed = window.confirm("읽기 요청을 취소하시겠습니까?");
-            if (confirmed) {
-              navigate("/main");
+          onClose={(auto) => {
+            if (auto) {
+              // 상대방 입장 시 sendStartInfo 실행!
+              handleInviteeJoined();
+            } else {
+              // 수동 취소
+              const confirmed = window.confirm("함께 읽기 요청을 취소하시겠습니까?");
+              if (confirmed) {
+                navigate("/main");
+              }
             }
-          }}          
+          }}
+          
         />
       )}
 
-
+      {showConfirmStartModal && (
+        <WaitingModal
+          mode="confirmed"
+          friend={friend}
+          onClose={() => {
+            setShowConfirmStartModal(false);
+            setIsPhotoModalOpen(true);
+          }}
+        />
+      )}
 
       {/* 진입 시 포토 모달 띄우기기 */}
       {isPhotoModalOpen && (
@@ -167,12 +290,11 @@ function MultiPage() {
       {/* 중앙 콘텐츠 */}
       <div className="flex w-full h-[75%] max-w-[1200px] px-4 lg:px-12">
       <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
-        {storyData.length > 0 && (
+        {storyData.length > 0 && startReady && (
           <StoryIllustration storyData={storyData[currentPage]} />
         )}
 
-        {/* ✅ 조건부 렌더링 (PhotoModal이 닫혔을 때만 대사 재생 시작) */}
-        {!showWaiting && !isPhotoModalOpen && storyData.length > 0 && !isMissionVisible && (
+        {!showWaiting && !isPhotoModalOpen && storyData.length > 0 && !isMissionVisible && startReady && (
           <StoryDialogue
             key={`dialogue-${currentPage}`}
             storyData={storyData[currentPage]}
@@ -180,8 +302,7 @@ function MultiPage() {
           />
         )}
 
-        {/* ✅ 미션이 보일 때는 MissionScreen */}
-        {!isPhotoModalOpen && storyData.length > 0 && isMissionVisible && (
+        {!isPhotoModalOpen && storyData.length > 0 && isMissionVisible && startReady && (
           <MissionScreen
             storyData={storyData[currentPage]}
             assets={assets}

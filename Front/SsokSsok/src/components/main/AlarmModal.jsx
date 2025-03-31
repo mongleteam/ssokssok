@@ -6,11 +6,15 @@ import CheckIcon from "../../assets/images/check_icon.png"
 import DeleteIcon from "../../assets/images/remove_icon.png"
 import { acceptFriendApi, acceptGameApi, rejectFriendApi, rejectGameApi } from "../../apis/FriendApi";
 import { useAlarmStore } from "../../stores/alarmStore";
+import { useNavigate } from "react-router-dom";
+
 
 const AlarmModal = () => {
 
   const myAlarm = useAlarmStore((state) => state.alarms);
   const setAlarms = useAlarmStore((state) => state.setAlarms);
+  const navigate = useNavigate();
+
 
   const fetchMyAlarm = async () => {
     try {
@@ -43,8 +47,25 @@ const AlarmModal = () => {
           await acceptFriendApi(item.friendId)
           console.log("친구 요청 수락 완료")
         } else if (item.state === "multi") {
-          await acceptGameApi(item.friendId)
+          await acceptGameApi(item.friendId);
           console.log("게임 초대 수락")
+
+          const roomId = item.roomId;          // roomId 알림에서 꺼내서
+          const inviter = item.friendId;
+
+          if (roomId) {
+
+            navigate("/multi", {
+              state: {
+                roomId,
+                friend: item.friendId,
+                from: "invitee"
+              },
+            });
+            
+          } else {
+            alert("roomId 정보가 없습니다.");
+          }
         }
         await fetchMyAlarm()
       } catch (err) {
