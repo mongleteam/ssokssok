@@ -126,6 +126,7 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
   }, [visited]);
 
   const drawCanvas = () => {
+    console.log("🖌️ drawCanvas 호출됨");
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!ctx || !bgRef.current) return;
@@ -137,16 +138,29 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
 
     ctx.drawImage(bgRef.current, 0, 0, width, height);
 
-    if (drawPath.length > 1) {
-      ctx.beginPath();
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 3;
-      ctx.moveTo(drawPath[0].x, drawPath[0].y);
-      for (let i = 1; i < drawPath.length; i++) {
-        ctx.lineTo(drawPath[i].x, drawPath[i].y);
+      // 2. ⭐ 가이드라인 (회색)
+      if (starPoints.length > 1) {
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(180, 180, 180, 0.5)"; // 연한 회색
+        ctx.lineWidth = 2;
+        ctx.moveTo(starPoints[0].x, starPoints[0].y);
+        for (let i = 1; i < starPoints.length; i++) {
+          ctx.lineTo(starPoints[i].x, starPoints[i].y);
+        }
+        ctx.stroke();
       }
-      ctx.stroke();
-    }
+
+      // 3. ✍️ 유저가 그린 선 (노란색)
+      if (drawPath.length > 1) {
+        ctx.beginPath();
+        ctx.strokeStyle = "yellow"; // 유저 선은 노란색
+        ctx.lineWidth = 3;
+        ctx.moveTo(drawPath[0].x, drawPath[0].y);
+        for (let i = 1; i < drawPath.length; i++) {
+          ctx.lineTo(drawPath[i].x, drawPath[i].y);
+        }
+        ctx.stroke();
+      }
 
     starPoints.forEach((p, i) => {
       ctx.beginPath();
@@ -178,14 +192,12 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
           muted
           className="border rounded-lg w-[480px] h-[360px] scale-x-[-1]"
         />
-        {starPoints.length > 0 && (
           <canvas
             ref={canvasRef}
             width={width}
             height={height}
             className="border rounded-lg"
           />
-        )}
       </div>
       <div className="w-full flex flex-col items-center gap-2 mt-4">
         <div className="text-lg font-bold text-gray-700">
