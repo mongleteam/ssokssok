@@ -52,6 +52,7 @@ function MultiPage() {
     if (typeof index === "number" && index >= 1) {
       console.log("이어읽기 시작 페이지:", index); // 잘 받아왔는지 확인
       setPageIndex(index);
+      setCurrentPage(index - 1); // ✅ 초기 진입 시도 보정
     }
   }, []);
 
@@ -79,8 +80,8 @@ function MultiPage() {
     onSocketEvent("sendStartInfo", ({ inviteeRole, pageIndex }) => {
       console.log("📦 역할/페이지 정보 수신:", inviteeRole, pageIndex);
       setRole(inviteeRole);
-      setCurrentPage(pageIndex - 1); // 배열 인덱스 기준이라 -1 해줘야 원하는대로 작동함..
       setPageIndex(pageIndex);
+      setCurrentPage(pageIndex - 1);
       setStartReady(true); // 페이지 정보 수신 후 시작 가능 플래그 설정
     });
   
@@ -170,6 +171,7 @@ function MultiPage() {
           nowPage: nextPage,
           finish: false,
         });
+        console.log("✅ 진행상황 업데이트 (일반 페이지):", nextPage);
       }
     }
   };
