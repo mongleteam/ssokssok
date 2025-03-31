@@ -111,6 +111,20 @@
         WHERE progress_pk = #{progressPk}
     </select>
 
+    <!-- 같이 하려는 친구와 진행상황 존재 여부 확인  -->
+    <select id="selectExistingProgress"
+            parameterType="map"
+            resultType="int">
+        SELECT progress_pk
+        FROM progress
+        WHERE fairytale_pk = #{fairytalePk}
+            AND user_pk = #{userPk}
+            AND friend_id = #{friendId}
+    </select>
+    <!--  진행상황 삭제  -->
+    <delete id="deleteProgress" parameterType="int">
+        DELETE FROM progress WHERE progress_pk = #{progressPk}
+    </delete>
 
     <!-- 진행상황 업데이트
      업데이트 되는 값이 null 값이 아닌 경우 업데이트
