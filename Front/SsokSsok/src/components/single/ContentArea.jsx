@@ -32,7 +32,7 @@ const ContentArea = ({ page, showMission, MissionComponent, assets, onMissionCom
         <MissionComponent
           onComplete={onMissionComplete}
           setStatusContent={(content) => {
-            console.log("✅ setStatusContent 호출됨 (ContentArea에서)", content);
+            // console.log("✅ setStatusContent 호출됨 (ContentArea에서)", content);
             setStatusContent(content);
           }}
           missionProps={page.mission}

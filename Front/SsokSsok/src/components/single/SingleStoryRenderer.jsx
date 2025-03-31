@@ -18,14 +18,34 @@ const SingleStoryRenderer = ({ story, assets }) => {
   const page = story[currentPage];
   const hasMission = !!page.mission;
 
-  // TTS 자동 재생
-  useEffect(() => {
-    if (!page.tts || !assets[page.tts]) return;
-    const timeout = setTimeout(() => {
-      audioRef.current?.play().catch(() => {});
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, [page.tts, assets]);
+  // TTS + 효과음(sounds) 자동 재생
+useEffect(() => {
+  if (page.sounds && Array.isArray(page.sounds)) {
+    page.sounds.forEach((soundFile) => {
+      const soundUrl = assets[soundFile];
+      if (soundUrl) {
+        const audio = new Audio(soundUrl);
+        audio.play().catch(() => {});
+      }
+    });
+  }
+
+  if (!page.tts || !assets[page.tts]) return;
+  const timeout = setTimeout(() => {
+    audioRef.current?.play().catch(() => {});
+  }, 1000);
+  return () => clearTimeout(timeout);
+}, [page.tts, assets, page.sounds]);
+
+  // // TTS 자동 재생
+  // useEffect(() => {
+  //   if (!page.tts || !assets[page.tts]) return;
+  //   const timeout = setTimeout(() => {
+  //     audioRef.current?.play().catch(() => {});
+  //   }, 1000);
+  //   return () => clearTimeout(timeout);
+  // }, [page.tts, assets]);
+
 
   // 오디오 종료 감지
   useEffect(() => {
@@ -82,6 +102,8 @@ const SingleStoryRenderer = ({ story, assets }) => {
       {page.tts && (
         <audio ref={audioRef} src={assets[page.tts]} style={{ display: "none" }} />
       )}
+
+    
 
       {/* 페이지 네비게이션 */}
       <div className="absolute inset-y-0 left-0 right-0 flex justify-between items-center px-8 z-20 pointer-events-none">
