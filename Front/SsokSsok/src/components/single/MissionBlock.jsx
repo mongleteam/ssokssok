@@ -43,24 +43,24 @@ const MissionBlock = ({
         <img
           src={titleImage}
           alt="미션 제목"
-          className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-80 h-auto z-10"
+          className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-80 h-auto z-10"
         />
 
         <div
-          className="relative w-full px-8 py-6 bg-no-repeat bg-center bg-contain mt-6"
+          className="relative w-full px-8 py-6 bg-no-repeat bg-center bg-contain mt-4"
           style={{
             backgroundImage: `url(${boardImage})`,
             backgroundSize: "100% 100%",
-            height: "300px"
+            height: "240px"
           }}
         >
           {/* 지시사항 텍스트 */}
-          <div className="text-center font-cafe24 text-2xl mt-10 whitespace-pre-line leading-relaxed">
+          <div className="text-center font-cafe24 text-xl mt-9 whitespace-pre-line leading-relaxed">
             {instructionText}
           </div>
 
           {/* 👇 상태 UI (데시벨, 카운트다운 등) */}
-          <div className="mt-2 mb-5 min-h-[100px] flex items-center justify-center">
+          <div className="mb-8 min-h-[80px] flex items-center justify-center">
             {statusContent ?? (
               <div className="text-center text-gray-400">[상태 UI 없음]</div>
             )}

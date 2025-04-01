@@ -60,8 +60,17 @@ public class SocketEventHandler {
         // 본인이 제거한 돌의 위치를 보냅니다.
         server.addEventListener("removeStone", StoneLocRequest.class, (client, data, ack) ->
                 removeStone(data) );
+
+        server.addEventListener("draw", RoomDrawRequest.class, (client, data, ack)-> draw(data));
     }
 
+
+    // frame 단위로 점 하나를 추가할 수 있습니다.
+    // frame 때 그림에 좌표하나가 추가 한다면 상대방에게 알립니다.
+    private void draw(RoomDrawRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("draw", new RoomDrawResponse(data.getSenderName(),data.getX(), data.getY()));
+    }
 
     // 본인이 제거한 돌의 위치를 보냅니다.
     private void removeStone(StoneLocRequest data){
