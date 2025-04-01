@@ -353,14 +353,26 @@ function MultiPage() {
       <PageNavigationButton
           icon={previousIcon}
           altText="이전 페이지"
-          onClick={handlePreviousPage}
+          onClick={() => {
+            if (from !== "inviter") {
+              alert("페이지는 친구가 넘길 수 있어요!");
+              return;
+            }
+            handlePreviousPage();
+          }}
           disabled={currentPage === 0 && !isMissionVisible}
           className="pointer-events-auto"
         />
         <PageNavigationButton
           icon={nextIcon}
           altText="다음 페이지"
-          onClick={handleNextPage}
+          onClick={() => {
+            if (from !== "inviter") {
+              alert("페이지는 친구가 넘길 수 있어요!");
+              return;
+            }
+            handleNextPage();
+          }}
           disabled={currentPage === storyData.length - 1 && !isMissionVisible}
           className="pointer-events-auto"
         />
@@ -391,7 +403,6 @@ function MultiPage() {
           />
         )}
       </div>
-
 
         <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
           <VideoManager roomId={roomId} userName={role} />
