@@ -78,6 +78,8 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
     return dx * dx + dy * dy <= threshold * threshold;
   };
 
+  // frame 마다 호출되는 함수
+  // 각 frame에서 뭐할지 
   const onResults = (results) => {
     if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) return;
 
@@ -93,7 +95,11 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
 
     const isDrawing = fingerTip.y < fingerPip.y - 0.02;
 
+    // 만약 그리고 있다면
     if (isDrawing) {
+      
+      // tip 좌표를 그림에 추가한다.
+      // 이 때 상대방에게 event를 보내야함
       setDrawPath((prev) => [...prev, tip]);
 
       setVisited((prev) => {
@@ -128,7 +134,7 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
   const drawCanvas = () => {
     console.log("🖌️ drawCanvas 호출됨");
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
+    const ctx = canvas?.getContext("2d"); // canvas
     if (!ctx || !bgRef.current) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
