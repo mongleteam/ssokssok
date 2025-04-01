@@ -95,7 +95,7 @@ const VideoManager = ({ roomId, userName }) => {
       {publisher && (
         <div>
           <p className="text-center font-semibold">{userName}(나)</p>
-          <VideoPlayer streamManager={publisher} />
+          <VideoPlayer streamManager={publisher} isPublisher={true}/>
         </div>
       )}
 
@@ -106,7 +106,7 @@ const VideoManager = ({ roomId, userName }) => {
             {/* 내 역할과 다르면 친구 역할로 출력 */}
             {userName === "헨젤" ? "그레텔" : "헨젤"}(친구)
           </p>
-          <VideoPlayer streamManager={sub} />
+          <VideoPlayer streamManager={sub} isPublisher={false}/>
         </div>
       ))}
     </div>
