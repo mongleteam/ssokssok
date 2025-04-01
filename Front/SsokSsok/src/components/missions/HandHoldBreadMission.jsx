@@ -1,49 +1,54 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { useTrackingCore } from "../../hooks/useTrackingCore";
 import { useFingerTracking } from "../../hooks/useFingerTracking";
-
+import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import CountdownOverlay from "../webcam/captureCompositeImage";
 const MAX_BREAD = 3;
 const HOLD_DURATION = 3000; // 3초
 
 const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
   const videoRef = useRef(null);
-  const { fingerPos } = useFingerTracking(videoRef);
-  const [breads, setBreads] = useState([]);  // 빵 위치 
-  const [heldBread, setHeldBread] = useState(null);   // 현재 손 머무르고 있는 빵빵
+  const {
+    handLandmarks,
+    previewUrl,
+    showModal,
+    countdown,
+    setShowModal,
+    handleSave,
+  } = useTrackingCore(videoRef);
+
+  const fingerPos = useFingerTracking(handLandmarks);
+
+  const [breads, setBreads] = useState([]);
+  const [heldBread, setHeldBread] = useState(null);
   const [holdStartTime, setHoldStartTime] = useState(null);
   const [collectedCount, setCollectedCount] = useState(0);
   const [missionMessage, setMissionMessage] = useState("");
 
-  const breadImg = missionProps.instructionImages?.[0];  // 빵
-  const bgImg = missionProps.instructionImages?.[1];   //  배경
+  const breadImg = missionProps.instructionImages?.[0];
+  const bgImg = missionProps.instructionImages?.[1];
   const soundEffect = missionProps.soundEffect?.[0];
 
-  // 초기 빵 랜덤 배치
   useEffect(() => {
     if (!assets[breadImg]) return;
 
     const placed = [];
-    const MIN_DISTANCE = 20; // 💡 빵 사이 최소 거리 (% 기준)
-
+    const MIN_DISTANCE = 20;
     while (placed.length < MAX_BREAD) {
-      const x = Math.random() * 65 + 10;  // 캠 위치 피하기 위함(임의 조정)
-      const y = Math.random() * 65 + 25;  
-
+      const x = Math.random() * 65 + 10;
+      const y = Math.random() * 65 + 25;
       const tooClose = placed.some((b) => {
         const dx = b.x - x;
         const dy = b.y - y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        return dist < MIN_DISTANCE;
+        return Math.sqrt(dx * dx + dy * dy) < MIN_DISTANCE;
       });
-
       if (!tooClose) {
         placed.push({ id: placed.length, x, y, collected: false });
       }
     }
-
     setBreads(placed);
   }, [assets, breadImg]);
 
-  // 손 위치로 수집 판단
   useEffect(() => {
     if (!fingerPos) {
       setHeldBread(null);
@@ -53,7 +58,6 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
 
     const now = Date.now();
     let found = null;
-
     for (const bread of breads) {
       if (bread.collected) continue;
       const dx = Math.abs(bread.x - (1 - fingerPos.x) * 100);
@@ -76,7 +80,6 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
         setHeldBread(null);
         setHoldStartTime(null);
 
-        // 사운드 효과 재생
         if (soundEffect && assets[soundEffect]) {
           const audio = new Audio(assets[soundEffect]);
           audio.play();
@@ -88,7 +91,6 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
     }
   }, [fingerPos, breads, heldBread, holdStartTime, soundEffect, assets]);
 
-  // 성공 체크
   useEffect(() => {
     if (collectedCount >= MAX_BREAD) {
       setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
@@ -96,7 +98,6 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
     }
   }, [collectedCount, onComplete]);
 
-  // 상태 UI
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = (
@@ -112,8 +113,10 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
   }, [collectedCount, missionMessage]);
 
   return (
-    <div className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden">
-      {/* 배경 이미지 */}
+    <div
+      id="capture-container"
+      className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden"
+    >
       {assets[bgImg] && (
         <img
           src={assets[bgImg]}
@@ -122,7 +125,6 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
         />
       )}
 
-      {/* 빵 표시 */}
       {breads.map((bread) =>
         !bread.collected ? (
           <img
@@ -135,7 +137,6 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
         ) : null
       )}
 
-      {/* 손가락 위치 디버그용 도트 */}
       {fingerPos && (
         <div
           className="absolute w-6 h-6 bg-red-500 rounded-full z-50"
@@ -147,7 +148,15 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
         />
       )}
 
-      {/* 사용자 웹캠 오른쪽 상단에 작게 표시 */}
+      {countdown !== null && <CountdownOverlay count={countdown} />}
+
+      <PhotoCaptureModal
+        isOpen={showModal}
+        previewUrl={previewUrl}
+        onSave={handleSave}
+        onClose={() => setShowModal(false)}
+      />
+
       <video
         ref={videoRef}
         autoPlay
