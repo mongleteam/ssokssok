@@ -119,7 +119,7 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
   }, [collected, missionMessage]);
 
   return (
-    <div className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden">
       <video ref={videoRef} autoPlay muted className="w-full h-full object-cover scale-x-[-1]" />
       <div id="hand-debug-layer" className="absolute inset-0 pointer-events-none z-50" />
       {stones.map(
