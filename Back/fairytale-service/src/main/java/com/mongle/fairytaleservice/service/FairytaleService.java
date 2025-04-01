@@ -13,7 +13,7 @@ public interface FairytaleService {
     FairytaleInfoResponseDTO findFairytaleById(Integer fairytalePk, String userPk);
     List<FairytaleSimpleDTO> getAllFairytale();
     String uploadAndSave(MultipartFile file, String userPk, Integer fairytalePk);
-    int createProgress(ProgressInsertRequestDTO requestDTO);
+    int createProgress(ProgressInsertRequestDTO requestDTO,String userPk);
     void updateProgress(int progressPk, String userPk, ProgressUpdateRequestDTO requestDTO);
 
 }

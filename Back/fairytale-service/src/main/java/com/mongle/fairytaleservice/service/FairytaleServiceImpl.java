@@ -17,7 +17,9 @@ import com.mongle.fairytaleservice.entity.progress;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -79,18 +81,30 @@ public class FairytaleServiceImpl implements FairytaleService {
     }
 
     @Override
-    public int createProgress(ProgressInsertRequestDTO requestDTO) {
+    public int createProgress(ProgressInsertRequestDTO requestDTO,String userPk) {
         // 1. now_page 값이 없으면 예외 처리
         if (requestDTO.getNowPage() == null) {
             throw new CustomException(ErrorCode.UNKNOWN_PAGE);
         }
 
-        // 2. Progress 생성하는 리퀘스트 DTO -> 엔티티로 설정해준 progress로 변환
+        // 2. friend_id가 존재할 때 그 친구와 똑같은 동화의 진행상황 있는지 확인
+        if(requestDTO.getFairytalePk() != null) {
+            int existingPk = fairytaleMapper.selectExistingProgress(
+                    requestDTO.getFairytalePk(),
+                    userPk,
+                    requestDTO.getFriendId()
+            );
+            if (existingPk > 0) {
+                fairytaleMapper.deleteProgress(existingPk);
+            }
+        }
+
+        // 3. Progress 생성하는 리퀘스트 DTO -> 엔티티로 설정해준 progress로 변환
         progress progress = new progress();
         progress.setNowPage(requestDTO.getNowPage());
         progress.setMode(requestDTO.getMode().name());
         progress.setFriendId(requestDTO.getFriendId());
-        progress.setUserPk(requestDTO.getUserPk());
+        progress.setUserPk(userPk);
         progress.setFairytalePk(requestDTO.getFairytalePk());
         progress.setRole(requestDTO.getRole());
         progress.setFinish(false);  // 기본값 false
