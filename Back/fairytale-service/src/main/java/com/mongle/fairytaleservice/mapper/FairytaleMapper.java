@@ -25,7 +25,7 @@ public interface FairytaleMapper {
     );
     List<FairytaleSimpleDTO> findAllFairytale();
     void insertMyAlbum(myalbum album);
-    int selectExistingProgress(
+    Integer selectExistingProgress(
             @Param("fairytalePk") Integer fairytalePk,
             @Param("userPk") String userPk,
             @Param("friendId") String friendId);

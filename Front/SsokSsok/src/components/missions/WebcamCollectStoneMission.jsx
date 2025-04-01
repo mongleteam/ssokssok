@@ -1,27 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTrackingCore } from "../../hooks/useTrackingCore";
 import { useHandPose } from "../../hooks/useHandPose";
-
+import CountdownOverlay from "../webcam/captureCompositeImage";
+import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
   const videoRef = useRef(null);
+  const missionRef = useRef(null);
+
   const [collected, setCollected] = useState(0);
   const [stones, setStones] = useState([]);
   const [hoveredStoneId, setHoveredStoneId] = useState(null);
   const [lastHoveredStoneId, setLastHoveredStoneId] = useState(null);
   const [missionMessage, setMissionMessage] = useState("");
 
+  const { handLandmarks, showModal, previewUrl, handleSave, countdown, setShowModal } =
+    useTrackingCore(videoRef, 1);
+
+  const { getHandCenter, isHandOpen, isHandClosed } = useHandPose(handLandmarks);
+
   const targetImage = missionProps.instructionImages?.[0];
   const soundSrc = missionProps.soundEffect?.[0];
   const MAX_STONES = 5;
-
-  const { getHandCenter, isHandOpen, isHandClosed } = useHandPose(videoRef);
 
   useEffect(() => {
     const setupCam = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
+        if (videoRef.current) videoRef.current.srcObject = stream;
       } catch (err) {
         console.error("포트 접근 실패:", err);
       }
@@ -33,8 +38,7 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
     if (!assets[targetImage]) return;
 
     const newStones = [];
-    const minDistance = 22; // 최소 거리 (percent 기준)
-
+    const minDistance = 22;
     while (newStones.length < MAX_STONES) {
       const newStone = {
         id: newStones.length,
@@ -42,13 +46,9 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
         y: Math.random() * 60 + 20,
         collected: false,
       };
-
       const tooClose = newStones.some(
-        (s) =>
-          Math.abs(s.x - newStone.x) < minDistance &&
-          Math.abs(s.y - newStone.y) < minDistance
+        (s) => Math.abs(s.x - newStone.x) < minDistance && Math.abs(s.y - newStone.y) < minDistance
       );
-
       if (!tooClose) newStones.push(newStone);
     }
 
@@ -56,8 +56,8 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
   }, [assets, targetImage]);
 
   useEffect(() => {
-    const center = getHandCenter();
-    if (!center || !isHandOpen()) {
+    const center = getHandCenter;
+    if (!center || !isHandOpen) {
       setHoveredStoneId(null);
       return;
     }
@@ -78,12 +78,12 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
   }, [stones, getHandCenter, isHandOpen]);
 
   useEffect(() => {
-    const center = getHandCenter();
-    if (!center || !isHandClosed() || lastHoveredStoneId === null) return;
+    const center = getHandCenter;
+    if (!center || !isHandClosed || lastHoveredStoneId === null) return;
 
     setStones((prev) => {
       const updated = [...prev];
-      const idx = updated.findIndex((stone) => stone.id === lastHoveredStoneId && !stone.collected);
+      const idx = updated.findIndex((s) => s.id === lastHoveredStoneId && !s.collected);
       if (idx !== -1) {
         if (soundSrc && assets[soundSrc]) {
           const audio = new Audio(assets[soundSrc]);
@@ -102,14 +102,12 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
       setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
       onComplete?.();
     }
-  }, [collected, onComplete]);
+  }, [collected]);
 
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = missionMessage ? (
-      <div className="text-3xl text-center font-bold text-green-700 animate-pulse">
-        {missionMessage}
-      </div>
+      <div className="text-3xl text-center font-bold text-green-700 animate-pulse">{missionMessage}</div>
     ) : (
       <div className="text-5xl font-cafe24 text-center font-bold text-stone-900">
         {collected} / {MAX_STONES}
@@ -119,8 +117,9 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
   }, [collected, missionMessage]);
 
   return (
-    <div className="relative w-[56rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div id="capture-container" ref={missionRef} className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
       <video ref={videoRef} autoPlay muted className="w-full h-full object-cover scale-x-[-1]" />
+      {countdown !== null && <CountdownOverlay count={countdown} />}
       <div id="hand-debug-layer" className="absolute inset-0 pointer-events-none z-50" />
       {stones.map(
         (stone) =>
@@ -134,6 +133,13 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
             />
           )
       )}
+
+      <PhotoCaptureModal
+        isOpen={showModal}
+        previewUrl={previewUrl}
+        onSave={handleSave}
+        onClose={() => setShowModal(false)}
+      />
     </div>
   );
 };

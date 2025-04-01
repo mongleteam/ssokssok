@@ -65,7 +65,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
     const statusUI = (
       <div className="flex flex-col items-center justify-center gap-4 mt-6">
         {isSuccess ? (
-          <div className="text-3xl font-bold text-green-700 animate-pulse mb-8">
+          <div className="text-3xl font-bold text-green-700 animate-pulse">
             ✅ 성공! 다음 페이지로 넘어가세요.
           </div>
         ) : (
@@ -118,7 +118,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   };
 
   return (
-    <div className="relative w-[56rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden">
       <video
         ref={videoRef}
         autoPlay
