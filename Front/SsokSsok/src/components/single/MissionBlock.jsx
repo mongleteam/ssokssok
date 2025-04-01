@@ -43,11 +43,11 @@ const MissionBlock = ({
         <img
           src={titleImage}
           alt="미션 제목"
-          className="absolute top-3 left-1/2 transform -translate-x-1/2 w-80 h-auto z-10"
+          className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-80 h-auto z-10"
         />
 
         <div
-          className="relative w-full px-8 py-6 bg-no-repeat bg-center bg-contain mt-12"
+          className="relative w-full px-8 py-6 bg-no-repeat bg-center bg-contain mt-6"
           style={{
             backgroundImage: `url(${boardImage})`,
             backgroundSize: "100% 100%",
@@ -55,7 +55,7 @@ const MissionBlock = ({
           }}
         >
           {/* 지시사항 텍스트 */}
-          <div className="text-center font-cafe24 text-3xl mt-10 whitespace-pre-line leading-relaxed">
+          <div className="text-center font-cafe24 text-2xl mt-10 whitespace-pre-line leading-relaxed">
             {instructionText}
           </div>
 

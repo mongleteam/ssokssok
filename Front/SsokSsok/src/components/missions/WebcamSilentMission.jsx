@@ -118,7 +118,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   };
 
   return (
-    <div className="relative w-[56rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
       <video
         ref={videoRef}
         autoPlay
