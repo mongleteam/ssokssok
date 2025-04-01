@@ -16,6 +16,9 @@ export const useTrackingCore = (videoRef, fairytalePk = 1) => {
   const captureTriggered = useRef(false);
   const cameraRef = useRef(null);
   const thumbHoldStart = useRef(null);
+  const holisticRef = useRef(null);
+  const handsRef = useRef(null);
+
 
   const startCountdownAndCapture = async () => {
     for (let i = 3; i > 0; i--) {
@@ -32,13 +35,16 @@ export const useTrackingCore = (videoRef, fairytalePk = 1) => {
   };
 
   useEffect(() => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || cameraRef.current) return;
 
     const hands = new Hands({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
-    const face = new Holistic({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${f}` });
+    const holistic = new Holistic({ locateFile: (f) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${f}` });
+
+    handsRef.current = hands;
+    holisticRef.current = holistic;
 
     hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.8, minTrackingConfidence: 0.7 });
-    face.setOptions({ modelComplexity: 1, minDetectionConfidence: 0.8, minTrackingConfidence: 0.7 });
+    holistic.setOptions({ modelComplexity: 1, refineFaceLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
     hands.onResults((res) => {
       const landmarks = res.multiHandLandmarks?.[0] || null;
@@ -72,14 +78,17 @@ export const useTrackingCore = (videoRef, fairytalePk = 1) => {
       }
     });
 
-    face.onResults((res) => {
-      setFaceLandmarks(res.multiFaceLandmarks?.[0] || null);
+    holistic.onResults((res) => {
+      setFaceLandmarks(res.faceLandmarks || null);
+      // console.log("[TRACKING] raw holistic result:", res);
     });
 
     cameraRef.current = new Camera(videoRef.current, {
       onFrame: async () => {
+        if (videoRef.current?.readyState >= 2) {
         await hands.send({ image: videoRef.current });
-        await face.send({ image: videoRef.current });
+        await holistic.send({ image: videoRef.current });
+        }
       },
       width: 640,
       height: 480,
