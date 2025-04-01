@@ -151,8 +151,23 @@ function MultiPage() {
       }
     }
   }, [currentPage, isMissionVisible, from, roomId]);
-  
 
+  const handleCompleteReading = async () => {
+    if (!progressPk) return;
+  
+    try {
+      await updateProgressApi(progressPk, {
+        nowPage: pageIndex,
+        finish: true,
+      });
+  
+      console.log("📘 진행상황 완료로 업데이트!");
+      // 👉 메인으로 이동 등 후처리
+      navigate("/main", { replace: true });
+    } catch (err) {
+      console.error("❌ 진행상황 완료 업데이트 실패:", err);
+    }
+  };
   
 
   useEffect(() => {
@@ -287,12 +302,13 @@ function MultiPage() {
             role: role === fairytale.first ? "FIRST" : "SECOND",
           });
 
-          const newPk = res.data?.data?.progressPk;
-          if (newPk) {
-            setProgressPk(newPk); // ✅ 상태 저장!
-          }
+          const newPk = res.data?.data;
+            if (newPk) {
+              setProgressPk(newPk); // 진행상황pk 상태에 저장
+            }
 
-          console.log("진행상황 등록 완료!");
+          // console.log("✅ 진행상황 등록 완료!", res.data); // 여기에 progressPk 있어야 함
+          console.log("✅ 진행상황 등록 완료!");
 
       } catch (err) {
         console.error("❌ 진행상황 등록 실패:", err);
@@ -425,12 +441,23 @@ function MultiPage() {
 
       {!isMissionVisible && (
         <button
-          onClick={() => {
+          onClick={async () => {
             if (currentPage === storyData.length - 1) {
               console.log("독서 완료!");
+              try {
+                if (progressPk) {
+                  await updateProgressApi(progressPk, {
+                    nowPage: currentPage + 1,
+                    finish: true,
+                  });
+                  console.log("✅ 완료로 업데이트 성공!");
+                }
+              } catch (err) {
+                console.error("❌ 완료 업데이트 실패:", err);
+              }
               setIsCompleteModalOpen(true);
             } else {
-              console.log("그만 읽기 클릭! 추후 저장 로직 연결 예정");
+              console.log("그만 읽기 클릭!");
               setIsPauseModalOpen(true);
               // 저장 API 연결 예정
             }
