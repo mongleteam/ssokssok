@@ -91,12 +91,23 @@ const VideoManager = ({ roomId, userName }) => {
 
   return (
     <div className="flex flex-col space-y-4">
-      {publisher && <VideoPlayer streamManager={publisher} />}
+      {/* 본인 영상 */}
+      {publisher && (
+        <div>
+          <p className="text-center font-semibold">{userName}(나)</p>
+          <VideoPlayer streamManager={publisher} />
+        </div>
+      )}
+
+      {/* 상대방 영상 */}
       {subscribers.map((sub) => (
-        <VideoPlayer
-          key={sub.stream.connection.connectionId} // ✅ 고유 키 지정
-          streamManager={sub}
-        />
+        <div key={sub.stream.connection.connectionId}>
+          <p className="text-center font-semibold">
+            {/* 내 역할과 다르면 친구 역할로 출력 */}
+            {userName === "헨젤" ? "그레텔" : "헨젤"}(친구)
+          </p>
+          <VideoPlayer streamManager={sub} />
+        </div>
       ))}
     </div>
   );
