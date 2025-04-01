@@ -17,7 +17,6 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
   const [countdown, setCountdown] = useState(null);
   const [gameOver, setGameOver] = useState(false);
   const [missionMessage, setMissionMessage] = useState(""); // ✅ 메시지 상태 추가
-
   const { playerGesture, witchGesture, result } = useRPSGesture(videoRef, {
     width: 640,
     height: 480,
@@ -50,9 +49,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     setGameOver(false);
     setIsPlaying(true);
     setCountdown(3);
-    setMissionMessage("🧙 가위바위보 준비 중...");
     prevMessageRef.current = ""; // ✅ 이전 메시지 초기화
-    setStatusContent?.(null); // ✅ 상태 콘텐츠 초기화
     prevCountdownRef.current = null;
 
     let count = 3;
@@ -71,27 +68,71 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
   };
 
   // 상태 메시지 UI 업데이트
-  useEffect(() => {
-    if (!setStatusContent) return;
+    useEffect(() => {
+      if (!setStatusContent) return;
 
-    if (isPlaying && countdown !== null) {
-      if (countdown !== prevCountdownRef.current) {
-        prevCountdownRef.current = countdown;
+      // 카운트다운 진행 중
+      if (isPlaying && countdown !== null) {
+        if (countdown !== prevCountdownRef.current) {
+          prevCountdownRef.current = countdown;
+          setStatusContent(
+            <div className="text-5xl text-center font-bold animate-bounce font-cafe24">
+              {countdown}
+            </div>
+          );
+        }
+        return;
+      }
+
+      // 초기 상태: 게임 시작 전 (isPlaying, countdown, gameOver 모두 false)
+      // missionMessage가 아직 설정되지 않은 경우 도전 버튼을 보여줌
+      if (!isPlaying && !countdown && !gameOver && missionMessage === "") {
         setStatusContent(
-          <div className="text-5xl text-center font-bold text-rose-600 animate-bounce">
-            {countdown}
+          <div className="text-center text-3xl font-bold text-amber-700 animate-pulse space-y-4 font-cafe24">
+            <button
+              onClick={startGame}
+              className="relative inline-block text-black rounded-lg text-xl"
+            >
+              <img src={startBtn} alt="도전 버튼" className="w-48 mx-auto" />
+              <span className="absolute inset-0 flex items-center justify-center font-bold text-3xl mb-2">
+                도전
+              </span>
+            </button>
           </div>
         );
+        prevMessageRef.current = "";
+        return;
       }
-    } else if (missionMessage && missionMessage !== prevMessageRef.current) {
-      prevMessageRef.current = missionMessage;
-      setStatusContent(
-        <div className="text-3xl text-center font-bold text-amber-700 animate-pulse">
-          {missionMessage}
-        </div>
-      );
-    }
-  }, [isPlaying, countdown, missionMessage, setStatusContent]);
+
+      // 게임 종료 후 missionMessage가 설정된 경우 (승리, 패배, 무승부)
+      if (!isPlaying && !countdown && (gameOver || missionMessage)) {
+        const showRetryButton = gameOver && result !== "win";
+        const showStartButton = !gameOver; // gameOver가 false이면 재도전이 아니라 도전 버튼
+
+        setStatusContent(
+          <div
+            className="relative flex flex-row items-center justify-center gap-4 text-center text-3xl font-bold text-amber-700 animate-pulse font-cafe24"
+            style={{ transform: "translateY(-20px)" }}
+          >
+            <div>{missionMessage}</div>
+            {(showRetryButton || showStartButton) && (
+              <button
+                onClick={startGame}
+                className="relative inline-block text-black rounded-lg text-xl"
+              >
+                <img src={startBtn} alt="버튼" className="w-48 mx-auto" />
+                <span className="absolute inset-0 flex items-center justify-center font-bold text-3xl mb-2">
+                  {showRetryButton ? "재도전" : "도전"}
+                </span>
+              </button>
+            )}
+          </div>
+        );
+        prevMessageRef.current = missionMessage;
+      }
+    }, [isPlaying, countdown, missionMessage, gameOver, result, setStatusContent]);
+
+
 
   // 컴포넌트 언마운트 시 상태 리셋 (페이지를 벗어났다가 돌아올 때 이전 상태가 남지 않도록)
   useEffect(() => {
@@ -115,7 +156,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
         className="w-full h-full object-cover scale-x-[-1]"
       />
 
-      <div className="absolute top-4 left-4 text-white text-xl font-semibold bg-black/50 px-4 py-2 rounded-lg space-y-1">
+      <div className="absolute top-4 left-4 text-white text-3xl font-semibold bg-black/50 px-6 py-4 rounded-xl space-y-1 font-cafe24">
         <div>
           🧙 마녀: {witchGesture ? gestureToEmoji[witchGesture] : "..."}
         </div>
@@ -123,30 +164,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
           🧒 나: {playerGesture ? gestureToEmoji[playerGesture] : "..."}
         </div>
       </div>
-      <div className="absolute bottom-6 w-full text-center">
-        {!isPlaying && !countdown && gameOver && result !== "win" && (
-          <button
-            onClick={startGame}
-            className="px-6 py-3 text-black rounded-lg text-xl"
-          >
-            <img src={startBtn} alt="시작 버튼" className="w-48 mx-auto" />
-            <span className="absolute inset-0 flex items-center justify-center font-bold text-3xl mb-2">
-              재도전
-            </span>
-          </button>
-        )}
-        {!isPlaying && !countdown && !gameOver && (
-          <button
-            onClick={startGame}
-            className="px-6 py-3 text-black rounded-lg text-xl"
-          >
-            <img src={startBtn} alt="시작 버튼" className="w-48 mx-auto" />
-            <span className="absolute inset-0 flex items-center justify-center font-bold text-3xl mb-2">
-              도전
-            </span>
-          </button>
-        )}
-      </div>
+ 
     </div>
   );
 };
