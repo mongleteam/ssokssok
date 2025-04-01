@@ -112,7 +112,7 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
   }, [collectedCount, missionMessage]);
 
   return (
-    <div className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden">
       {/* 배경 이미지 */}
       {assets[bgImg] && (
         <img
