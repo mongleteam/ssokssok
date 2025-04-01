@@ -27,7 +27,7 @@ function SingleStoryIllustration({ src, videoRef = null }) {
   }, []);
 
   return (
-    <div className="relative w-[57rem] h-auto torn-effect mt-6 mb-3 overflow-hidden rounded-xl">
+    <div className="relative w-[54rem] h-auto torn-effect mt-6 mb-3 overflow-hidden rounded-xl">
     {videoRef ? (
       <video
         ref={videoRef}
