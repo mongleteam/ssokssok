@@ -10,8 +10,9 @@ export const connectSocket = () => {
   if (socket) return; // 중복 연결 방지
 
   socket = io("wss://j12e201.p.ssafy.io/multi/", {
-  // socket = io("ws://3.36.67.192:19092/", {
-    path: "/socket.io",
+    path: "/multi/socket.io",
+    // socket = io("ws://3.36.67.192:19092/", {
+      // path: "/socket.io",
     transports: ["websocket"],
     withCredentials: true,
   });
