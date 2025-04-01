@@ -114,7 +114,7 @@
     <!-- 같이 하려는 친구와 진행상황 존재 여부 확인  -->
     <select id="selectExistingProgress"
             parameterType="map"
-            resultType="int">
+            resultType="java.lang.Integer">
         SELECT progress_pk
         FROM progress
         WHERE fairytale_pk = #{fairytalePk}

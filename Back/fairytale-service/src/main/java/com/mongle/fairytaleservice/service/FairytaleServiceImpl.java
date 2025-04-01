@@ -89,12 +89,12 @@ public class FairytaleServiceImpl implements FairytaleService {
 
         // 2. friend_id가 존재할 때 그 친구와 똑같은 동화의 진행상황 있는지 확인
         if(requestDTO.getFairytalePk() != null) {
-            int existingPk = fairytaleMapper.selectExistingProgress(
+            Integer existingPk = fairytaleMapper.selectExistingProgress(
                     requestDTO.getFairytalePk(),
                     userPk,
                     requestDTO.getFriendId()
             );
-            if (existingPk > 0) {
+            if (existingPk != null && existingPk > 0) {
                 fairytaleMapper.deleteProgress(existingPk);
             }
         }
