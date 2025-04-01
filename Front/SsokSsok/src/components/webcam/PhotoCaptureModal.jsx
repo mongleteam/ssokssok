@@ -29,7 +29,7 @@ const PhotoCaptureModal = ({ isOpen, previewUrl, onSave, onClose, duration = 100
             transition={{ duration: 0.3 }}
           >
             {/* 배경 */}
-            <img src={backgroundImage} alt="배경" className="w-[70rem]" />
+            <img src={backgroundImage} alt="배경" className="w-[62rem]" />
 
             {/* 닫기 버튼 */}
             <button onClick={onClose} className="absolute top-12 right-14">
@@ -44,7 +44,7 @@ const PhotoCaptureModal = ({ isOpen, previewUrl, onSave, onClose, duration = 100
               <img
                 src={previewUrl}
                 alt="캡처 미리보기"
-                className="w-[40rem] rounded-xl border-4 border-white shadow-xl"
+                className="w-[36rem] rounded-xl border-4 border-white shadow-xl"
               />
 
               <p className="text-2xl font-bold text-black font-cafe24">내 사진책에서 볼 수 있어요!</p>

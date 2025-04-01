@@ -1904,6 +1904,7 @@ packages:
 
   utrie@1.0.2:
     resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
+
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     hasBin: true
@@ -3666,13 +3667,11 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-<<<<<<< Front/SsokSsok/pnpm-lock.yaml
   utrie@1.0.2:
     dependencies:
       base64-arraybuffer: 1.0.2
-=======
+
   uuid@9.0.1: {}
->>>>>>> Front/SsokSsok/pnpm-lock.yaml
 
   vite@6.2.1(jiti@2.4.2)(lightningcss@1.29.2)(yaml@2.7.0):
     dependencies:
