@@ -9,10 +9,12 @@ import PageNavigationButton from "../../components/story/PageNavigationButton";
 import CompleteModal from "../../components/story/CompleteModal";
 import PauseModal from "../../components/story/PauseModal";
 import PhotoModal from "../../components/story/PhotoModal";
+import WaitingModal from "../../components/multi/WaitingModal";
 import JSZip from "jszip";
 import VideoP1 from "../../components/multi/VideoP1";
 import VideoP2 from "../../components/multi/VideoP2";
-import WaitingModal from "../../components/multi/WaitingModal";
+import VideoManager from "../../components/multi/VideoManager";
+
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
 import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
@@ -267,9 +269,16 @@ function MultiPage() {
     setShowWaiting(false);
     setShowConfirmStartModal(true);
   
-    // ✅ 진행상황 생성은 오직 새로 읽기면서 pageIndex === 1일 때만!
+    // 진행상황 생성은 오직 새로 읽기면서 pageIndex === 1일 때만!
     if (pageIndex === 1 && location.state?.from === "inviter" && !location.state?.isResume) {
         try {
+          console.log("✅ 생성 요청 파라미터:", {
+            mode: "MULTI",
+            friendId: friend?.friendId,
+            nowPage: pageIndex,
+            fairytalePk: fairytale?.fairytalePk,
+            role: role === fairytale?.first ? "FIRST" : "SECOND",
+          });          
           const res = await createProgressApi({
             mode: "MULTI",
             friendId: friend.friendId,
@@ -385,8 +394,7 @@ function MultiPage() {
 
 
         <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
-          <VideoP1 />
-          <VideoP2 />
+          <VideoManager roomId={roomId} userName={role} />
         </div>
       </div>
 
