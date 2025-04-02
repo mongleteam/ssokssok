@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useMicVolume } from "../../hooks/useMicVolume";
 import speackIcon from "../../assets/images/speack_icon.png";
+import { useTrackingCore } from "../../hooks/useTrackingCore";
+import CountdownOverlay from "../webcam/captureCompositeImage";
+import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+
 
 const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const videoRef = useRef(null);
@@ -14,6 +18,15 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const [missionMessage, setMissionMessage] = useState("");
 
   const secondsLeft = Math.max(0, Math.ceil((REQUIRED_DURATION - quietDuration) / 1000));
+
+  const {
+    previewUrl,
+    showModal,
+    handleSave,
+    countdown,
+    setShowModal,
+  } = useTrackingCore(videoRef);
+  
 
   useEffect(() => {
     const setupCam = async () => {
@@ -118,7 +131,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   };
 
   return (
-    <div className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden">
+    <div id="capture-container" className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden">
       <video
         ref={videoRef}
         autoPlay
@@ -130,6 +143,17 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
           <span className="text-white text-9xl font-bold animate-pingSlow">{overlayCount}</span>
         </div>
       )}
+
+      {/* ✅ 엄지 들고 캡처 시 카운트다운 오버레이 */}
+      {countdown !== null && <CountdownOverlay count={countdown} />}
+
+      {/* ✅ 캡처 후 사진 미리보기 + 저장 모달 */}
+      <PhotoCaptureModal
+        isOpen={showModal}
+        previewUrl={previewUrl}
+        onSave={handleSave}
+        onClose={() => setShowModal(false)}
+      />
     </div>
   );
 };
