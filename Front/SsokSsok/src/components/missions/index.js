@@ -6,6 +6,7 @@ import EatCookieMission from "../missions/EatCookieMisson";
 import RockScissorsPaperMission from "../missions/RockScissorsPaperMission";
 import WebcamCleanMission from "./WebcamCleanMission";
 import TreasureHuntMission from "./TreasureHuntMission";
+import WebcamDrawMission from "./WebcamDrawMission";
 
 export const missionMap = {
   "webcam-silent": WebcamSilentMission, // 조용히하기 미션
@@ -16,4 +17,5 @@ export const missionMap = {
   "webcam-get-magicbook": RockScissorsPaperMission, // 가위바위보 미션
   "webcam-clean": WebcamCleanMission, // 청소 미션
   "treasure-hunt": TreasureHuntMission, // 보물찾기 미션
+  "webcam-draw": WebcamDrawMission // 마법진
 };
