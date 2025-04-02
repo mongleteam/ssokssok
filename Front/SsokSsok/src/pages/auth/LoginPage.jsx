@@ -73,6 +73,8 @@ const LoginPage = () => {
                         <input id="password" name="password" type="password" placeholder="비밀번호를 입력하세요" className="custom-input"
                         value={formData.password} onChange={handleChange}/>
                     </div>
+                    {/* 아이디 찾기 */}
+
                 </div>
 
                 
@@ -81,8 +83,6 @@ const LoginPage = () => {
                         console.log("✅ 로그인 버튼 클릭됨")
                         handleLogin()
                       }}>로그인</button>
-
-
             </div>
         </>
     )

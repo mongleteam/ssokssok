@@ -1,3 +1,4 @@
+import { spring } from "framer-motion";
 import springApi  from "./axiosConfig";
 
 // 회원가입
@@ -18,6 +19,10 @@ export const refreshTokenApi = () => {
     })
 }
 
+// 아이디 찾기
+export const findIdApi = (findIdData) => {
+    return springApi.post("/auth/id", findIdData)
+}
 // 아이디 중복체크 
 export const checkIdApi = (keyword) => {
     return springApi.get(`/auth/check-id?id=${keyword}`)

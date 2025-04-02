@@ -8,6 +8,7 @@ import MainRoutes from "./MainRoutes";
 import MultiRoutes from "./MultiRoutes";
 import SingleRoutes from "./SingleRoutes";
 import MagicStarPage from "../pages/MagicStarPage";
+import FindIdPage from "../pages/auth/FindIdPage";
 
 const AppRoutes = () => {
   return (
@@ -16,11 +17,13 @@ const AppRoutes = () => {
       <Route path="/" element={<SignupLoginMainPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path = "/findid" element = {<FindIdPage/>}/>
 
       {/* 메인, 멀티, 싱글 라우트 분리 */}
       <Route path="/main/*" element={<MainRoutes />} />
       <Route path="/multi/*" element={<MultiRoutes />} />
       <Route path="/single/*" element={<SingleRoutes />} />
+
       {/* 미션 실험용 */}
       <Route path="/magicstar" element={<MagicStarPage />} />
     </Routes>
