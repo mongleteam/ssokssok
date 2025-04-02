@@ -7,12 +7,16 @@ let socket = null; // 소켓 인스턴스를 외부에서 접근 가능하게 �
  * @param {string} roomId - 방 ID
  */
 export const connectSocket = () => {
-  if (socket) return; // 중복 연결 방지
+  console.log("📡 connectSocket 호출됨");
+  if (socket) {
+    // console.log("⚠️ 이미 연결된 소켓 존재:", socket.id);
+    return; // 중복 연결 방지
+  }
 
-  socket = io("wss://j12e201.p.ssafy.io/multi/", {
+  socket = io("wss://j12e201.p.ssafy.io", {
     path: "/multi/socket.io",
-    // socket = io("ws://3.36.67.192:19092/", {
-      // path: "/socket.io",
+  // socket = io("ws://3.36.67.192:19092/", {
+  //   path: "/socket.io",
     transports: ["websocket"],
     withCredentials: true,
   });
