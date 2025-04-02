@@ -79,7 +79,7 @@ function MultiPage() {
     }
   
     // ✅ 미션 진입
-    const isMission = currentData.instructions && !viewedMissions[currentPage];
+    const isMission = currentData.mission && !viewedMissions[currentPage];
     if (isMission) {
       setIsMissionVisible(true);
   
@@ -223,16 +223,25 @@ function MultiPage() {
         const storyText = await storyFile.async("string");
         const storyJson = JSON.parse(storyText);
 
-        storyJson.forEach((page) => {
-          page.image = fileMap[page.illustration];
-          page.audio = fileMap[page.sound[0]];
-          page.tts = fileMap[page.tts];
-          page.scriptFile = fileMap[page.script];
-          page.hintImage = fileMap[page.hint];
+     storyJson.forEach((page) => {
+       page.image = fileMap[page.illustration];
+       page.audio = fileMap[page.sound?.[0]]; // sound 배열이 비어있을 수 있으므로 안전하게 처리
+       page.tts = fileMap[page.tts];
+       page.scriptFile = fileMap[page.script];
+       page.soundFiles = page.sound?.map((file) => fileMap[file]) || [];
 
-          // ✅ 전체 sound 배열을 fileMap 경로로 매핑
-          page.soundFiles = page.sound?.map((file) => fileMap[file]) || [];
-        });
+       // mission 데이터가 존재하면 파일 URL로 매핑
+       if (page.mission) {
+         page.mission.instructionsFile = fileMap[page.mission.instructions];
+         page.mission.hintImageFile = page.mission.hintImage
+           ? fileMap[page.mission.hintImage]
+           : null;
+         page.mission.instructionImagesFiles =
+           page.mission.instructionImages?.map((img) => fileMap[img]) || [];
+         page.mission.soundEffects =
+           page.mission.soundEffect?.map((sound) => fileMap[sound]) || [];
+       }
+     });
 
         setAssets(fileMap);
         setStoryData(storyJson);
