@@ -1,9 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useMicVolume } from "../../hooks/useMicVolume";
 import speackIcon from "../../assets/images/speack_icon.png";
+import { useTrackingCore } from "../../hooks/useTrackingCore";
+import CountdownOverlay from "../webcam/captureCompositeImage";
+import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+
 
 const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const videoRef = useRef(null);
+
+  const {
+    handLandmarks,
+    showModal,
+    countdown,
+    previewUrl,
+    setShowModal,
+    handleSave,
+  } = useTrackingCore(videoRef, 1);
+
   const volume = useMicVolume();
   const [isSuccess, setIsSuccess] = useState(false);
   const [quietDuration, setQuietDuration] = useState(0);
@@ -14,6 +28,36 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const [missionMessage, setMissionMessage] = useState("");
 
   const secondsLeft = Math.max(0, Math.ceil((REQUIRED_DURATION - quietDuration) / 1000));
+
+  const thumbHoldStart = useRef(null);
+  const captureTriggered = useRef(false);
+
+
+  useEffect(() => {
+    if (!handLandmarks) return;
+  
+    const thumb = handLandmarks[4];
+    const index = handLandmarks[8];
+  
+    const isThumbUp = thumb?.y < index?.y - 0.1;
+  
+    if (isThumbUp) {
+      if (!thumbHoldStart.current) {
+        thumbHoldStart.current = Date.now();
+      } else {
+        const elapsed = Date.now() - thumbHoldStart.current;
+        if (elapsed >= 2000 && !captureTriggered.current) {
+          captureTriggered.current = true;
+          console.log("👍 엄지 2초 유지됨! 캡처 시작");
+          // 캡처 실행은 useTrackingCore 내부에서 처리됨
+        }
+      }
+    } else {
+      thumbHoldStart.current = null;
+      captureTriggered.current = false;
+    }
+  }, [handLandmarks]);
+  
 
   useEffect(() => {
     const setupCam = async () => {
@@ -32,7 +76,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const volumeRef = useRef(volume);
   useEffect(() => {
     volumeRef.current = volume;
-  }, [volume]);
+  }, []);
 
   useEffect(() => {
     if (!missionStarted) return;
@@ -50,6 +94,9 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
 
     return () => clearInterval(interval);
   }, [missionStarted, isSuccess]);
+
+
+
 
   useEffect(() => {
     if (quietDuration >= REQUIRED_DURATION && !isSuccess) {
@@ -97,7 +144,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
     );
   
     setStatusContent(statusUI);
-  }, [volume, secondsLeft, isSuccess]);
+  }, []);
   
 
   useEffect(() => {
@@ -118,18 +165,28 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   };
 
   return (
-    <div className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden">
+    <div id="capture-container" className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden">
       <video
         ref={videoRef}
         autoPlay
         muted
         className="w-full h-full object-cover scale-x-[-1]"
       />
+
       {!missionStarted && overlayCount > 0 && (
         <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
           <span className="text-white text-9xl font-bold animate-pingSlow">{overlayCount}</span>
         </div>
       )}
+
+      {/* 📸 엄지 제스처 캡처용 모달 */}
+      {countdown !== null && <CountdownOverlay count={countdown} />}
+      <PhotoCaptureModal
+        isOpen={showModal}
+        previewUrl={previewUrl}
+        onSave={handleSave}
+        onClose={() => setShowModal(false)}
+      />
     </div>
   );
 };
