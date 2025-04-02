@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useFingerTracking } from "../../hooks/useFingerTracking";
+import { useTrackingCore } from "../../hooks/useTrackingCore"; // ✅ 이거 추가!
+import { useFingerPosition } from "../../hooks/useFingerTracking"; // useFingerTracking 대신 이거 사용
+import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import CountdownOverlay from "../webcam/captureCompositeImage";
 
 const HOLD_DURATION = 3000; // 3초 머물기
 
@@ -10,7 +13,17 @@ const TreasureHuntMission = ({
   assets,
 }) => {
   const videoRef = useRef(null);
-  const { fingerPos } = useFingerTracking(videoRef);
+
+  const {
+    handLandmarks,
+    previewUrl,
+    showModal,
+    countdown,
+    setShowModal,
+    handleSave,
+  } = useTrackingCore(videoRef);
+
+  const fingerPos = useFingerPosition(handLandmarks);
 
   const [selectedDoor, setSelectedDoor] = useState(null);
   const [resultImage, setResultImage] = useState(null);
@@ -32,6 +45,9 @@ const TreasureHuntMission = ({
     if (isCompleted || selectedDoor) return;
     setSelectedDoor(door);
 
+    const soundFail = missionProps.soundEffect?.[0];  // 실패시 나는 효과음
+    const soundSuccess = missionProps.soundEffect?.[1] // 성공시 나는 효과음음
+
     if (door === treasureDoor) {
       const imgMap = {
         left: "page35_interaction_left.jpg",
@@ -40,9 +56,21 @@ const TreasureHuntMission = ({
       };
       setResultImage(assets[imgMap[door]]);
       setIsCompleted(true);
+
+      // 성공시 효과음 재생
+      if (soundSuccess && assets[soundSuccess]) {
+        const audio = new Audio(assets[soundSuccess]);
+        audio.play().catch(() => {});
+      }
       onComplete?.();
     } else {
       setShowNotice(true);
+
+      // 실패시 효과음 재생
+      if (soundFail && assets[soundFail]) {
+        const audio = new Audio(assets[soundFail]);
+        audio.play().catch(() => {});
+      }
       setTimeout(() => setShowNotice(false), 2000);
       setSelectedDoor(null);
     }
@@ -81,11 +109,11 @@ const TreasureHuntMission = ({
         보물을 찾았어요! 🎉
       </div>
     ) : showNotice ? (
-      <div className="text-xl font-bold text-red-600 animate-shake">
+      <div className="text-2xl font-cafe24 text-red-600 animate-shake">
         다시 시도해보세요!
       </div>
     ) : (
-      <div className="text-xl text-gray-700">
+      <div className="text-2xl text-gray-700 font-cafe24">
         문 위에 3초간 손을 머물러 보세요!
       </div>
     );
@@ -96,12 +124,12 @@ const TreasureHuntMission = ({
   const noticeImage = assets["page35_interaction_notice.png"];
 
   return (
-    <div className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div id="capture-container" className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
       {baseImage && (
         <img
           src={baseImage}
           alt="doors"
-          className="absolute inset-0 w-full h-full object-cover z-0"
+          className="absolute inset-0 w-full h-full object-cover object-fill z-0"
         />
       )}
 
@@ -109,26 +137,37 @@ const TreasureHuntMission = ({
         <img
           src={noticeImage}
           alt="notice"
-          className="absolute w-60 h-auto top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
+          className="absolute w-[26rem] h-auto top-[-16%] left-1/2 transform -translate-x-1/2 z-20 "
         />
       )}
 
       {fingerPos && (
         <div
-          className="absolute w-6 h-6 bg-yellow-400 rounded-full z-50"
+          className="absolute text-8xl z-40"
           style={{
             left: `${(1 - fingerPos.x) * 100}%`,
             top: `${fingerPos.y * 100}%`,
             transform: "translate(-50%, -50%)",
           }}
-        />
+          >
+            ✋
+            </div>
       )}
+
+      {countdown !== null && <CountdownOverlay count={countdown} />}
+
+      <PhotoCaptureModal
+        isOpen={showModal}
+        previewUrl={previewUrl}
+        onSave={handleSave}
+        onClose={() => setShowModal(false)}
+      />
 
       <video
         ref={videoRef}
         autoPlay
         muted
-        className="absolute top-4 right-4 w-52 h-30 object-cover scale-x-[-1] border-2 border-white rounded z-50"
+        className="absolute top-4 right-4 w-52 h-30 object-cover scale-x-[-1] border-2 border-white rounded z-40"
       />
     </div>
   );
