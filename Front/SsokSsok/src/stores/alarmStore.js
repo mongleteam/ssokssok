@@ -1,5 +1,5 @@
 // stores/alarmStore.js
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export const useAlarmStore = create((set) => ({
   alarms: [],
@@ -10,7 +10,10 @@ export const useAlarmStore = create((set) => ({
   },
   addAlarm: (alarm) => {
     console.log("📨 addAlarm 호출됨:", alarm);
-    set((state) => ({ alarms: [...state.alarms, alarm] }));
+    set((state) => ({
+      alarms: [...state.alarms, alarm],
+      isLoaded: true,
+    }));
   },
   clearAlarms: () => {
     console.log("🧹 clearAlarms 호출됨");
