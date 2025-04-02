@@ -11,8 +11,10 @@ const WebcamCleanMission = ({
   assets,
 }) => {
   const videoRef = useRef(null);
+  const broomRef = useRef(null);
   const missionRef = useRef(null);
   const [motionCount, setMotionCount] = useState(0);
+
   const {
     handLandmarks,
     showModal,
@@ -23,9 +25,8 @@ const WebcamCleanMission = ({
   } = useTrackingCore(videoRef, 1);
 
   const { getHandCenter } = useHandPose(handLandmarks);
-  const broomImg = assets[missionProps.instructionImages?.[0]];
 
-  // ✅ 먼지 이미지 3단계 추가
+  const broomImg = assets[missionProps.instructionImages?.[0]];
   const dustImg1 = assets[missionProps.instructionImages?.[1]];
   const dustImg2 = assets[missionProps.instructionImages?.[2]];
   const dustImg3 = assets[missionProps.instructionImages?.[3]];
@@ -37,23 +38,9 @@ const WebcamCleanMission = ({
   });
   const countRef = useRef(0);
 
+  // 💨 손 흔들기 감지
   useEffect(() => {
-    const setupCam = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        if (videoRef.current) videoRef.current.srcObject = stream;
-      } catch (err) {
-        console.error("카메라 접근 실패:", err);
-      }
-    };
-    setupCam();
-  }, []);
-
-  useEffect(() => {
-    if (!handLandmarks) return;
-    if (countRef.current >= 3) return;
+    if (!handLandmarks || countRef.current >= 3) return;
 
     const wrist = handLandmarks[0];
     if (!wrist) return;
@@ -87,6 +74,13 @@ const WebcamCleanMission = ({
     }
   }, [handLandmarks]);
 
+  // ✅ 빗자루 DOM 직접 조작 (최적화)
+  useEffect(() => {
+    if (!getHandCenter || !broomRef.current) return;
+    broomRef.current.style.left = `${(1 - getHandCenter.x) * 100}%`;
+    broomRef.current.style.top = `${getHandCenter.y * 100}%`;
+  }, [getHandCenter]);
+
   useEffect(() => {
     if (motionCount >= 3) {
       onComplete?.();
@@ -103,11 +97,10 @@ const WebcamCleanMission = ({
     setStatusContent(ui);
   }, [motionCount]);
 
-  // 먼지 이미지 렌더링
   const renderDust = () => {
-    if (motionCount === 0) return dustImg1;
+    if (motionCount === 0) return dustImg3;
     if (motionCount === 1) return dustImg2;
-    if (motionCount === 2) return dustImg3;
+    if (motionCount === 2) return dustImg1;
     return null;
   };
 
@@ -123,31 +116,31 @@ const WebcamCleanMission = ({
         muted
         className="w-full h-full object-cover scale-x-[-1]"
       />
-      {countdown !== null && <CountdownOverlay count={countdown} />}
 
-      {/* 먼지 이미지 */}
+      {/* 💨 먼지 */}
       {renderDust() && (
         <img
           src={renderDust()}
           alt="dust"
-          className="absolute top-0 left-0 w-full h-full object-cover z-10 pointer-events-none"
+          className="absolute top-20 right-0 w-[20rem]  object-cover z-10 pointer-events-none"
         />
       )}
 
-      {/* 손 위에 빗자루 이미지 */}
-      {getHandCenter && broomImg && (
+      {/* 🧹 빗자루 */}
+      {broomImg && (
         <img
+          ref={broomRef}
           src={broomImg}
           alt="broom"
-          className="absolute w-80 h-80 pointer-events-none z-20"
+          className="absolute w-80 h-80 pointer-events-none z-20 transition-transform duration-75"
           style={{
-            left: `${(1 - getHandCenter.x) * 100}%`,
-            top: `${getHandCenter.y * 100}%`,
             transform: "translate(-50%, -50%)",
           }}
         />
       )}
 
+      {/* ⏱️ 카운트다운 + 📸 캡처 모달 */}
+      {countdown !== null && <CountdownOverlay count={countdown} />}
       <PhotoCaptureModal
         isOpen={showModal}
         previewUrl={previewUrl}

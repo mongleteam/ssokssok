@@ -8,6 +8,16 @@ import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 
 const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const videoRef = useRef(null);
+
+  const {
+    handLandmarks,
+    showModal,
+    countdown,
+    previewUrl,
+    setShowModal,
+    handleSave,
+  } = useTrackingCore(videoRef, 1);
+
   const volume = useMicVolume();
   const [isSuccess, setIsSuccess] = useState(false);
   const [quietDuration, setQuietDuration] = useState(0);
@@ -45,7 +55,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const volumeRef = useRef(volume);
   useEffect(() => {
     volumeRef.current = volume;
-  }, [volume]);
+  }, []);
 
   useEffect(() => {
     if (!missionStarted) return;
@@ -63,6 +73,9 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
 
     return () => clearInterval(interval);
   }, [missionStarted, isSuccess]);
+
+
+
 
   useEffect(() => {
     if (quietDuration >= REQUIRED_DURATION && !isSuccess) {
@@ -110,7 +123,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
     );
   
     setStatusContent(statusUI);
-  }, [volume, secondsLeft, isSuccess]);
+  }, []);
   
 
   useEffect(() => {
@@ -138,6 +151,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
         muted
         className="w-full h-full object-cover scale-x-[-1]"
       />
+
       {!missionStarted && overlayCount > 0 && (
         <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
           <span className="text-white text-9xl font-bold animate-pingSlow">{overlayCount}</span>

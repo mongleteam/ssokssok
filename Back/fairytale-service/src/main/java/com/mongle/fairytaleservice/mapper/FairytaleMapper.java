@@ -37,4 +37,5 @@ public interface FairytaleMapper {
             @Param("nowPage") Integer nowPage,
             @Param("finish") Boolean finish
            );
+    int getLastInsertId();
 }
