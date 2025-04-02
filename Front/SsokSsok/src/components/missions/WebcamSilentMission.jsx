@@ -29,34 +29,13 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
 
   const secondsLeft = Math.max(0, Math.ceil((REQUIRED_DURATION - quietDuration) / 1000));
 
-  const thumbHoldStart = useRef(null);
-  const captureTriggered = useRef(false);
-
-
-  useEffect(() => {
-    if (!handLandmarks) return;
-  
-    const thumb = handLandmarks[4];
-    const index = handLandmarks[8];
-  
-    const isThumbUp = thumb?.y < index?.y - 0.1;
-  
-    if (isThumbUp) {
-      if (!thumbHoldStart.current) {
-        thumbHoldStart.current = Date.now();
-      } else {
-        const elapsed = Date.now() - thumbHoldStart.current;
-        if (elapsed >= 2000 && !captureTriggered.current) {
-          captureTriggered.current = true;
-          console.log("👍 엄지 2초 유지됨! 캡처 시작");
-          // 캡처 실행은 useTrackingCore 내부에서 처리됨
-        }
-      }
-    } else {
-      thumbHoldStart.current = null;
-      captureTriggered.current = false;
-    }
-  }, [handLandmarks]);
+  const {
+    previewUrl,
+    showModal,
+    handleSave,
+    countdown,
+    setShowModal,
+  } = useTrackingCore(videoRef);
   
 
   useEffect(() => {
@@ -179,8 +158,10 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
         </div>
       )}
 
-      {/* 📸 엄지 제스처 캡처용 모달 */}
+      {/* ✅ 엄지 들고 캡처 시 카운트다운 오버레이 */}
       {countdown !== null && <CountdownOverlay count={countdown} />}
+
+      {/* ✅ 캡처 후 사진 미리보기 + 저장 모달 */}
       <PhotoCaptureModal
         isOpen={showModal}
         previewUrl={previewUrl}

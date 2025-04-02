@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from "react"
 import useSpeechRecognition from "../../hooks/useSpeechRecognition";
 import startBtn from "../../assets/images/btn_green.png";
 import stopBtn from "../../assets/images/btn_gold.png";
+import { useTrackingCore } from "../../hooks/useTrackingCore";
+import CountdownOverlay from "../webcam/captureCompositeImage";
+import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+
 
 const TARGET_TEXT = "반짝이는 조약돌을 따라가자";
 
@@ -11,6 +15,14 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
   const [isListening, setIsListening] = useState(false);
   const [matchedLength, setMatchedLength] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false); // ✅ 추가
+
+  const {
+      previewUrl,
+      showModal,
+      handleSave,
+      countdown,
+      setShowModal,
+    } = useTrackingCore(videoRef);
 
   const onResult = useCallback((event) => {
     let transcript = "";
@@ -124,12 +136,23 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
   }, [coloredText, isListening, showSuccess]);
 
   return (
-    <div className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div id="capture-container" className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
       <video
         ref={videoRef}
         autoPlay
         muted
         className="w-full h-full object-cover scale-x-[-1]"
+      />
+
+      {/* ✅ 엄지 들고 캡처 시 카운트다운 오버레이 */}
+      {countdown !== null && <CountdownOverlay count={countdown} />}
+
+      {/* ✅ 캡처 후 사진 미리보기 + 저장 모달 */}
+      <PhotoCaptureModal
+        isOpen={showModal}
+        previewUrl={previewUrl}
+        onSave={handleSave}
+        onClose={() => setShowModal(false)}
       />
     </div>
   );
