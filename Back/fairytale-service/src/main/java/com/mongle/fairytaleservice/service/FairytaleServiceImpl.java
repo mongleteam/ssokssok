@@ -87,19 +87,7 @@ public class FairytaleServiceImpl implements FairytaleService {
             throw new CustomException(ErrorCode.UNKNOWN_PAGE);
         }
 
-        // 2. friend_id가 존재할 때 그 친구와 똑같은 동화의 진행상황 있는지 확인
-        if(requestDTO.getFairytalePk() != null) {
-            Integer existingPk = fairytaleMapper.selectExistingProgress(
-                    requestDTO.getFairytalePk(),
-                    userPk,
-                    requestDTO.getFriendId()
-            );
-            if (existingPk != null && existingPk > 0) {
-                fairytaleMapper.deleteProgress(existingPk);
-            }
-        }
-
-        // 3. Progress 생성하는 리퀘스트 DTO -> 엔티티로 설정해준 progress로 변환
+        // 2. Progress 생성하는 리퀘스트 DTO -> 엔티티로 설정해준 progress로 변환
         progress progress = new progress();
         progress.setNowPage(requestDTO.getNowPage());
         progress.setMode(requestDTO.getMode().name());
@@ -111,8 +99,8 @@ public class FairytaleServiceImpl implements FairytaleService {
 
         // 3. progress DB에 삽입
         fairytaleMapper.insertProgress(progress);
-
-        return progress.getProgressPk();
+        int newPk = fairytaleMapper.getLastInsertId();
+        return newPk;
     }
     @Override
     public void updateProgress(int progressPk, String userPk, ProgressUpdateRequestDTO requestDTO){
