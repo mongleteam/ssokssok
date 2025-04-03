@@ -1,25 +1,17 @@
-// VideoPlayer.jsx
-// 개별 영상 담당 (프레젠테이셔널)
-import React, { useEffect, useRef } from 'react';
+// ✅ VideoPlayer.jsx
+import React, { useEffect, useRef } from "react";
 
-const VideoPlayer = ({ streamManager }) => {
-  const videoRef = useRef();
+const VideoPlayer = ({ streamManager, videoRef }) => {
+  const internalRef = useRef();
 
   useEffect(() => {
-    if (streamManager && videoRef.current) {
-      streamManager.addVideoElement(videoRef.current);
+    const refToUse = videoRef || internalRef;
+    if (streamManager && refToUse.current) {
+      streamManager.addVideoElement(refToUse.current);
     }
   }, [streamManager]);
 
-  return (
-    <div className="rounded-xl overflow-hidden shadow-md">
-      <video
-        autoPlay
-        ref={videoRef}
-        style={{ width: '100%', height: 'auto' }}
-      />
-    </div>
-  );
+  return <video autoPlay ref={videoRef || internalRef} muted playsInline style={{ width: "100%", height: "auto" }} />;
 };
 
 export default VideoPlayer;
