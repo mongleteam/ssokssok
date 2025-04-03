@@ -11,8 +11,6 @@ import PauseModal from "../../components/story/PauseModal";
 import PhotoModal from "../../components/story/PhotoModal";
 import WaitingModal from "../../components/multi/WaitingModal";
 import JSZip from "jszip";
-import VideoP1 from "../../components/multi/VideoP1";
-import VideoP2 from "../../components/multi/VideoP2";
 import VideoManager from "../../components/multi/VideoManager";
 
 
