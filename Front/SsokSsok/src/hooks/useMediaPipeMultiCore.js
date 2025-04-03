@@ -53,6 +53,47 @@ export const useMediaPipeMultiCore = (videoRef, {
     setPreviewUrl(null);
   };
 
+  // 📌 유틸 함수 모음 -------------------------------------
+  const checkThumbPose = (landmarks) => {
+    const thumb = landmarks?.[4];
+    const index = landmarks?.[8];
+    return thumb && index && thumb.y < index.y - 0.1;
+  };
+
+  const checkMouthOpen = (landmarks) => {
+    if (!landmarks || landmarks.length < 20) return false;
+    const upperLip = landmarks[13];
+    const lowerLip = landmarks[14];
+    return Math.abs(upperLip.y - lowerLip.y) > 0.02;
+  };
+
+  const checkSilent = (volume, threshold = 0.01) => {
+    return volume < threshold;
+  };
+
+  const isHandShaking = (() => {
+    let prevX = null;
+    let direction = null;
+    let changeCount = 0;
+    return (landmarks) => {
+      if (!landmarks) return false;
+      const wrist = landmarks[0];
+      if (prevX === null) {
+        prevX = wrist.x;
+        return false;
+      }
+      const deltaX = wrist.x - prevX;
+      const newDirection = deltaX > 0 ? "right" : "left";
+      if (direction && newDirection !== direction) {
+        changeCount++;
+      }
+      direction = newDirection;
+      prevX = wrist.x;
+      return changeCount >= 4;
+    };
+  })();
+  // ----------------------------------------------------
+
   // 📦 미디어파이프 세팅 + 처리 루프 시작
   useEffect(() => {
     if (!videoRef.current || cameraRef.current) return;
@@ -96,17 +137,10 @@ export const useMediaPipeMultiCore = (videoRef, {
       );
 
       // ✅ 엄지척 인식 (4번 → 엄지, 8번 → 검지)
-      const thumb = landmarks?.[4];
-      const index = landmarks?.[8];
+      // const thumb = landmarks?.[4];
+      // const index = landmarks?.[8];
 
-      if (!thumb || !index) {
-        thumbHoldStart.current = null;
-        return;
-      }
-
-      const isThumbUp = thumb.y < index.y - 0.1;
-
-      if (isThumbUp) {
+      if (checkThumbPose(landmarks)) {
         if (!thumbHoldStart.current) {
           thumbHoldStart.current = Date.now();
         } else {
@@ -139,6 +173,12 @@ export const useMediaPipeMultiCore = (videoRef, {
             handLandmarks,
             faceLandmarks,
             micVolume,
+            utils: {
+              checkMouthOpen,
+              checkSilent,
+              isHandShaking,
+              checkThumbPose,
+            },
             onSuccess: onMissionSuccess,
           });
         }
