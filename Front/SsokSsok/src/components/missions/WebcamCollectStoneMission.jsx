@@ -128,7 +128,7 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
               key={stone.id}
               src={assets[targetImage]}
               alt="stone"
-              className="absolute w-16 h-16"
+              className="absolute w-16 h-16 z-[60] pointer-events-none"
               style={{ left: `${stone.x}%`, top: `${stone.y}%` }}
             />
           )
