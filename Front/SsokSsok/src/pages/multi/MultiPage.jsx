@@ -12,16 +12,10 @@ import PhotoModal from "../../components/story/PhotoModal";
 import WaitingModal from "../../components/multi/WaitingModal";
 import JSZip from "jszip";
 import VideoManager from "../../components/multi/VideoManager";
+import MissionRenderer from "../../components/multi/MissionRenderer"
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
-import {
-  connectSocket,
-  disconnectSocket,
-  joinRoom,
-  sendMessage,
-  onSocketEvent,
-  offSocketEvent,
-} from "../../services/socket";
+import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
 
 // 아이콘 경로
 import nextIcon from "../../assets/images/pagenext_icon.png";
@@ -381,38 +375,34 @@ function MultiPage() {
 
       {/* 중앙 콘텐츠 */}
       <div className="flex w-full h-[75%] max-w-[1200px] px-4 lg:px-12">
-        <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
-          {storyData.length > 0 && startReady && (
+      {/* 좌측: 삽화 + 대사 또는 미션 */}
+      <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
+        {isMissionVisible ? (
+          // 미션 표시
+          <MissionRenderer
+            storyData={storyData[currentPage]}
+            role={role}
+            from={from}
+          />
+        ) : (
+          // 스토리 표시
+          <>
             <StoryIllustration storyData={storyData[currentPage]} />
-          )}
-
-          {!showWaiting &&
-            !isPhotoModalOpen &&
-            storyData.length > 0 &&
-            !isMissionVisible &&
-            startReady && (
-              <StoryDialogue
-                key={`dialogue-${currentPage}`}
-                storyData={storyData[currentPage]}
-                assets={assets}
-              />
-            )}
-
-          {!isPhotoModalOpen &&
-            storyData.length > 0 &&
-            isMissionVisible &&
-            startReady && (
-              <MissionScreen
-                storyData={storyData[currentPage]}
-                assets={assets}
-              />
-            )}
-        </div>
-
-        <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
-          <VideoManager roomId={roomId} userName={role} />
-        </div>
+            <StoryDialogue
+              key={`dialogue-${currentPage}`}
+              storyData={storyData[currentPage]}
+              assets={assets}
+            />
+          </>
+        )}
       </div>
+
+      {/* 우측: 영상 */}
+      <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
+        <VideoManager roomId={roomId} userName={role} />
+      </div>
+    </div>
+
 
       {/* 독서 완료 모달 */}
       {isCompleteModalOpen && (
