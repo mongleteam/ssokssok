@@ -33,6 +33,7 @@
         WHERE p.fairytale_pk = #{fairytalePk}
           AND p.user_pk = #{userPk}
           AND p.mode = 'SINGLE'
+          AND p.finish = 0
         ORDER BY p.created_date DESC
             LIMIT 1
     </select>
@@ -52,6 +53,7 @@
         WHERE p.fairytale_pk = #{fairytalePk}
           AND p.user_pk = #{userPk}
           AND p.mode = 'MULTI'
+          AND p.finish = 0
         ORDER BY p.created_date DESC
             LIMIT 3
     </select>
@@ -74,27 +76,30 @@
 
 
     <!-- 진행상황 생성   -->
-    <insert id="insertProgress" parameterType="com.mongle.fairytaleservice.entity.progress"
-            useGeneratedKeys="true" keyProperty="progressPk" keyColumn="progress_pk">
-        INSERT INTO progress (
-            now_page,
-            mode,
-            friend_id,
-            user_pk,
-            fairytale_pk,
-            finish,
-            role
-        )
-        VALUES (
-                   #{nowPage},
-                   #{mode},
-                   #{friendId},
-                   #{userPk},
-                   #{fairytalePk},
-                   FALSE,
-                   #{role}
-               )
+    <insert id="insertProgress" parameterType="com.mongle.fairytaleservice.entity.progress">
+        REPLACE INTO progress (
+        now_page,
+        mode,
+        friend_id,
+        user_pk,
+        fairytale_pk,
+        finish,
+        role
+    )
+    VALUES (
+        #{nowPage},
+        #{mode},
+        #{friendId},
+        #{userPk},
+        #{fairytalePk},
+        FALSE,
+        #{role}
+        );
     </insert>
+
+    <select id="getLastInsertId" resultType="int">
+        SELECT LAST_INSERT_ID();
+    </select>
 
     <!--  pk로 진행상황 조회  -->
     <select id="selectProgressById" resultType="com.mongle.fairytaleservice.entity.progress">
