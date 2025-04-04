@@ -56,7 +56,7 @@ authApi.interceptors.response.use(
       } catch (refreshError) {
         // 재발급 실패 → 로그아웃 처리
         useAuthStore.getState().logout();
-        window.location.href = "/auth/login";
+        window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

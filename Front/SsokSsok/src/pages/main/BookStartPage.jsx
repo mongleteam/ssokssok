@@ -73,7 +73,7 @@ const BookStartPage = () => {
         <img
           src={HanselBoard}
           alt="hanselBoard"
-          className="absolute w-[18rem] top-[1%] left-[50%] -translate-x-1/2 z-10"
+          className="absolute w-[18rem] top-[4%] left-[50%] -translate-x-1/2 z-10"
         />
 
         <div className="absolute top-[18%] w-[45rem] h-[30rem] flex z-20">

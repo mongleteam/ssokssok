@@ -8,7 +8,7 @@ import { loginApi } from "../../apis/authApi";
 import { jwtDecode } from "jwt-decode";
 import useAuthStore from "../../stores/authStore";
 import { mypageInfoApi } from "../../apis/myPageApi";
-
+import { isTokenExpired } from "../../utils/tokenUtils";
 const LoginPage = () => {
 
     const navigate = useNavigate()
@@ -17,6 +17,13 @@ const LoginPage = () => {
         id: "",
         password: "",
     })
+
+    // useEffect(() => {
+    //   const token = isTokenExpired()
+    //   if (token) {
+    //     navigate("/main")
+    //   }
+    // }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target
