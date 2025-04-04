@@ -3,9 +3,21 @@ import * as handPose from "@mediapipe/hands";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-import { sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
+import {
+  sendMessage,
+  onSocketEvent,
+  offSocketEvent,
+} from "../../../services/socket";
 
-const CollectStoneOverlay = ({ missionData, assets, onSuccess, publisher, roomId, userName, from }) => {
+const CollectStoneOverlay = ({
+  missionData,
+  assets,
+  onSuccess,
+  publisher,
+  roomId,
+  userName,
+  from,
+}) => {
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
 
@@ -108,10 +120,10 @@ const CollectStoneOverlay = ({ missionData, assets, onSuccess, publisher, roomId
       if (videoRef.current && publisher?.stream) {
         const mediaStream = publisher.stream.getMediaStream();
         videoRef.current.srcObject = mediaStream;
-  
+
         try {
           await videoRef.current.play(); // ✅ 명확히 play 완료 대기
-  
+
           const camera = new Camera(videoRef.current, {
             onFrame: async () => {
               await hands.send({ image: videoRef.current });
@@ -119,14 +131,14 @@ const CollectStoneOverlay = ({ missionData, assets, onSuccess, publisher, roomId
             width: 640,
             height: 480,
           });
-  
+
           camera.start();
         } catch (err) {
           console.error("🎥 Video play error:", err);
         }
       }
     };
-  
+
     setupCamera();
 
     const initialStones = generateRandomStones(5).map((stone) => ({
@@ -135,14 +147,13 @@ const CollectStoneOverlay = ({ missionData, assets, onSuccess, publisher, roomId
     }));
     setStones(initialStones);
     setStoneCountReady(true);
-    
+
     // 돌 생성 후 emit
     // sendMessage("initStones", {
     //   roomId,
     //   senderName: userName,
     //   stones: initialStones,
     // });
-    
   }, [missionData, assets, publisher]);
 
   // useEffect(() => {
@@ -151,7 +162,7 @@ const CollectStoneOverlay = ({ missionData, assets, onSuccess, publisher, roomId
   //       setStones((prev) => [...prev, ...incomingStones]);
   //     }
   //   };
-  
+
   //   onSocketEvent("initStones", handleInitStones);
   //   return () => offSocketEvent("initStones");
   // }, [userName, roomId]);
@@ -165,11 +176,10 @@ const CollectStoneOverlay = ({ missionData, assets, onSuccess, publisher, roomId
         )
       );
     };
-  
+
     onSocketEvent("removeStone", handleRemoveStone);
     return () => offSocketEvent("removeStone");
   }, [roomId]);
-
 
   useEffect(() => {
     if (stoneCountReady && stones.length === 0 && !success) {
