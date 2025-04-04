@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/book_background.css";
@@ -13,6 +14,7 @@ import WaitingModal from "../../components/multi/WaitingModal";
 import JSZip from "jszip";
 import VideoWithOverlay from "../../components/multi/VideoWithOverlay";
 import CollectStoneOverlay from "../../components/multi/CollectStoneOverlay";
+import MissionRouter from "../../components/story/MissionRouter.jsx";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
 import {
@@ -250,7 +252,8 @@ function MultiPage() {
         if (newPk) {
           setProgressPk(newPk); // ✅ 상태 저장!
         }
-        console.log("진행상황 등록 완료!");      } catch (err) {
+        console.log("진행상황 등록 완료!");
+      } catch (err) {
         console.error("❌ 진행상황 등록 실패:", err);
       }
     }
@@ -281,7 +284,8 @@ function MultiPage() {
                 navigate("/main");
               }
             }
-          }}        />
+          }}
+        />
       )}
 
       {showConfirmStartModal && (
@@ -349,27 +353,33 @@ function MultiPage() {
         </div>
         <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
           <VideoWithOverlay roomId={roomId} userName={role}>
-            {(publisher) =>
-              isMissionVisible &&
-              storyData[currentPage]?.mission?.type ===
-                "webcam-collect-stone-multi" && (
-                <CollectStoneOverlay
-                  assets={assets}
-                  missionData={storyData[currentPage].mission}
-                  publisher={publisher}
-                  onSuccess={() => {
-                    setIsMissionVisible(false);
-                    setViewedMissions((prev) => ({
-                      ...prev,
-                      [currentPage]: true,
-                    }));
-                  }}
-                  roomId={roomId}
-                  userName={role}
-                  from={from}
-                />
-              )
-            }
+            {(publisher) => {
+              const mission = storyData[currentPage]?.mission;
+              const missionRole = storyData[currentPage]?.role;
+
+              return (
+                isMissionVisible &&
+                mission?.type && (
+                  <MissionRouter
+                    type={mission.type}
+                    role={role}
+                    missionRole={missionRole}
+                    missionData={mission}
+                    assets={assets}
+                    publisher={publisher}
+                    onSuccess={() => {
+                      setIsMissionVisible(false);
+                      setViewedMissions((prev) => ({
+                        ...prev,
+                        [currentPage]: true,
+                      }));
+                    }}
+                    roomId={roomId}
+                    from={from}
+                  />
+                )
+              );
+            }}
           </VideoWithOverlay>
         </div>
       </div>
