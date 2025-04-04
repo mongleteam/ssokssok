@@ -42,6 +42,7 @@ const MyPageModal = ({openModal}) => {
   const handleLogout = async () => {
     if (window.confirm("로그아웃갈비?")) {
       await logout()
+      navigate("/login")
     }
   }
 

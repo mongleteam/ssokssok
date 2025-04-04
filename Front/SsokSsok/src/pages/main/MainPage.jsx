@@ -36,14 +36,14 @@ const MainPage = () => {
     const reset = useAlarmStore((state) => state.reset);
     const { accessToken } = useAuthStore()
     const navigate = useNavigate()
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (!accessToken || isTokenExpired(accessToken)) {
-            alert("로그인이 필요합니다.")
-            navigate("/login")
-        }
+    //     if (!accessToken || isTokenExpired(accessToken)) {
+    //         alert("로그인이 필요합니다.")
+    //         navigate("/login")
+    //     }
 
-    }, [accessToken, navigate])
+    // }, [accessToken, navigate])
 
     const [openHansel, setOpenHansel] = useState(false)
     const handleBookClick = (bookTitle) => {
