@@ -158,8 +158,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { useMicVolume } from "../../hooks/useMicVolume";
 import speackIcon from "../../assets/images/speack_icon.png";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import { captureCompositeImage } from "../../utils/captureCompositeImage";
 
 
 const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
@@ -179,7 +180,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
     previewUrl,
     setShowModal,
     handleSave,
-  } = useTrackingCore(videoRef, 1);
+  } = useTrackingCore(videoRef, 1, captureCompositeImage);
 
   const secondsLeft = Math.max(0, Math.ceil((REQUIRED_DURATION - quietDuration) / 1000));
 
@@ -304,7 +305,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
      {/* ✅ 캡처 후 사진 미리보기 + 저장 모달 */}
        <PhotoCaptureModal
          isOpen={showModal}
-       previewUrl={previewUrl}
+         previewUrl={previewUrl}
          onSave={handleSave}
         onClose={() => setShowModal(false)}
       />

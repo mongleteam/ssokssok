@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
 import { useDrawStarMission } from "../../hooks/useDrawStarMission";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 
 const WebcamDrawMission = ({
   missionProps,

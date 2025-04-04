@@ -3,7 +3,8 @@ import useSpeechRecognition from "../../hooks/useSpeechRecognition";
 import startBtn from "../../assets/images/btn_green.png";
 import stopBtn from "../../assets/images/btn_gold.png";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import { captureCompositeImage } from "../../utils/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 
 
@@ -22,7 +23,7 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
       handleSave,
       countdown,
       setShowModal,
-    } = useTrackingCore(videoRef);
+    } = useTrackingCore(videoRef, 1, captureCompositeImage);
 
   const onResult = useCallback((event) => {
     let transcript = "";

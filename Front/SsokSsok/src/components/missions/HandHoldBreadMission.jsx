@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
 import { useFingerTracking } from "../../hooks/useFingerTracking";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 const MAX_BREAD = 3;
 const HOLD_DURATION = 3000; // 3초
 

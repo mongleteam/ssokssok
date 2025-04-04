@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
+import { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
 import { useHandGesture } from "../../hooks/useHandGesture";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import startBtn from "../../assets/images/btn_green.png";
 
@@ -33,7 +34,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     countdown: captureCountdown,
     setShowModal,
     handleSave,
-  } = useTrackingCore(videoRef);
+  } = useTrackingCore(videoRef, captureWithVideoOverlay);
 
   // 가위바위보 제스처 훅
   const { playerGesture, witchGesture, result, resetGesture } = useHandGesture(
