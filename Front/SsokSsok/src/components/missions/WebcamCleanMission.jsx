@@ -118,11 +118,11 @@ const WebcamCleanMission = ({
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = successMessage ? (
-      <div className="text-4xl font-cafe24 font-bold text-green-700 animate-pulse text-center">
+      <div className="text-2xl font-cafe24 font-bold text-green-700 animate-pulse text-center">
         {successMessage}
       </div>
     ) : (
-      <div className="text-4xl font-cafe24 text-center font-bold text-blue-700 animate-bounce">
+      <div className="text-3xl font-cafe24 text-center font-bold text-blue-700 animate-bounce">
         {motionCount} / 3
       </div>
     );
@@ -135,7 +135,7 @@ const WebcamCleanMission = ({
     <div
       ref={missionRef}
       id="capture-container"
-      className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden"
+      className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden"
     >
       <video
         ref={videoRef}

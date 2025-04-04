@@ -11,6 +11,8 @@ const SingleStoryRenderer = ({ story, assets }) => {
   const audioRef = useRef(null);
   const [isAudioEnded, setIsAudioEnded] = useState(false);
   const [missionOriginPage, setMissionOriginPage] = useState(null);
+  const [ttsKey, setTtsKey] = useState(0); // TTS 강제 재실행용
+
 
   if (!story || !story.length) {
     return <div className="text-center font-bold mt-10">스토리 없음 😥</div>;
@@ -36,7 +38,7 @@ useEffect(() => {
     audioRef.current?.play().catch(() => {});
   }, 1000);
   return () => clearTimeout(timeout);
-}, [page.tts, assets, page.sounds]);
+}, [page.tts, assets, page.sounds, currentPage]);
 
   // // TTS 자동 재생
   // useEffect(() => {
@@ -49,14 +51,37 @@ useEffect(() => {
 
 
   // 오디오 종료 감지
+  // useEffect(() => {
+  //   setIsAudioEnded(false);
+  //   const audio = audioRef.current;
+  //   if (!audio) return;
+  //   const handleEnded = () => setIsAudioEnded(true);
+  //   audio.addEventListener("ended", handleEnded);
+  //   return () => audio.removeEventListener("ended", handleEnded);
+  // }, [page.tts]);
   useEffect(() => {
-    setIsAudioEnded(false);
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!page.tts || !assets[page.tts] || !audio) return;
+  
+    setIsAudioEnded(false); // 재생 전 초기화
+  
+    audio.src = assets[page.tts];
+    audio.load();
+  
+    const timeout = setTimeout(() => {
+      audio.play().catch(() => {});
+    }, 500);
+  
     const handleEnded = () => setIsAudioEnded(true);
     audio.addEventListener("ended", handleEnded);
-    return () => audio.removeEventListener("ended", handleEnded);
-  }, [page.tts]);
+  
+    return () => {
+      clearTimeout(timeout);
+      audio.pause();
+      audio.removeEventListener("ended", handleEnded);
+    };
+  }, [currentPage, ttsKey]); // ttsKey가 바뀌면 재실행
+  
 
   // 미션 진입 가능 여부
   useEffect(() => {
@@ -87,6 +112,7 @@ useEffect(() => {
     if (showMission) {
       if (missionOriginPage !== null) {
         setCurrentPage(missionOriginPage);
+        setTtsKey((prev) => prev + 1); // 🔥 TTS 재실행
       }
       setShowMission(false);
       setMissionComplete(false);
@@ -97,6 +123,7 @@ useEffect(() => {
   
     if (currentPage === 0) return;
     setCurrentPage((prev) => prev - 1);
+    setTtsKey((prev) => prev + 1); // 🔥 이전 페이지로도 TTS 재실행
     setShowMission(false);
     setMissionComplete(false);
     setMissionReady(false);
@@ -134,7 +161,7 @@ useEffect(() => {
           <div className="w-20 h-20" />
         )}
 
-        {/* {currentPage < story.length - 1 ? (
+        {currentPage < story.length - 1 ? (
           <img
             src={pageNextButton}
             alt="다음 페이지"
@@ -149,8 +176,8 @@ useEffect(() => {
           />
         ) : (
           <div className="w-20 h-20" />
-        )} */}
-        {currentPage < story.length - 1 ? (
+        )}
+        {/* {currentPage < story.length - 1 ? (
             <img
               src={pageNextButton}
               alt="다음 페이지"
@@ -171,7 +198,7 @@ useEffect(() => {
             />
           ) : (
             <div className="w-20 h-20" />
-          )}
+          )} */}
       </div>
     </div>
   );

@@ -55,9 +55,9 @@ const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, asset
         if (!setStatusContent) return;
       
         const ui = (
-          <div className="h-[7rem] flex items-center justify-center">
+          <div className="h-[7rem] flex items-center justify-center -mt-8">
             {missionMessage ? (
-              <div className="text-3xl text-center font-cafe24 font-bold text-green-700 animate-pulse">
+              <div className="text-2xl text-center font-cafe24 font-bold text-green-700 animate-pulse">
                 {missionMessage}
               </div>
             ) : isHolding ? (
@@ -84,7 +84,7 @@ const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, asset
       
     
       return (
-        <div id="capture-container" ref={missionRef} className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+        <div id="capture-container" ref={missionRef} className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden">
           <video ref={videoRef} autoPlay muted className="w-full h-full object-cover scale-x-[-1]" />
           {countdown !== null && <CountdownOverlay count={countdown} />}
 

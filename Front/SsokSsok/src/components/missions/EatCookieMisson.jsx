@@ -64,11 +64,11 @@ const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = missionMessage ? (
-      <div className="text-3xl text-center font-bold text-green-700 animate-pulse">
+      <div className="text-2xl text-center font-bold text-green-700 animate-pulse">
         {missionMessage}
       </div>
     ) : (
-      <div className="text-5xl font-cafe24 text-center font-bold text-stone-900">
+      <div className="text-4xl font-cafe24 text-center font-bold text-stone-900">
         {count} / {MAX_COOKIE}
       </div>
     );
@@ -79,7 +79,7 @@ const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }
     <div
       id="capture-container"
       ref={missionRef}
-      className="relative w-[54rem] aspect-video torn-effect mt-2 mb-3 overflow-hidden"
+      className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden"
     >
       <video
         ref={videoRef}

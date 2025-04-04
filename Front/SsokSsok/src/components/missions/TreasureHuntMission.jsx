@@ -105,7 +105,7 @@ const TreasureHuntMission = ({
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = isCompleted ? (
-      <div className="text-3xl font-bold text-green-700 animate-pulse">
+      <div className="text-2xl font-bold text-green-700 animate-pulse">
         보물을 찾았어요! 🎉
       </div>
     ) : showNotice ? (
@@ -124,7 +124,7 @@ const TreasureHuntMission = ({
   const noticeImage = assets["page35_interaction_notice.png"];
 
   return (
-    <div id="capture-container" className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div id="capture-container" className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden">
       {baseImage && (
         <img
           src={baseImage}
@@ -137,13 +137,13 @@ const TreasureHuntMission = ({
         <img
           src={noticeImage}
           alt="notice"
-          className="absolute w-[26rem] h-auto top-[-16%] left-1/2 transform -translate-x-1/2 z-20 "
+          className="absolute w-[22rem] h-auto top-[-16%] left-1/2 transform -translate-x-1/2 z-20 "
         />
       )}
 
       {fingerPos && (
         <div
-          className="absolute text-8xl z-40"
+          className="absolute text-7xl z-40"
           style={{
             left: `${(1 - fingerPos.x) * 100}%`,
             top: `${fingerPos.y * 100}%`,
@@ -167,7 +167,7 @@ const TreasureHuntMission = ({
         ref={videoRef}
         autoPlay
         muted
-        className="absolute top-4 right-4 w-52 h-30 object-cover scale-x-[-1] border-2 border-white rounded z-40"
+        className="absolute top-4 right-4 w-48 h-30 object-cover scale-x-[-1] border-2 border-white rounded z-40"
       />
     </div>
   );
