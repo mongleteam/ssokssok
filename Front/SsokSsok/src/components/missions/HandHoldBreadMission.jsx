@@ -35,7 +35,7 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
     const placed = [];
     const MIN_DISTANCE = 20;
     while (placed.length < MAX_BREAD) {
-      const x = Math.random() * 65 + 10;
+      const x = Math.random() * 70 + 10;
       const y = Math.random() * 65 + 25;
       const tooClose = placed.some((b) => {
         const dx = b.x - x;
@@ -115,13 +115,13 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
   return (
     <div
       id="capture-container"
-      className="relative w-[54rem] aspect-video torn-effect mt-4 mb-3 overflow-hidden"
+      className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden"
     >
       {assets[bgImg] && (
         <img
           src={assets[bgImg]}
           alt="background"
-          className="absolute inset-0 w-full h-full object-cover z-0"
+          className="absolute inset-0 w-full h-full object-fill z-0"
         />
       )}
 
@@ -131,7 +131,7 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
             key={bread.id}
             src={assets[breadImg]}
             alt="bread"
-            className="absolute w-16 h-16 z-10"
+            className="absolute w-14 h-14 z-10"
             style={{ left: `${bread.x}%`, top: `${bread.y}%` }}
           />
         ) : null
@@ -139,7 +139,7 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
 
       {fingerPos && (
         <div
-          className="absolute w-6 h-6 bg-red-500 rounded-full z-50"
+          className="absolute w-5 h-5 bg-red-500 rounded-full z-40"
           style={{
             left: `${(1 - fingerPos.x) * 100}%`,
             top: `${fingerPos.y * 100}%`,
@@ -161,7 +161,7 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
         ref={videoRef}
         autoPlay
         muted
-        className="absolute top-4 right-4 w-52 h-30 object-cover scale-x-[-1] border-2 border-white rounded z-50"
+        className="absolute top-4 right-4 w-48 h-30 object-cover scale-x-[-1] border-2 border-white rounded z-40"
       />
     </div>
   );

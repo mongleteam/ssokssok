@@ -108,9 +108,9 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = missionMessage ? (
-      <div className="text-3xl text-center font-bold text-green-700 animate-pulse">{missionMessage}</div>
+      <div className="text-2xl text-center font-bold text-green-700 animate-pulse">{missionMessage}</div>
     ) : (
-      <div className="text-5xl font-cafe24 text-center font-bold text-stone-900">
+      <div className="text-2xl font-cafe24 text-center font-bold text-stone-900">
         {collected} / {MAX_STONES}
       </div>
     );
@@ -118,7 +118,7 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
   }, [collected, missionMessage]);
 
   return (
-    <div id="capture-container" ref={missionRef} className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div id="capture-container" ref={missionRef} className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden">
       <video ref={videoRef} autoPlay muted className="w-full h-full object-cover scale-x-[-1]" />
       {countdown !== null && <CountdownOverlay count={countdown} />}
       <div id="hand-debug-layer" className="absolute inset-0 pointer-events-none z-50" />
@@ -129,7 +129,7 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
               key={stone.id}
               src={assets[targetImage]}
               alt="stone"
-              className="absolute w-16 h-16 z-[60] pointer-events-none"
+              className="absolute w-16 h-16 z-[40] pointer-events-none"
               style={{ left: `${stone.x}%`, top: `${stone.y}%` }}
             />
           )

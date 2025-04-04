@@ -95,15 +95,15 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
   useEffect(() => {
     if (!setStatusContent) return;
     const statusUI = (
-      <div className="text-center text-4xl font-cafe24 leading-relaxed">
+      <div className="text-center text-2xl font-cafe24 leading-relaxed">
         {showSuccess ? (
-          <div className="text-green-600 font-bold animate-pulse mt-2 mb-3">
+          <div className="text-green-600 font-bold animate-pulse">
             ✅ 성공! 다음 페이지로 넘어가세요.
           </div>
         ) : (
           <>
             "{coloredText}"
-            <div className="mb-4">
+            <div className=" -mt-3">
               {!isListening ? (
                 <button
                   className="relative px-6 -py-2"
@@ -113,8 +113,8 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
                     startListening();
                   }}
                 >
-                  <img src={startBtn} alt="시작 버튼" className="w-48 mx-auto" />
-                  <span className="absolute inset-0 flex items-center justify-center font-bold text-3xl mb-2">시작</span>
+                  <img src={startBtn} alt="시작 버튼" className="w-36 mx-auto mt-2" />
+                  <span className="absolute inset-0 flex items-center justify-center font-bold text-2xl">시작</span>
                 </button>
               ) : (
                 <button
@@ -124,8 +124,8 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
                     stopListening();
                   }}
                 >
-                  <img src={stopBtn} alt="종료 버튼" className="w-48 mx-auto" />
-                  <span className="absolute inset-0 flex items-center justify-center font-bold text-3xl">종료</span>
+                  <img src={stopBtn} alt="종료 버튼" className="w-36 mx-auto mt-3" />
+                  <span className="absolute inset-0 flex items-center justify-center font-bold text-2xl mt-3">종료</span>
                 </button>
               )}
             </div>
@@ -137,7 +137,7 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
   }, [coloredText, isListening, showSuccess]);
 
   return (
-    <div id="capture-container" className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div id="capture-container" className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden">
       <video
         ref={videoRef}
         autoPlay

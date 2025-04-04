@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
-import { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
+import { captureCompositeImage, captureCopositeImage } from "../../utils/captureCompositeImage";
 import { useHandGesture } from "../../hooks/useHandGesture";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
@@ -34,7 +34,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     countdown: captureCountdown,
     setShowModal,
     handleSave,
-  } = useTrackingCore(videoRef, captureWithVideoOverlay);
+  } = useTrackingCore(videoRef, captureCompositeImage);
 
   // 가위바위보 제스처 훅
   const { playerGesture, witchGesture, result, resetGesture } = useHandGesture(
@@ -110,8 +110,8 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
             onClick={startGame}
             className="relative inline-block text-black rounded-lg text-xl"
           >
-            <img src={startBtn} alt="도전 버튼" className="w-48 mx-auto" />
-            <span className="absolute inset-0 flex items-center justify-center font-bold text-3xl mb-2">
+            <img src={startBtn} alt="도전 버튼" className="w-40 mx-auto" />
+            <span className="absolute inset-0 flex items-center justify-center font-bold text-2xl mb-2">
               도전
             </span>
           </button>
@@ -123,7 +123,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
       const isWin = result === "win";
       return (
         <div
-          className="relative flex flex-row items-center justify-center gap-4 text-center text-3xl font-bold text-amber-700 animate-pulse font-cafe24"
+          className="relative flex flex-row items-center justify-center gap-4 text-center text-2xl font-bold text-amber-700 animate-pulse font-cafe24"
           style={{ transform: "translateY(-20px)" }}
         >
           <div>{missionMessage}</div>
@@ -132,8 +132,8 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
               onClick={startGame}
               className="relative inline-block text-black rounded-lg text-xl"
             >
-              <img src={startBtn} alt="버튼" className="w-48 mx-auto" />
-              <span className="absolute inset-0 flex items-center justify-center font-bold text-3xl mb-2">
+              <img src={startBtn} alt="버튼" className="w-40 mx-auto" />
+              <span className="absolute inset-0 flex items-center justify-center font-bold text-2xl mb-2">
                 재도전
               </span>
             </button>
@@ -174,7 +174,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     <div
       id="capture-container"
       ref={missionRef}
-      className="relative w-[54rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden"
+      className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden"
     >
       <video
         ref={videoRef}
