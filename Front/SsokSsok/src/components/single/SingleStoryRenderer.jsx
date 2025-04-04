@@ -10,6 +10,7 @@ const SingleStoryRenderer = ({ story, assets }) => {
   const [missionComplete, setMissionComplete] = useState(false);
   const audioRef = useRef(null);
   const [isAudioEnded, setIsAudioEnded] = useState(false);
+  const [missionOriginPage, setMissionOriginPage] = useState(null);
 
   if (!story || !story.length) {
     return <div className="text-center font-bold mt-10">스토리 없음 😥</div>;
@@ -67,6 +68,7 @@ useEffect(() => {
   // 다음 페이지
   const handleNext = () => {
     if (missionReady && !showMission) {
+      setMissionOriginPage(currentPage); // ⭐ 미션 진입 전에 현재 페이지 저장
       setShowMission(true);
       setMissionReady(false);
       return;
@@ -81,6 +83,18 @@ useEffect(() => {
 
   // 이전 페이지
   const handlePrevious = () => {
+    // 🎯 미션 상태에서 나가면 저장해둔 페이지로 돌아감
+    if (showMission) {
+      if (missionOriginPage !== null) {
+        setCurrentPage(missionOriginPage);
+      }
+      setShowMission(false);
+      setMissionComplete(false);
+      setMissionReady(false);
+      setIsAudioEnded(false);
+      return;
+    }
+  
     if (currentPage === 0) return;
     setCurrentPage((prev) => prev - 1);
     setShowMission(false);
@@ -88,6 +102,8 @@ useEffect(() => {
     setMissionReady(false);
     setIsAudioEnded(false);
   };
+
+  
 
   return (
     <div className="flex flex-col items-center w-full max-w-6xl mx-auto space-y-4 mt-3">
@@ -118,7 +134,7 @@ useEffect(() => {
           <div className="w-20 h-20" />
         )}
 
-        {currentPage < story.length - 1 ? (
+        {/* {currentPage < story.length - 1 ? (
           <img
             src={pageNextButton}
             alt="다음 페이지"
@@ -133,7 +149,29 @@ useEffect(() => {
           />
         ) : (
           <div className="w-20 h-20" />
-        )}
+        )} */}
+        {currentPage < story.length - 1 ? (
+            <img
+              src={pageNextButton}
+              alt="다음 페이지"
+              onClick={
+                (!hasMission && isAudioEnded) ||
+                (missionReady && !showMission) ||
+                (showMission && missionComplete)
+                  ? handleNext
+                  : undefined // ❌ 클릭 못하게 함
+              }
+              className={`w-20 h-20 cursor-pointer transition-opacity duration-300 ${
+                (!hasMission && isAudioEnded) ||
+                (missionReady && !showMission) ||
+                (showMission && missionComplete)
+                  ? "opacity-100 animate-blinkTwice brightness-110 pointer-events-auto"
+                  : "opacity-30 grayscale pointer-events-none"
+              }`}
+            />
+          ) : (
+            <div className="w-20 h-20" />
+          )}
       </div>
     </div>
   );
