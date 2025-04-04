@@ -64,12 +64,21 @@ public class SocketEventHandler {
         server.addEventListener("draw", RoomDrawRequest.class, (client, data, ack) -> draw(data));
 
         server.addEventListener("initStones", RoomStoneRequest.class, (client, data, ack) -> initStones(data));
+
+        server.addEventListener("removeStone", RemoveStoneRequest.class, (client, data, ack) ->
+                removeStone(data));
     }
 
     // 돌의 위치를 초기화 합니다.
     private void initStones(RoomStoneRequest data){
         String roomId = data.getRoomId();
         server.getRoomOperations(roomId).sendEvent("initStones", new RoomStoneResponse(data.getSenderName(), data.getStones()));
+    }
+
+    // 돌을 제거합니다.
+    private void removeStone(RemoveStoneRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("removeStone", new RemoveStoneResponse(data.getSenderName(), data.getStoneId()));
     }
 
 
