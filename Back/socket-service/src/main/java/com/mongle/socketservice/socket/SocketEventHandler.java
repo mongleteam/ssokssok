@@ -67,6 +67,15 @@ public class SocketEventHandler {
 
         server.addEventListener("removeStone", RemoveStoneRequest.class, (client, data, ack) ->
                 removeStone(data));
+
+        server.addEventListener("sendRts", RtsRequest.class, (client, data, ack) ->
+                sendRts(data));
+    }
+
+    // 본인이 가위바위보에서 뭐 냈는지
+    private void sendRts(RtsRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("sendRts", new RtsResponse(data.getSenderName(), data.getRps()));
     }
 
     // 돌의 위치를 초기화 합니다.
