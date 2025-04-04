@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/book_background.css";
@@ -13,8 +12,9 @@ import PhotoModal from "../../components/story/PhotoModal";
 import WaitingModal from "../../components/multi/WaitingModal";
 import JSZip from "jszip";
 import VideoWithOverlay from "../../components/multi/VideoWithOverlay";
-import CollectStoneOverlay from "../../components/multi/CollectStoneOverlay";
+import CollectStoneOverlay from "../../components/multi/mission/CollectStoneOverlay.jsx";
 import MissionRouter from "../../components/story/MissionRouter.jsx";
+import IllustrationRouter from "../../components/story/IllustrationRouter.jsx";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
 import {
@@ -38,7 +38,8 @@ function MultiPage() {
   const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
   const [isMissionVisible, setIsMissionVisible] = useState(false);
   const [viewedMissions, setViewedMissions] = useState({});
-
+  const [statusContent, setStatusContent] = useState(null);
+  const [publisher, setPublisher] = useState(null);
   const location = useLocation();
   const { roomId, friend, from, fairytale } = location.state || {};
   const [role, setRole] = useState(location.state?.role || null);
@@ -58,6 +59,8 @@ function MultiPage() {
     const nextPage = currentPage + 1;
     const shouldSave = from === "inviter" && !isMissionVisible && progressPk;
 
+
+    
     if (isMissionVisible) {
       setIsMissionVisible(false);
       setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
@@ -224,6 +227,11 @@ function MultiPage() {
     return () => offSocketEvent("prevNext");
   }, [from, handleNextPage, handlePreviousPage]);
 
+  useEffect(() => {
+    // currentPage 변경 시 statusContent 초기화 (이전 미션 UI 제거)
+    setStatusContent(null);
+  }, [currentPage]);
+
   const handleInviteeJoined = async () => {
     sendMessage("sendStartInfo", {
       roomId,
@@ -258,7 +266,8 @@ function MultiPage() {
       }
     }
   };
-
+  const currentMission = storyData[currentPage]?.mission;
+  const currentMissionRole = storyData[currentPage]?.role;
   return (
     <div className="relative book-background-container flex flex-col items-center">
       {showWaiting && (
@@ -328,7 +337,28 @@ function MultiPage() {
       <div className="flex w-full h-[75%] max-w-[1200px] px-4 lg:px-12">
         <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
           {storyData.length > 0 && startReady && (
-            <StoryIllustration storyData={storyData[currentPage]} />
+            <StoryIllustration storyData={storyData[currentPage]}>
+              {isMissionVisible && currentMission?.type && (
+                <IllustrationRouter
+                  type={currentMission.type}
+                  role={role}
+                  missionRole={currentMissionRole}
+                  missionData={currentMission}
+                  assets={assets}
+                  publisher={publisher}
+                  onSuccess={() => {
+                    setIsMissionVisible(false);
+                    setViewedMissions((prev) => ({
+                      ...prev,
+                      [currentPage]: true,
+                    }));
+                  }}
+                  roomId={roomId}
+                  from={from}
+                  setStatusContent={setStatusContent}
+                />
+              )}
+            </StoryIllustration>
           )}
           {!showWaiting &&
             !isPhotoModalOpen &&
@@ -348,15 +378,16 @@ function MultiPage() {
               <MissionScreen
                 storyData={storyData[currentPage]}
                 assets={assets}
+                statusContent={statusContent}
               />
             )}
         </div>
         <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
           <VideoWithOverlay roomId={roomId} userName={role}>
-            {(publisher) => {
+            {(pub) => {
+              if (!publisher) setPublisher(pub);
               const mission = storyData[currentPage]?.mission;
               const missionRole = storyData[currentPage]?.role;
-
               return (
                 isMissionVisible &&
                 mission?.type && (
@@ -366,16 +397,18 @@ function MultiPage() {
                     missionRole={missionRole}
                     missionData={mission}
                     assets={assets}
-                    publisher={publisher}
+                    publisher={pub}
                     onSuccess={() => {
                       setIsMissionVisible(false);
                       setViewedMissions((prev) => ({
                         ...prev,
                         [currentPage]: true,
                       }));
+                   
                     }}
                     roomId={roomId}
                     from={from}
+                    setStatusContent={setStatusContent}
                   />
                 )
               );

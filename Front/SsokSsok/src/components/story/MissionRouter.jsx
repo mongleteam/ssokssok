@@ -1,6 +1,8 @@
 import React from "react";
-import CollectStoneOverlay from "../multi/CollectStoneOverlay";
-import EatCookie from "../multi/EatCookie";
+import CollectStoneOverlay from "../multi/mission/CollectStoneOverlay";
+import EatCookie from "../multi/mission/EatCookie";
+import RockScissorsPaper from "../multi/mission/RockScissorsPaper";
+
 const MissionRouter = ({
   type,
   role,
@@ -45,6 +47,20 @@ const MissionRouter = ({
           from={from}
         />
       );
+    case "webcam-get-magicbook-multi":
+      return (
+        <RockScissorsPaper
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          missionData={missionData}
+          assets={assets}
+          publisher={publisher}
+          roomId={roomId}
+          userName={role}
+          from={from}
+        />
+      );
+
     // case "webcam-silent-multi":
     //   return <SilentMission ... />;
     // case "webcam-draw-star-multi":

@@ -3,7 +3,7 @@ import boardImage from "../../assets/images/board2.png";
 import hintIcon from "../../assets/images/hint_icon.png"; // 힌트 아이콘 경로
 import HintModal from "../../components/story/HintModal"; // 힌트 모달 컴포넌트 임포트
 
-const MissionScreen = ({ storyData, assets }) => {
+const MissionScreen = ({ storyData, assets, statusContent }) => {
   const [missionText, setMissionText] = useState(""); // 지시사항 텍스트 상태
   const [isHintModalOpen, setIsHintModalOpen] = useState(false); // 힌트 모달 상태
 
@@ -50,6 +50,7 @@ const MissionScreen = ({ storyData, assets }) => {
         <p className="mt-2 text-lg font-medium whitespace-pre-line">
           {missionText}
         </p>
+        {statusContent && <div className="mt-6">{statusContent}</div>}
       </div>
 
       {/* 힌트 아이콘 */}

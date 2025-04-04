@@ -2,9 +2,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Holistic } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
-import { useMouthTracker } from "../../hooks/useMouthTracker";
-import CountdownOverlay from "../webcam/captureCompositeImage";
-import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import { useMouthTracker } from "../../../hooks/useMouthTracker";
+import CountdownOverlay from "../../webcam/captureCompositeImage";
+import PhotoCaptureModal from "../../webcam/PhotoCaptureModal";
 
 const EatCookie = ({
   onSuccess, // 미션 성공 시 호출되는 콜백
@@ -115,6 +115,7 @@ const EatCookie = ({
       setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
       onSuccess?.();
     }
+   
   }, [count, onSuccess]);
 
   // 상태 UI 업데이트
@@ -144,7 +145,7 @@ const EatCookie = ({
         <img
           src={assets[currentCookieImage]}
           alt="cookie"
-          className="absolute w-12 h-12 z-20"
+          className="absolute w-36 h-36 z-20"
           style={{
             top: "50%",
             left: "50%",
