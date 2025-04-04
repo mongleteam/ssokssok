@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
+import { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
 import { useHandPose } from "../../hooks/useHandPose";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 
 const WebcamCleanMission = ({
@@ -22,7 +23,7 @@ const WebcamCleanMission = ({
     handleSave,
     countdown,
     setShowModal,
-  } = useTrackingCore(videoRef, 1);
+  } = useTrackingCore(videoRef, 1, captureWithVideoOverlay);
 
   const { getHandCenter } = useHandPose(handLandmarks);
 
@@ -37,6 +38,7 @@ const WebcamCleanMission = ({
     movedRight: false,
   });
   const countRef = useRef(0);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // 💨 손 흔들기 감지
   useEffect(() => {
@@ -103,6 +105,31 @@ const WebcamCleanMission = ({
     if (motionCount === 2) return dustImg1;
     return null;
   };
+
+  // ✅ 2. 미션 완료 시 메시지 설정
+  useEffect(() => {
+    if (motionCount >= 3) {
+      setSuccessMessage("✅ 청소 완료! 다음 페이지로 이동하세요.");
+      onComplete?.();
+    }
+  }, [motionCount, onComplete]);
+
+  // ✅ 3. 상태 UI 업데이트
+  useEffect(() => {
+    if (!setStatusContent) return;
+    const ui = successMessage ? (
+      <div className="text-4xl font-cafe24 font-bold text-green-700 animate-pulse text-center">
+        {successMessage}
+      </div>
+    ) : (
+      <div className="text-4xl font-cafe24 text-center font-bold text-blue-700 animate-bounce">
+        {motionCount} / 3
+      </div>
+    );
+    setStatusContent(ui);
+  }, [motionCount, successMessage]);
+
+
 
   return (
     <div

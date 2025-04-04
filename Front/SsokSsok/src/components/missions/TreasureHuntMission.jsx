@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore"; // ✅ 이거 추가!
 import { useFingerPosition } from "../../hooks/useFingerTracking"; // useFingerTracking 대신 이거 사용
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 
 const HOLD_DURATION = 3000; // 3초 머물기
 

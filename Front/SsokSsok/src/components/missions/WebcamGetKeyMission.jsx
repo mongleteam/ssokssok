@@ -1,7 +1,8 @@
 import React, { useEffect,  useRef,  useState } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
+import { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
 import { useHandPose } from "../../hooks/useHandPose";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 
 const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
@@ -13,7 +14,7 @@ const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, asset
     const [missionMessage, setMissionMessage] = useState("");
 
     const { handLandmarks, showModal, previewUrl, handleSave, countdown, setShowModal } =
-    useTrackingCore(videoRef, 1);
+    useTrackingCore(videoRef, 1, captureWithVideoOverlay);
 
     const { getHandCenter, isHandOpen } = useHandPose(handLandmarks);
 

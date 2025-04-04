@@ -1,8 +1,9 @@
 // ✅ missions/EatCookieMission.jsx
 import React, { useRef, useEffect, useState } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
+import { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
 import { useMouthTracker } from "../../hooks/useMouthTracker";
-import CountdownOverlay from "../webcam/captureCompositeImage";
+import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 
 const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
@@ -26,7 +27,7 @@ const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }
     countdown,
     setShowModal,
     handleSave,
-  } = useTrackingCore(videoRef);
+  } = useTrackingCore(videoRef, 1, captureWithVideoOverlay);
 
   const { mouthOpen } = useMouthTracker(faceLandmarks);
   const prevMouthOpenLocal = useRef(null);
