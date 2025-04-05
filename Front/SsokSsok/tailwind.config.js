@@ -22,6 +22,11 @@ export default {
       animation: {
         blinkTwice: 'blinkTwice 1s ease-in-out 1',
       },
+      // ✅ 커서 유틸리티 확장
+      cursor: {
+        custom: "url('/cursors/cursor.png'), auto",
+        pointerCustom: "url('/cursors/point_cursor.png'), pointer",
+      },
     },
   },
   plugins: [],

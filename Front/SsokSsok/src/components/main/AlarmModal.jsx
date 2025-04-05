@@ -36,7 +36,7 @@ const AlarmModal = () => {
       case "multi":
         return `${item.friendId}님이 동화에 초대했습니다.`
       default:
-        return "알 수 없는 알림입니다."
+        return "조금만 기다려주세요요."
     }
   }
 
@@ -45,10 +45,10 @@ const AlarmModal = () => {
       try {
         if (item.state === "friend") {
           await acceptFriendApi(item.friendId)
-          console.log("친구 요청 수락 완료")
+          // console.log("친구 요청 수락 완료")
         } else if (item.state === "multi") {
           await acceptGameApi(item.friendId);
-          console.log("게임 초대 수락")
+          // console.log("게임 초대 수락")
 
           const roomId = item.roomId;          // roomId 알림에서 꺼내서
           const inviter = item.friendId;

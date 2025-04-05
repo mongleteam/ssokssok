@@ -4,20 +4,22 @@ import checkIcon from "../../assets/images/check_icon.png"
 import boardImage from "../../assets/images/friend_board.png"
 import plusIcon from "../../assets/images/plus_icon.png"
 import DeleteIcon from "../../assets/images/remove_icon.png"
+import CustomAlert from "../CustomAlert";
 
 const FriendModal = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
-
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
     const [myFriend, setMyFriend] = useState([])
     useEffect(() => {
         const fetchMyFriend = async () => {
             try {
                 const res = await myFriendApi()
-                console.log(res.data.data.friendList)
+                // console.log(res.data.data.friendList)
                 setMyFriend(res.data.data.friendList)
             } catch (err) {
-                console.error("친구 조회 실패", err)
+                // console.error("친구 조회 실패", err)
             }
         }
         fetchMyFriend()
@@ -29,7 +31,7 @@ const FriendModal = () => {
             const res = await searchFriendApi(searchTerm)
             setSearchResults(res.data)
           } catch (err) {
-            console.error("친구 검색 실패:", err)
+            // console.error("친구 검색 실패:", err)
             setSearchResults([])
           }
     }
@@ -37,10 +39,12 @@ const FriendModal = () => {
     const handleAddFriend = async (friendID) => {
         try {
             await plusFriendApi(friendID)
-            alert(`${friendID} 아이디로 친구 요청을 보냈습니다 !`)
+            setAlertMessage(`${friendID} 아이디로 친구 요청을 보냈습니다 !`)
+            setShowAlert(true);
         } catch (err) {
-            console.error("친구 추가 실패 : ", err)
-            alert("친구 추가 요청에 실패했습니다")
+            // console.error("친구 추가 실패 : ", err)
+            setAlertMessage("친구 추가 요청에 실패했습니다")
+            setShowAlert(true);
         }
     }
 
@@ -50,12 +54,14 @@ const FriendModal = () => {
       
         try {
           await deleteFriendApi(friendId);
-          alert(`${friendNickname}님이 삭제되었습니다!`)
+          setAlertMessage(`${friendNickname}님이 삭제되었습니다!`)
+          setShowAlert(true)
           
           setMyFriend(prev => prev.filter(friend => friend.friendId !== friendId))
         } catch (err) {
-          console.error("친구 삭제 실패", err)
-          alert("친구 삭제에 실패했습니다.")
+        //   console.error("친구 삭제 실패", err)
+        setAlertMessage("친구 삭제에 실패했습니다.")
+        setShowAlert(true)
         }
       }
 
@@ -132,6 +138,14 @@ const FriendModal = () => {
                 </div>
 
             </div>
+
+            {showAlert && (
+                <CustomAlert
+                    message={alertMessage}
+                    onClose={() => setShowAlert(false)}
+                />
+                )}
+
         </div>
     )
 }

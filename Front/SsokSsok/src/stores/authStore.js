@@ -20,9 +20,9 @@ const useAuthStore = create((set) => {
       try {
         // 서버에 로그아웃 요청
         await authApi.post("/user/logout")
-        console.log("백엔드드 로그아웃 성공")
+        // console.log("백엔드드 로그아웃 성공")
       } catch (err) {
-        console.warn("백엔드드 로그아웃 실패", err)
+        // console.warn("백엔드드 로그아웃 실패", err)
       }
       // 클라이언트 상태 초기화
       localStorage.removeItem("accessToken")
