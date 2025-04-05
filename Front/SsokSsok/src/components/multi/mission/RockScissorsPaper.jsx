@@ -3,8 +3,6 @@ import React, { useRef, useEffect, useState, useMemo } from "react";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
 import { useHandGesture } from "../../../hooks/useHandGesture";
-import CountdownOverlay from "../../webcam/captureCompositeImage";
-import PhotoCaptureModal from "../../webcam/PhotoCaptureModal";
 import startBtn from "../../../assets/images/btn_green.png";
 
 // 가위바위보 이모지 매핑
@@ -209,13 +207,7 @@ const RockScissorsPaper = ({
         </div>
       </div>
 
-      <PhotoCaptureModal
-        isOpen={false}
-        previewUrl={""}
-        onSave={() => {}}
-        onClose={() => {}}
-      />
-      {countdown !== null && <CountdownOverlay count={countdown} />}
+    
     </>
   );
 };
