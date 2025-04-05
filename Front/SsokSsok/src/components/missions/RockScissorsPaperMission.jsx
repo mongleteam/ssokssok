@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
-import { captureCompositeImage, captureCopositeImage } from "../../utils/captureCompositeImage";
+import { captureCompositeImage} from "../../utils/captureCompositeImage";
 import { useHandGesture } from "../../hooks/useHandGesture";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";

@@ -3,8 +3,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { Holistic } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
 import { useMouthTracker } from "../../../hooks/useMouthTracker";
-import CountdownOverlay from "../../webcam/captureCompositeImage";
-import PhotoCaptureModal from "../../webcam/PhotoCaptureModal";
+
 
 const EatCookie = ({
   onSuccess, // 미션 성공 시 호출되는 콜백
@@ -153,13 +152,7 @@ const EatCookie = ({
           }}
         />
       )}
-      <PhotoCaptureModal
-        isOpen={showModal}
-        previewUrl={previewUrl}
-        onSave={() => {}}
-        onClose={() => setShowModal(false)}
-      />
-      {countdown !== null && <CountdownOverlay count={countdown} />}
+      
     </>
   );
 };
