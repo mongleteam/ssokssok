@@ -15,6 +15,7 @@ import RoleSelectModal from "../../components/multi/RoleSelectModal";
 import FriendSelectModal from "../../components/multi/FriendSelectModal";
 import InviteConfirmModal from "../../components/multi/InviteConfirmModal";
 import WaitingModal from "../../components/multi/WaitingModal";
+import { createSingleProgressApi } from "../../apis/singleApi";
 
 const BookStartPage = () => {
   const [bookData, setBookData] = useState(null)
@@ -62,6 +63,34 @@ const BookStartPage = () => {
     setShowContinueModal(true);
   };
 
+  const handleStartSingle = async () => {
+    try {
+      const response = await createSingleProgressApi({
+        mode: "SINGLE",
+        friendId: null,
+        nowPage: 1,
+        fairytalePk: fairytale.fairytalePk,
+        role: "FIRST",
+      });
+  
+      if (response.data.isSuccess) {
+        const progress = response.data.data;
+  
+        navigate("/single", {
+          state: {
+            progressPk: progress.progressPk,
+            nowPage: progress.nowPage,
+            role: progress.role,
+            fairytale,
+          },
+        });
+      } else {
+        console.error("실패:", response.data);
+      }
+    } catch (error) {
+      console.error("에러:", error);
+    }
+  };
 
   return (
     <>
@@ -81,7 +110,7 @@ const BookStartPage = () => {
           <div className="w-1/2 h-full flex flex-col items-center">
             <h2 className="text-3xl font-whitechalk">혼자서도 즐겨요!</h2>
             <div className="relative group w-[15rem] mb-4 cursor-pointer"
-             onClick={() => navigate("/single")}>
+             onClick={handleStartSingle}>
               <img src={modeBoard} alt="modeBoard" className="w-full transition shake-hover" />
               <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 font-whitechalk text-3xl text-white drop-shadow-md">
                 싱글 모드
