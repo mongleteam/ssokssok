@@ -2,6 +2,7 @@ import React from "react";
 import CollectStoneOverlay from "../multi/mission/CollectStoneOverlay";
 import EatCookie from "../multi/mission/EatCookie";
 import RockScissorsPaper from "../multi/mission/RockScissorsPaper";
+import WebcamGetKey from "../multi/mission/WebcamGetKey";
 
 const MissionRouter = ({
   type,
@@ -60,7 +61,19 @@ const MissionRouter = ({
           from={from}
         />
       );
-
+    case "webcam-getkey-multi":
+      return (
+        <WebcamGetKey
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          missionData={missionData}
+          assets={assets}
+          publisher={publisher}
+          roomId={roomId}
+          userName={role}
+          from={from}
+        />
+      );
     // case "webcam-silent-multi":
     //   return <SilentMission ... />;
     // case "webcam-draw-star-multi":
