@@ -2,7 +2,7 @@ import React from "react";
 import CollectStoneOverlay from "../multi/mission/CollectStoneOverlay";
 import EatCookie from "../multi/mission/EatCookie";
 import RockScissorsPaper from "../multi/mission/RockScissorsPaper";
-
+import DrawStarMission from "../multi/mission/DrawStarMission";
 const MissionRouter = ({
   type,
   role,
@@ -63,8 +63,6 @@ const MissionRouter = ({
 
     // case "webcam-silent-multi":
     //   return <SilentMission ... />;
-    // case "webcam-draw-star-multi":
-    //   return <DrawStarMission ... />;
     default:
       return null;
   }
