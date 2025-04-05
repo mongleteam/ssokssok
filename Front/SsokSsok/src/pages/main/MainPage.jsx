@@ -20,6 +20,7 @@ import HanselBookOpening from "../../components/animations/HanselBookOpening";
 import lockImg from "../../assets/images/lock.png";
 import useInitialAlarmLoad from "../../hooks/useInitialAlarmLoad";
 import { useAlarmStore } from "../../stores/alarmStore";
+import { useAlert } from "../../contexts/AlertContext";
 
 const books = [
     { title: "헨젤과 그레텔", image: bookHansel },
@@ -44,13 +45,13 @@ const MainPage = () => {
     //     }
 
     // }, [accessToken, navigate])
-
+    const { showAlert } = useAlert()
     const [openHansel, setOpenHansel] = useState(false)
     const handleBookClick = (bookTitle) => {
         if (bookTitle === "헨젤과 그레텔") {
             setOpenHansel(true)
         } else {
-            alert("서비스 추후 준비중입니다 🥹")
+            showAlert("서비스 추후 준비중입니다 🥹")
         }
     }
     

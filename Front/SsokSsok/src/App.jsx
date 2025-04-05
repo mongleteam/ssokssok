@@ -4,7 +4,7 @@ import AppRoutes from "./routes";
 import useAuthStore from "./stores/authStore";
 import useAlarmSSE from "./hooks/useAlarmSSE";
 import useBgmStore from "./stores/bgmStore";
-
+import './index.css';
 const App = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
   // App.jsx

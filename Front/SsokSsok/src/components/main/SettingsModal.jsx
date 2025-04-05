@@ -23,7 +23,7 @@ const SettingsModal = () => {
           value={volume}
           onChange={(e) => {
             const vol = parseFloat(e.target.value)
-            console.log("🎯 슬라이더 움직임:", vol) // 확인용 로그
+            // console.log("🎯 슬라이더 움직임:", vol) // 확인용 로그
             setVolume(vol)
           }}
           className="w-full custom-slider"
