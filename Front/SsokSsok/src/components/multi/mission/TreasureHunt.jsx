@@ -6,15 +6,7 @@ const HOLD_DURATION = 3000; // 3초 머물기
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 360;
 
-const TreasureHunt = ({
-  missionData,
-  assets,
-  onSuccess,
-  publisher,
-  roomId,
-  userName,
-  from,
-}) => {
+const TreasureHunt = ({ onSuccess, setStatusContent, missionData, assets }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -232,7 +224,9 @@ const TreasureHunt = ({
   }, [isCompleted, showNotice, setStatusContent]);
 
   return (
-    <div className="relative w-[640px] h-[480px] overflow-hidden">
+    <div
+      className="relative w-[640px] h-[480px] overflow-hidden"
+    >
       <canvas ref={canvasRef} className="absolute inset-0 z-10" />
       <video ref={videoRef} className="hidden" autoPlay muted />
     </div>
