@@ -72,15 +72,15 @@ const BookStartPage = () => {
         fairytalePk: fairytale.fairytalePk,
         role: "FIRST",
       });
+      console.log("api 응답 : ", response.data)
   
       if (response.data.isSuccess) {
-        const progress = response.data.data;
-  
+        const progressPk = response.data.data;
         navigate("/single", {
           state: {
-            progressPk: progress.progressPk,
-            nowPage: progress.nowPage,
-            role: progress.role,
+            progressPk,
+            nowPage: 1,
+            role: "FIRST",
             fairytale,
           },
         });

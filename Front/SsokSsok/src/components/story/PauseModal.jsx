@@ -10,7 +10,7 @@ const PauseModal = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
       <div
-        className="relative w-[60%] h-[40%] flex flex-col items-center justify-center bg-center bg-no-repeat bg-[length:100%_100%]"
+        className="relative w-[60%] h-[50%] flex flex-col items-center justify-center bg-center bg-no-repeat bg-[length:100%_100%]"
         style={{ backgroundImage: `url(${boardBackground})` }}
       >
         <h1 className="font-whitechalk text-5xl text-black mb-4">그만 읽기</h1>
