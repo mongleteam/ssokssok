@@ -7,9 +7,12 @@ const VideoPlayer = ({ streamManager }) => {
 
   useEffect(() => {
     if (streamManager && videoRef.current) {
+      videoRef.current.innerHTML = '';
       streamManager.addVideoElement(videoRef.current);
     }
   }, [streamManager]);
+
+  if (!streamManager) return null;
 
   return (
     <div className="rounded-xl overflow-hidden shadow-md">

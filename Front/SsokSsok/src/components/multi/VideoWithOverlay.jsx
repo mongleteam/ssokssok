@@ -87,10 +87,6 @@ const VideoWithOverlay = ({ roomId, userName, children }) => {
               muted
               className="w-full h-auto"
             />
-            {publisher.addVideoElement &&
-              videoRef.current &&
-              publisher.addVideoElement(videoRef.current)}
-
             {/* 오버레이 요소 */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
               {typeof children === "function" ? children(publisher) : children}
@@ -98,7 +94,7 @@ const VideoWithOverlay = ({ roomId, userName, children }) => {
           </div>
         </div>
       )}
-
+  
       {/* 상대방 영상 */}
       {subscribers.map((sub) => (
         <div key={sub.stream.connection.connectionId}>
