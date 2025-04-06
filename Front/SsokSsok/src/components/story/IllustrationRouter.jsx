@@ -1,5 +1,6 @@
 import React from "react";
 import HandHoldBreadOverlay from "../multi/mission/HandHoldBreadOverlay";
+import TreasureHunt from "../multi/mission/TreasureHunt";
 import DrawStarMission from "../multi/mission/DrawStarMission";
 const IllustrationRouter = ({
   type,
@@ -23,6 +24,19 @@ const IllustrationRouter = ({
     case "hand-hold-bread--multi":
       return (
         <HandHoldBreadOverlay
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          missionData={missionData}
+          assets={assets}
+          publisher={publisher}
+          roomId={roomId}
+          userName={role}
+          from={from}
+        />
+      );
+    case "treasure-hunt":
+      return (
+        <TreasureHunt
           onSuccess={onSuccess}
           setStatusContent={setStatusContent}
           missionData={missionData}

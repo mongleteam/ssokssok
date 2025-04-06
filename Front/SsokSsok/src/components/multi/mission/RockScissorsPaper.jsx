@@ -13,7 +13,7 @@ const gestureToEmoji = {
 };
 
 const RockScissorsPaper = ({
-  onComplete,
+  onSuccess,
   setStatusContent,
   assets,
   publisher,
@@ -91,13 +91,13 @@ const RockScissorsPaper = ({
     handledRef.current = true;
     if (result === "win") {
       setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
-      onComplete?.();
+      onSuccess?.();
     } else if (result === "lose") {
       setMissionMessage("😵 패배 - 다시 도전해보세요!");
     } else {
       setMissionMessage("😐 무승부 - 다시 도전해보세요!");
     }
-  }, [result, gameOver, onComplete]);
+  }, [result, gameOver, onSuccess]);
 
   // [2] 게임 시작 (도전 버튼)
   const startGame = () => {
