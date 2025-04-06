@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands/hands";
 import { Camera } from "@mediapipe/camera_utils/camera_utils";
+import { sendMessage } from "../../../services/socket";
 
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 480;
@@ -157,6 +158,11 @@ const DrawStarMission = ({
           if (allVisited && backToStart && !isBackToStart) {
             setIsBackToStart(true);
             onSuccess?.();
+            sendMessage("isSuccess", {
+              senderName: userName,
+              roomId,
+              isSuccess: "성공",
+            });
           }
 
           return updated;

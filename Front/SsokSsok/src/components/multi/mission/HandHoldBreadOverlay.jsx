@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as handPose from "@mediapipe/hands";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
+import { sendMessage } from "../../../services/socket";
 
 const MAX_BREAD = 3;
 const HOLD_DURATION = 3000;
@@ -14,6 +15,8 @@ const HandHoldBreadOverlay = ({
   assets,
   onSuccess,
   publisher,
+  userName,
+  roomId,
 }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -145,6 +148,11 @@ const HandHoldBreadOverlay = ({
   useEffect(() => {
     if (collectedCount >= MAX_BREAD) {
       onSuccess?.();
+      sendMessage("isSuccess", {
+        senderName: userName,
+        roomId,
+        isSuccess: "성공",
+      });
     }
   }, [collectedCount, onSuccess]);
 

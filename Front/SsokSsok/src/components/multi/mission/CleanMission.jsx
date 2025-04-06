@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
+import { sendMessage } from "../../../services/socket";
 
 const CleanMissionMulti = ({
   missionData,
@@ -123,6 +124,11 @@ const CleanMissionMulti = ({
   useEffect(() => {
     if (motionCount >= 3) {
       onSuccess?.();
+      sendMessage("isSuccess", {
+        senderName: userName,
+        roomId,
+        isSuccess: "성공",
+      });
     }
   }, [motionCount]);
 

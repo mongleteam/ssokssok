@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
 import { useHandPose } from "../../../hooks/useHandPose";
+import { sendMessage } from "../../../services/socket";
 
 
 const WebcamGetKey = ({
@@ -95,6 +96,11 @@ const WebcamGetKey = ({
         setHoldStartTime(Date.now());
       } else if (Date.now() - holdingStartTime >= HOLD_DURATION) {
         setMissionMessage("✅ 열쇠 획득! 다음 페이지로 이동하세요.");
+        sendMessage("isSuccess", {
+          senderName: userName,
+          roomId,
+          isSuccess: "성공",
+        });
          setTimeout(() => {
            onSuccess?.();
          }, 5000);

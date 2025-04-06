@@ -4,10 +4,7 @@ import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import {
-  sendMessage,
-  onSocketEvent,
-  offSocketEvent,
-} from "../../../services/socket";
+  sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
 
 const CollectStoneOverlay = ({
   missionData,
@@ -184,6 +181,11 @@ const CollectStoneOverlay = ({
   useEffect(() => {
     if (stoneCountReady && stones.length === 0 && !success) {
       setSuccess(true);
+      sendMessage("isSuccess", {
+        senderName: userName,
+        roomId,
+        isSuccess: "성공",
+      });
       setTimeout(() => onSuccess?.(), 1000);
     }
   }, [stones, stoneCountReady, success, onSuccess]);
