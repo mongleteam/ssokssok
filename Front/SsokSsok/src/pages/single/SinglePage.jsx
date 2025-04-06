@@ -12,8 +12,8 @@ function SinglePage() {
     const [assets, setAssets] = useState(null); // ✅ 추가
     
     const location = useLocation();
-    const { progressPk, fairytale } = location.state || {};
-    console.log("storypage.pk🍕", progressPk, fairytale)
+    const { progressPk, fairytale, nowPage, role } = location.state || {};
+    // console.log("storypage.pk🍕", progressPk, fairytale)
 
     useEffect(() => {
         // 진입하자마자 preload 시작!
@@ -66,6 +66,7 @@ function SinglePage() {
         assets={assets} 
         progressPk={progressPk}
         totalPageCount={fairytale?.count || story.length}
+        nowPage={nowPage}
         />
       )}
         </div>

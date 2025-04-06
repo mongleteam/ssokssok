@@ -16,6 +16,7 @@ import FriendSelectModal from "../../components/multi/FriendSelectModal";
 import InviteConfirmModal from "../../components/multi/InviteConfirmModal";
 import WaitingModal from "../../components/multi/WaitingModal";
 import { createSingleProgressApi } from "../../apis/singleApi";
+import ContinueSingleModal from "../../components/story/ContinueSingleModal";
 
 const BookStartPage = () => {
   const [bookData, setBookData] = useState(null)
@@ -30,6 +31,10 @@ const BookStartPage = () => {
 
   const [showContinueModal, setShowContinueModal] = useState(false);
   const [selectedProgress, setSelectedProgress] = useState(null);
+
+  const [selectedContinueProgress, setSelectedContinueProgress] = useState(null);
+  const [showContinueConfirmModal, setShowContinueConfirmModal] = useState(false);
+
  
   
   useEffect(() => {
@@ -63,6 +68,7 @@ const BookStartPage = () => {
     setShowContinueModal(true);
   };
 
+  // 싱글 스토리 진행 시작 생성
   const handleStartSingle = async () => {
     try {
       const response = await createSingleProgressApi({
@@ -91,6 +97,27 @@ const BookStartPage = () => {
       console.error("에러:", error);
     }
   };
+
+  // 싱글 스토리 이어하기 핸들러 생성
+
+  const handleConfirmContinue = () => {
+    if (!selectedContinueProgress) return;
+    navigate("/single", {
+      state: {
+        progressPk: selectedContinueProgress.progressPk,
+        nowPage: selectedContinueProgress.nowPage,
+        role: selectedContinueProgress.role,
+        fairytale,
+      },
+    });
+  };
+  
+
+  const handleClickContinueSingle = (progress) => {
+    setSelectedContinueProgress(progress);
+    setShowContinueConfirmModal(true); // 모달 열기
+  };
+  
 
   return (
     <>
@@ -129,7 +156,12 @@ const BookStartPage = () => {
                     >
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-black font-whitechalk text-xl">싱글 진행률</p>
-                    <img src={continueBtn} alt="이어하기" className="w-[6rem] cursor-pointer" />
+                    <img 
+                    src={continueBtn} 
+                    alt="이어하기" 
+                    className="w-[6rem] cursor-pointer"
+                    onClick={() => handleClickContinueSingle(progress)}
+                    />
                   </div>
                   <div className="flex gap-1">
                     {[...Array(fairytale.count)].slice(0, 5).map((_, i) => (
@@ -145,6 +177,13 @@ const BookStartPage = () => {
               <p className="font-whitechalk mt-2">싱글모드를 시작해보세요!</p>
             )}
           </div>
+
+          {showContinueConfirmModal && (
+            <ContinueSingleModal
+              onConfirm={handleConfirmContinue}
+              onCancel={() => setShowContinueConfirmModal(false)}
+            />
+          )}
 
           {/* 멀티모드 */}
           <div className="w-1/2 h-full flex flex-col items-center">

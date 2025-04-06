@@ -8,8 +8,8 @@ import { useNavigate } from "react-router-dom";
 import PauseModal from "../story/PauseModal";
 import CompleteModal from "../story/CompleteModal";
 
-const SingleStoryRenderer = ({ story, assets, progressPk, totalPageCount }) => {
-  const [currentPage, setCurrentPage] = useState(0);
+const SingleStoryRenderer = ({ story, assets, progressPk, totalPageCount,  nowPage = 1 }) => {
+  const [currentPage, setCurrentPage] = useState(nowPage - 1); // nowPage는 1-based니까 -1
   const [missionReady, setMissionReady] = useState(false);
   const [showMission, setShowMission] = useState(false);
   const [missionComplete, setMissionComplete] = useState(false);
@@ -47,25 +47,6 @@ useEffect(() => {
   return () => clearTimeout(timeout);
 }, [page.tts, assets, page.sounds, currentPage]);
 
-  // // TTS 자동 재생
-  // useEffect(() => {
-  //   if (!page.tts || !assets[page.tts]) return;
-  //   const timeout = setTimeout(() => {
-  //     audioRef.current?.play().catch(() => {});
-  //   }, 1000);
-  //   return () => clearTimeout(timeout);
-  // }, [page.tts, assets]);
-
-
-  // 오디오 종료 감지
-  // useEffect(() => {
-  //   setIsAudioEnded(false);
-  //   const audio = audioRef.current;
-  //   if (!audio) return;
-  //   const handleEnded = () => setIsAudioEnded(true);
-  //   audio.addEventListener("ended", handleEnded);
-  //   return () => audio.removeEventListener("ended", handleEnded);
-  // }, [page.tts]);
   useEffect(() => {
     const audio = audioRef.current;
     if (!page.tts || !assets[page.tts] || !audio) return;
@@ -183,7 +164,6 @@ useEffect(() => {
   };
 
   
-
   return (
     <div className="flex flex-col items-center w-full max-w-6xl mx-auto space-y-4 mt-3">
       <StoryPage
@@ -213,7 +193,7 @@ useEffect(() => {
           <div className="w-20 h-20" />
         )}
 
-        {currentPage < story.length - 1 ? (
+        {/* {currentPage < story.length - 1 ? (
           <img
             src={pageNextButton}
             alt="다음 페이지"
@@ -228,8 +208,8 @@ useEffect(() => {
           />
         ) : (
           <div className="w-20 h-20" />
-        )}
-        {/* {currentPage < story.length - 1 ? (
+        )} */}
+        {currentPage < story.length - 1 ? (
             <img
               src={pageNextButton}
               alt="다음 페이지"
@@ -250,7 +230,7 @@ useEffect(() => {
             />
           ) : (
             <div className="w-20 h-20" />
-          )} */}
+          )}
       </div>
 
       {isCompleteModalOpen && (
