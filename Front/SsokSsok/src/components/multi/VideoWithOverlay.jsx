@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { OpenVidu } from "openvidu-browser";
 import VideoPlayer from "./VideoPlayer";
 import { getTokenFromServer } from "../../services/openviduApi";
@@ -12,6 +12,13 @@ const VideoWithOverlay = ({ roomId, userName, children }) => {
   const videoRef = useRef(null);
   const subscribedConnectionIds = useRef(new Set());
   const alreadyInitialized = useRef(false);
+
+  // ✅ 렌더링 이후 video 엘리먼트에 연결
+  useLayoutEffect(() => {
+    if (publisher && videoRef.current) {
+      publisher.addVideoElement(videoRef.current);
+    }
+  }, [publisher]);
 
   useEffect(() => {
     const initSession = async () => {
@@ -27,6 +34,7 @@ const VideoWithOverlay = ({ roomId, userName, children }) => {
         const connectionId = event.stream.connection.connectionId;
         if (subscribedConnectionIds.current.has(connectionId)) return;
         subscribedConnectionIds.current.add(connectionId);
+
         const subscriber = newSession.subscribe(event.stream, undefined);
         setSubscribers((prev) => [...prev, subscriber]);
       });
@@ -82,9 +90,9 @@ const VideoWithOverlay = ({ roomId, userName, children }) => {
           <div className="relative">
             <video
               autoPlay
-              ref={videoRef}
               playsInline
               muted
+              ref={videoRef}
               className="w-full h-auto"
             />
             {/* 오버레이 요소 */}
@@ -94,7 +102,7 @@ const VideoWithOverlay = ({ roomId, userName, children }) => {
           </div>
         </div>
       )}
-  
+
       {/* 상대방 영상 */}
       {subscribers.map((sub) => (
         <div key={sub.stream.connection.connectionId}>
