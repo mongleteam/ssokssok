@@ -17,4 +17,6 @@ public interface NotificationService {
 
     void deleteMultiNotification(String userPk, FriendRequestDTO friendRequestDTO);
 
+    void cancelMultiNotification(String userPk, FriendRequestDTO friendRequestDTO);
+
 }
