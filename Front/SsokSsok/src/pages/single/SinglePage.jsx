@@ -4,12 +4,16 @@ import StoryHeader from "../../components/StoryHeader";
 import PhotoModal from "../../components/story/PhotoModal";
 import SingleStoryRenderer from "../../components/single/SingleStoryRenderer";
 import JSZip from "jszip";
+import { useLocation } from "react-router-dom";
 
 function SinglePage() {
     const [showModal, setShowModal ] = useState(true); // 진입 시 자동 오픈픈
     const [story, setStory] = useState(null); // ✅ 추가
     const [assets, setAssets] = useState(null); // ✅ 추가
     
+    const location = useLocation();
+    const { progressPk, fairytale, nowPage, role } = location.state || {};
+    // console.log("storypage.pk🍕", progressPk, fairytale)
 
     useEffect(() => {
         // 진입하자마자 preload 시작!
@@ -55,9 +59,15 @@ function SinglePage() {
 
         <div className="content-container">
            
-            {/* 삽화, 미션, 힌트 등 하위 컴포넌트 */}
-            {!showModal && story && assets && (
-        <SingleStoryRenderer story={story} assets={assets} />
+        {/* 삽화, 미션, 힌트 등 하위 컴포넌트 */}
+        {!showModal && story && assets && (
+        <SingleStoryRenderer 
+        story={story} 
+        assets={assets} 
+        progressPk={progressPk}
+        totalPageCount={fairytale?.count || story.length}
+        nowPage={nowPage}
+        />
       )}
         </div>
         

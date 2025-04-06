@@ -15,6 +15,8 @@ import RoleSelectModal from "../../components/multi/RoleSelectModal";
 import FriendSelectModal from "../../components/multi/FriendSelectModal";
 import InviteConfirmModal from "../../components/multi/InviteConfirmModal";
 import WaitingModal from "../../components/multi/WaitingModal";
+import { createSingleProgressApi } from "../../apis/singleApi";
+import ContinueSingleModal from "../../components/story/ContinueSingleModal";
 
 const BookStartPage = () => {
   const [bookData, setBookData] = useState(null)
@@ -29,6 +31,10 @@ const BookStartPage = () => {
 
   const [showContinueModal, setShowContinueModal] = useState(false);
   const [selectedProgress, setSelectedProgress] = useState(null);
+
+  const [selectedContinueProgress, setSelectedContinueProgress] = useState(null);
+  const [showContinueConfirmModal, setShowContinueConfirmModal] = useState(false);
+
  
   
   useEffect(() => {
@@ -62,6 +68,56 @@ const BookStartPage = () => {
     setShowContinueModal(true);
   };
 
+  // 싱글 스토리 진행 시작 생성
+  const handleStartSingle = async () => {
+    try {
+      const response = await createSingleProgressApi({
+        mode: "SINGLE",
+        friendId: null,
+        nowPage: 1,
+        fairytalePk: fairytale.fairytalePk,
+        role: "FIRST",
+      });
+      console.log("api 응답 : ", response.data)
+  
+      if (response.data.isSuccess) {
+        const progressPk = response.data.data;
+        navigate("/single", {
+          state: {
+            progressPk,
+            nowPage: 1,
+            role: "FIRST",
+            fairytale,
+          },
+        });
+      } else {
+        console.error("실패:", response.data);
+      }
+    } catch (error) {
+      console.error("에러:", error);
+    }
+  };
+
+  // 싱글 스토리 이어하기 핸들러 생성
+
+  const handleConfirmContinue = () => {
+    if (!selectedContinueProgress) return;
+    navigate("/single", {
+      state: {
+        progressPk: selectedContinueProgress.progressPk,
+        nowPage: selectedContinueProgress.nowPage,
+        role: selectedContinueProgress.role,
+        fairytale,
+      },
+    });
+  };
+  
+
+  const handleClickContinueSingle = (progress) => {
+    setSelectedContinueProgress(progress);
+    setShowContinueConfirmModal(true); // 모달 열기
+  };
+  
 
   return (
     <>
@@ -81,7 +137,7 @@ const BookStartPage = () => {
           <div className="w-1/2 h-full flex flex-col items-center">
             <h2 className="text-3xl font-whitechalk">혼자서도 즐겨요!</h2>
             <div className="relative group w-[15rem] mb-4 cursor-pointer"
-             onClick={() => navigate("/single")}>
+             onClick={handleStartSingle}>
               <img src={modeBoard} alt="modeBoard" className="w-full transition shake-hover" />
               <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/3 font-whitechalk text-3xl text-white drop-shadow-md">
                 싱글 모드
@@ -100,7 +156,12 @@ const BookStartPage = () => {
                     >
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-black font-whitechalk text-xl">싱글 진행률</p>
-                    <img src={continueBtn} alt="이어하기" className="w-[6rem] cursor-pointer" />
+                    <img 
+                    src={continueBtn} 
+                    alt="이어하기" 
+                    className="w-[6rem] cursor-pointer"
+                    onClick={() => handleClickContinueSingle(progress)}
+                    />
                   </div>
                   <div className="flex gap-1">
                     {[...Array(fairytale.count)].slice(0, 5).map((_, i) => (
@@ -116,6 +177,13 @@ const BookStartPage = () => {
               <p className="font-whitechalk mt-2">싱글모드를 시작해보세요!</p>
             )}
           </div>
+
+          {showContinueConfirmModal && (
+            <ContinueSingleModal
+              onConfirm={handleConfirmContinue}
+              onCancel={() => setShowContinueConfirmModal(false)}
+            />
+          )}
 
           {/* 멀티모드 */}
           <div className="w-1/2 h-full flex flex-col items-center">
