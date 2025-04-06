@@ -4,6 +4,7 @@ import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
 import { useHandGesture } from "../../../hooks/useHandGesture";
 import startBtn from "../../../assets/images/btn_green.png";
+import { sendMessage } from "../../../services/socket";
 
 // 가위바위보 이모지 매핑
 const gestureToEmoji = {
@@ -13,10 +14,14 @@ const gestureToEmoji = {
 };
 
 const RockScissorsPaper = ({
-  onSuccess,
+  onSuccess, 
   setStatusContent,
+  missionData,
   assets,
   publisher,
+  roomId,
+  userName,
+  from
 }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -92,6 +97,11 @@ const RockScissorsPaper = ({
     if (result === "win") {
       setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
       onSuccess?.();
+      sendMessage("isSuccess", {
+        senderName: userName,
+        roomId,
+        isSuccess: "성공",
+      });
     } else if (result === "lose") {
       setMissionMessage("😵 패배 - 다시 도전해보세요!");
     } else {

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
+import { sendMessage } from "../../../services/socket";
 
 const HOLD_DURATION = 3000; // 3초 머물기
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 360;
 
-const TreasureHunt = ({ onSuccess, setStatusContent, missionData, assets }) => {
+const TreasureHunt = ({ onSuccess, setStatusContent, missionData, assets, userName, roomId }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -154,7 +155,14 @@ const TreasureHunt = ({ onSuccess, setStatusContent, missionData, assets }) => {
         const audio = new Audio(assets[soundSuccess]);
         audio.play().catch(() => {});
       }
-      setTimeout(() => onSuccess?.(), 1000);
+      setTimeout(() => {
+        onSuccess?.();
+        sendMessage("isSuccess", {
+          senderName: userName,
+          roomId,
+          isSuccess: "성공",
+        });
+      }, 1000);
     } else {
       setShowNotice(true);
       if (soundFail && assets[soundFail]) {

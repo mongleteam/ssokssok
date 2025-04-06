@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { Holistic } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
 import { useMouthTracker } from "../../../hooks/useMouthTracker";
+import { sendMessage } from "../../../services/socket";
 
 
 const EatCookie = ({
@@ -113,6 +114,11 @@ const EatCookie = ({
     if (count >= MAX_COOKIE) {
       setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
       onSuccess?.();
+      sendMessage("isSuccess", {
+        senderName: userName,
+        roomId,
+        isSuccess: "성공",
+      });
     }
    
   }, [count, onSuccess]);
