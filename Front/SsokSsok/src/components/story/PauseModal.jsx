@@ -3,8 +3,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import boardBackground from "../../assets/images/board3.png";
 import greenButton from "../../assets/images/btn_green.png";
+import { sendMessage, disconnectSocket } from "../../services/socket";
 
-const PauseModal = () => {
+const PauseModal = ({ roomId, userName }) => {
   const navigate = useNavigate();
 
   return (
@@ -21,7 +22,14 @@ const PauseModal = () => {
         </p>
 
         <button
-          onClick={() => navigate("/main")}
+          onClick={() => {
+            sendMessage("leaveGame", {
+              roomId,
+              username: userName,
+            });
+            disconnectSocket();
+            navigate("/main");
+          }}          
           className="relative w-52 h-20 text-black font-whitechalk text-2xl hover:scale-105 transition-transform duration-200"
         >
           <img

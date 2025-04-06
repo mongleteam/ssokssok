@@ -266,6 +266,19 @@ function MultiPage() {
     setStatusContent(null);
   }, [currentPage]);
 
+  useEffect(() => {
+    onSocketEvent("leaveGame", ({ username, exitMessage }) => {
+      alert(exitMessage || `${username} 님이 연결을 종료했습니다.`);
+      disconnectSocket(); // 연결 정리
+      navigate("/main");  // 메인으로 이동
+    });
+  
+    return () => {
+      offSocketEvent("leaveGame");
+    };
+  }, []);
+  
+
   const handleInviteeJoined = async () => {
     sendMessage("sendStartInfo", {
       roomId,
@@ -458,7 +471,11 @@ function MultiPage() {
       )}
       {isPauseModalOpen && (
         <div className="absolute inset-0 flex items-center justify-center z-50">
-          <PauseModal />
+          <PauseModal
+            roomId={roomId}
+            userName={role}
+          />
+
         </div>
       )}
       {!isMissionVisible && (
