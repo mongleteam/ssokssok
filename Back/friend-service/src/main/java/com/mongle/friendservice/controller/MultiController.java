@@ -46,4 +46,14 @@ public class MultiController {
 
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "멀티 요청 거절에 성공했습니다.", false));
     }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<ApiResponseJson> cancelNotification(
+            @RequestHeader("X-User-Id") String userPk,
+            @RequestBody FriendRequestDTO friendRequestDTO
+    ){
+        notificationService.cancelMultiNotification(userPk, friendRequestDTO);
+
+        return ResponseEntity.ok(new ApiResponseJson(true, 200, "멀티 요청을 취소했습니다.", true));
+    }
 }

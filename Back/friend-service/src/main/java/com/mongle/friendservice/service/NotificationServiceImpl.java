@@ -132,6 +132,22 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    @Override
+    public void cancelMultiNotification(String userPk, FriendRequestDTO friendRequestDTO) {
+        String friendId = friendRequestDTO.getFriendId();
+        String friendPk = userServiceClient.getUUID(friendId);
+        String userId = userServiceClient.getId(userPk);
+
+        String redisKey = REDIS_NOTIFICATION_PREFIX + friendPk + ":" + userId;
+
+        Boolean result = redisTemplate.delete(redisKey);
+
+        if (Boolean.FALSE.equals(result)) {
+            throw new CustomException(ErroCode.NOTIFICATION_NOT_FOUND);
+        }
+        sendNotification(friendPk);
+    }
+
 
 
 
