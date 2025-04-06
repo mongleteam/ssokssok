@@ -51,6 +51,11 @@ function MultiPage() {
     location.state?.progressPk || null
   );
   const [startReady, setStartReady] = useState(from !== "invitee");
+  const [missionSuccessMap, setMissionSuccessMap] = useState({
+    inviter: false,
+    invitee: false,
+  });
+  
 
   const navigate = useNavigate();
 
@@ -58,15 +63,23 @@ function MultiPage() {
     const currentData = storyData[currentPage];
     const nextPage = currentPage + 1;
     const shouldSave = from === "inviter" && !isMissionVisible && progressPk;
-
-
-    
+  
+    // 미션 중이고, 초대한 쪽이면 성공 여부 체크
+    if (isMissionVisible && from === "inviter") {
+      const bothSuccess = missionSuccessMap.inviter && missionSuccessMap.invitee;
+      if (!bothSuccess) {
+        alert("양쪽 모두 미션을 성공해야 다음 페이지로 넘어갈 수 있어요!");
+        return;
+      }
+    }
+  
+    // 미션 종료 처리
     if (isMissionVisible) {
       setIsMissionVisible(false);
       setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
       setCurrentPage(nextPage);
       setPageIndex(nextPage + 1);
-
+  
       if (from === "inviter") {
         sendMessage("prevNext", { roomId, next: true, prev: false });
         if (shouldSave) {
@@ -79,16 +92,19 @@ function MultiPage() {
       }
       return;
     }
-
+  
+    // 새로운 미션 진입
     const isMission = currentData.mission && !viewedMissions[currentPage];
     if (isMission) {
       setIsMissionVisible(true);
+      setMissionSuccessMap({ inviter: false, invitee: false }); // 🎯 성공 상태 초기화!
       if (from === "inviter") {
         sendMessage("prevNext", { roomId, next: true, prev: false });
       }
       return;
     }
-
+  
+    // 일반 페이지 이동
     setCurrentPage(nextPage);
     setPageIndex(nextPage + 1);
     if (from === "inviter") {
@@ -109,7 +125,9 @@ function MultiPage() {
     progressPk,
     storyData,
     roomId,
+    missionSuccessMap, // ⚠️ 상태 쓰고 있으니 이거도 의존성에 꼭!
   ]);
+  
 
   const handlePreviousPage = useCallback(() => {
     const prevPage = currentPage - 1;
@@ -131,6 +149,22 @@ function MultiPage() {
       }
     }
   }, [currentPage, isMissionVisible, from, roomId]);
+
+  useEffect(() => {
+    onSocketEvent("isSuccess", ({ senderName, isSuccess }) => {
+      console.log("📩 isSuccess 이벤트 수신:", { senderName, isSuccess });
+
+      setMissionSuccessMap((prev) => {
+        const key = senderName === role ? "inviter" : "invitee";
+        return { ...prev, [key]: isSuccess === "성공" };
+      });
+    });
+  
+    return () => {
+      offSocketEvent("isSuccess");
+    };
+  }, [role]);
+  
 
   useEffect(() => {
     const index = location.state?.pageIndex;

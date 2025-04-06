@@ -4,6 +4,7 @@ import EatCookie from "../multi/mission/EatCookie";
 import RockScissorsPaper from "../multi/mission/RockScissorsPaper";
 import WebcamGetKey from "../multi/mission/WebcamGetKey";
 import CleanMissionMulti from "../multi/mission/CleanMission";
+import SilentMissionMulti from "../multi/mission/SilentMissionMulti";
 
 const MissionRouter = ({
   type,
@@ -91,8 +92,18 @@ const MissionRouter = ({
         />
       );
 
-    // case "webcam-silent-multi":
-    //   return <SilentMission ... />;
+      case "webcam-silent-multi":
+        return (
+          <SilentMissionMulti
+            onSuccess={onSuccess}
+            setStatusContent={setStatusContent}
+            roomId={roomId}
+            userName={role}
+            publisher={publisher} // ✅ 꼭 추가
+          />
+        );
+      
+
     // case "webcam-draw-star-multi":
     //   return <DrawStarMission ... />;
     default:
