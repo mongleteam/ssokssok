@@ -69,45 +69,40 @@ const DrawStarMission = ({
     if (!canvas || !bgRef.current) return;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // 좌우 반전
     ctx.save();
     ctx.translate(CANVAS_WIDTH, 0);
     ctx.scale(-1, 1);
+    ctx.restore();
 
+    // 배경
     ctx.drawImage(bgRef.current, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    if (starPoints.length > 1) {
+    // 유저 그린 선
+    if (drawPath.length > 1) {
       ctx.beginPath();
-      ctx.strokeStyle = "rgba(180,180,180,0.5)";
-      ctx.lineWidth = 2;
-      ctx.moveTo(CANVAS_WIDTH - drawPath[0].x, drawPath[0].y);
+      ctx.strokeStyle = "yellow";
+      ctx.lineWidth = 3;
+      ctx.moveTo(drawPath[0].x, drawPath[0].y);
       for (let i = 1; i < drawPath.length; i++) {
-        ctx.lineTo(CANVAS_WIDTH - drawPath[i].x, drawPath[i].y);
+        ctx.lineTo(drawPath[i].x, drawPath[i].y);
       }
       ctx.stroke();
     }
 
-    // ✍️ 유저가 그린 선
-    if (drawPath.length > 1) {
-        ctx.beginPath();
-        ctx.strokeStyle = "yellow";
-        ctx.lineWidth = 3;
-        ctx.moveTo(CANVAS_WIDTH - drawPath[0].x, drawPath[0].y);
-        for (let i = 1; i < drawPath.length; i++) {
-        ctx.lineTo(CANVAS_WIDTH - drawPath[i].x, drawPath[i].y);
-        }
-        ctx.stroke();
-    }
-
+    // 별 점들
     starPoints.forEach((p, i) => {
       ctx.beginPath();
-      ctx.arc(CANVAS_WIDTH - p.x, p.y, 6, 0, 2 * Math.PI);
+      ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI);
       ctx.fillStyle = visited[i] ? "#00ff00" : "gray";
       ctx.fill();
     });
 
+    // 손가락 점
     if (currentFingerPos) {
       ctx.beginPath();
-      ctx.arc(CANVAS_WIDTH - currentFingerPos.x, currentFingerPos.y, 5, 0, 2 * Math.PI);
+      ctx.arc(currentFingerPos.x, currentFingerPos.y, 5, 0, 2 * Math.PI);
       ctx.fillStyle = "#00bfff";
       ctx.fill();
     }
@@ -129,15 +124,16 @@ const DrawStarMission = ({
       minDetectionConfidence: 0.7,
       minTrackingConfidence: 0.5,
     });
-    hands.onResults((results) => {
-      if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) return;
 
+    hands.onResults((results) => {
+      if (!results.multiHandLandmarks?.length) return;
       const landmarks = results.multiHandLandmarks[0];
       const fingerTip = landmarks[8];
       const fingerPip = landmarks[6];
 
+      // 반전된 캔버스 좌표
       const tip = {
-        x: fingerTip.x * CANVAS_WIDTH, // 원래는 이렇게 되어야 정상 인식
+        x: CANVAS_WIDTH - fingerTip.x * CANVAS_WIDTH,
         y: fingerTip.y * CANVAS_HEIGHT,
       };
       const pipY = fingerPip.y * CANVAS_HEIGHT;
@@ -147,6 +143,7 @@ const DrawStarMission = ({
       const isDrawing = tip.y < pipY - 10;
       if (isDrawing) {
         setDrawPath((prev) => [...prev, tip]);
+
         setVisited((prev) => {
           const updated = [...prev];
           starPoints.forEach((point, i) => {
@@ -171,6 +168,7 @@ const DrawStarMission = ({
       if (videoRef.current && publisher?.stream) {
         const stream = publisher.stream.getMediaStream();
         videoRef.current.srcObject = stream;
+
         try {
           await videoRef.current.play();
           const camera = new Camera(videoRef.current, {
@@ -188,27 +186,35 @@ const DrawStarMission = ({
     setupCamera();
   }, [publisher, starPoints]);
 
-  const progress = visited.length > 0 ? Math.round((visited.filter((v) => v).length / visited.length) * 100) : 0;
+  const progress =
+    visited.length > 0
+      ? Math.round((visited.filter((v) => v).length / visited.length) * 100)
+      : 0;
 
   useEffect(() => {
     setStatusContent?.(
       <div className="text-3xl font-cafe24 text-green-700 text-center animate-pulse">
-        마법주문 진행률: {progress}%
+        마법진 그리기 진행률: {progress}%
       </div>
     );
     return () => setStatusContent?.(null);
   }, [progress]);
 
   return (
-    <>
-      <video ref={videoRef} autoPlay muted  style={{ transform: "scaleX(-1)" }} className="hidden" />
+    <div className="relative w-full max-w-[640px] mx-auto aspect-video">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        className="absolute top-0 left-0 w-full h-full object-cover scale-x-[-1]" // 비디오만 반전
+      />
       <canvas
         ref={canvasRef}
         width={CANVAS_WIDTH}
         height={CANVAS_HEIGHT}
         className="absolute top-0 left-0 w-full h-full z-10"
       />
-    </>
+    </div>
   );
 };
 
