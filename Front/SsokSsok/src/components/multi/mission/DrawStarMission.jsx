@@ -193,7 +193,7 @@ const DrawStarMission = ({
   useEffect(() => {
     setStatusContent?.(
       <div className="text-3xl font-cafe24 text-green-700 text-center animate-pulse">
-        별 그리기 진행률: {progress}%
+        마법주문 진행률: {progress}%
       </div>
     );
     return () => setStatusContent?.(null);
