@@ -1,7 +1,7 @@
 import React from "react";
-
 import HandHoldBreadOverlay from "../multi/mission/HandHoldBreadOverlay";
 import TreasureHunt from "../multi/mission/TreasureHunt";
+import DrawStarMission from "../multi/mission/DrawStarMission";
 const IllustrationRouter = ({
   type,
   role,
@@ -51,6 +51,19 @@ const IllustrationRouter = ({
     //   return <SilentMission ... />;
     // case "webcam-draw-star-multi":
     //   return <DrawStarMission ... />;
+    case "webcam-draw-multi":
+      return (
+        <DrawStarMission
+          onSuccess={onSuccess}
+          missionData={missionData}
+          assets={assets}
+          publisher={publisher}
+          roomId={roomId}
+          userName={role}
+          from={from}
+          setStatusContent={setStatusContent}
+        />
+      )
     default:
       return null;
   }
