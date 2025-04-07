@@ -165,7 +165,8 @@ useEffect(() => {
 
   
   return (
-    <div className="flex flex-col items-center w-full max-w-6xl mx-auto space-y-4 mt-3">
+    <div className="min-h-screen flex items-center justify-center bg-beige px-4">
+    <div className="flex flex-col items-center w-full max-w-6xl mx-auto space-y-4 mt-2">
       <StoryPage
         page={page}
         showMission={showMission}
@@ -265,6 +266,7 @@ useEffect(() => {
       </span>
     </button>
 
+    </div>
     </div>
   );
 };

@@ -9,20 +9,27 @@ export const useHandGesture = (handLandmarks, isActive = false) => {
   const [witchGesture, setWitchGesture] = useState("?");
   const [result, setResult] = useState("Waiting...");
 
+  // 마녀 손 계속 바꾸기
   useEffect(() => {
     if (!isActive) return;
-    if (handLandmarks) {
-      const gesture = getHandGesture(handLandmarks);
-      if (gesture && ["rock", "paper", "scissors"].includes(gesture)) {
-        const randomWitch = getRandomWitchHand();
-        setPlayerGesture(gesture);
-        setWitchGesture(randomWitch);
-        setResult(judgeRPS(gesture, randomWitch));
-      }
-    }
-  }, [handLandmarks, isActive]);
+    const interval = setInterval(() => {
+      setWitchGesture(getRandomWitchHand());
+    }, 100); // 
 
-  // ✅ 외부에서 초기화할 수 있도록 함수 제공
+    return () => clearInterval(interval);
+  }, [isActive]);
+
+  // 내 손 제스처 인식
+  useEffect(() => {
+    if (!isActive || !handLandmarks) return;
+    const gesture = getHandGesture(handLandmarks);
+    if (gesture && ["rock", "paper", "scissors"].includes(gesture)) {
+      setPlayerGesture(gesture);
+      setResult(judgeRPS(gesture, witchGesture));
+    }
+  }, [handLandmarks, isActive, witchGesture]);
+
+  // 외부에서 초기화할 수 있도록 함수 제공
   const resetGesture = useCallback(() => {
     setPlayerGesture("None");
     setWitchGesture("?");
@@ -33,6 +40,6 @@ export const useHandGesture = (handLandmarks, isActive = false) => {
     playerGesture,
     witchGesture,
     result,
-    resetGesture, // ✅ 반환
+    resetGesture,
   };
 };
