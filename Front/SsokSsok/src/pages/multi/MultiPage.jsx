@@ -12,19 +12,11 @@ import PhotoModal from "../../components/story/PhotoModal";
 import WaitingModal from "../../components/multi/WaitingModal";
 import JSZip from "jszip";
 import VideoWithOverlay from "../../components/multi/VideoWithOverlay";
-import CollectStoneOverlay from "../../components/multi/mission/CollectStoneOverlay.jsx";
 import MissionRouter from "../../components/story/MissionRouter.jsx";
 import IllustrationRouter from "../../components/story/IllustrationRouter.jsx";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
-import {
-  connectSocket,
-  disconnectSocket,
-  joinRoom,
-  sendMessage,
-  onSocketEvent,
-  offSocketEvent,
-} from "../../services/socket";
+import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
 
 import nextIcon from "../../assets/images/pagenext_icon.png";
 import previousIcon from "../../assets/images/pageprevious_icon.png";
@@ -63,6 +55,7 @@ function MultiPage() {
     const currentData = storyData[currentPage];
     const nextPage = currentPage + 1;
     const shouldSave = from === "inviter" && !isMissionVisible && progressPk;
+    const shouldSaveOnMissionEnd = from === "inviter" && progressPk;
   
     // 미션 중이고, 초대한 쪽이면 성공 여부 체크
     // if (isMissionVisible && from === "inviter") {
@@ -82,13 +75,14 @@ function MultiPage() {
   
       if (from === "inviter") {
         sendMessage("prevNext", { roomId, next: true, prev: false });
-        if (shouldSave) {
+        if (shouldSaveOnMissionEnd) {
+          console.log("📝 진행상황 저장 시도 (미션 종료):", progressPk);
           await updateProgressApi(progressPk, {
             nowPage: nextPage + 1,
             finish: false,
           });
           console.log("✅ 저장 완료 (미션 종료):", nextPage + 1);
-        }
+        }        
       }
       return;
     }
@@ -303,9 +297,11 @@ function MultiPage() {
           fairytalePk: fairytale.fairytalePk,
           role: role === fairytale.first ? "FIRST" : "SECOND",
         });
-        const newPk = res.data?.data?.progressPk;
+        const newPk = res.data?.data;
+        
         if (newPk) {
           setProgressPk(newPk); // ✅ 상태 저장!
+          // console.log("✅ 진행상황 pk 받아오기 완!", newPk);
         }
         console.log("진행상황 등록 완료!");
       } catch (err) {
@@ -480,8 +476,21 @@ function MultiPage() {
       )}
       {!isMissionVisible && (
         <button
-          onClick={() => {
+          onClick={async() => {
             if (currentPage === storyData.length - 1) {
+              if (from === "inviter" && progressPk) {
+                try {
+                  await updateProgressApi(progressPk, {
+                    nowPage: pageIndex,
+                    finish: true,
+                  });
+                  console.log("✅ 읽기 완료 처리 완");
+                } catch (err) {
+                  console.error("❌ 읽기 완료 처리 실패:", err);
+                }
+              }
+              sendMessage("leaveGame", { roomId, username: role });
+              disconnectSocket();
               setIsCompleteModalOpen(true);
             } else {
               setIsPauseModalOpen(true);
