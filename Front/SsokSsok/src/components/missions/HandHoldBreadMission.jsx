@@ -61,7 +61,7 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
     for (const bread of breads) {
       if (bread.collected) continue;
       const dx = Math.abs(bread.x - (1 - fingerPos.x) * 100);
-      const dy = Math.abs(bread.y - fingerPos.y * 100);
+      const dy = Math.abs(bread.y - (fingerPos.y-0.03) * 100);
       if (dx < 10 && dy < 10) {
         found = bread;
         break;
@@ -101,7 +101,7 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = (
-      <div className="text-3xl font-cafe24 text-brown-800">
+      <div className="text-2xl font-cafe24 text-brown-800">
         {missionMessage ? (
           <div className="text-green-700 animate-pulse font-cafe24">{missionMessage}</div>
         ) : (
@@ -131,7 +131,7 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
             key={bread.id}
             src={assets[breadImg]}
             alt="bread"
-            className="absolute w-14 h-14 z-10"
+            className="absolute w-12 h-12 z-10"
             style={{ left: `${bread.x}%`, top: `${bread.y}%` }}
           />
         ) : null
@@ -139,13 +139,15 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
 
       {fingerPos && (
         <div
-          className="absolute w-5 h-5 bg-red-500 rounded-full z-40"
+          className="absolute text-6xl z-40"
           style={{
             left: `${(1 - fingerPos.x) * 100}%`,
             top: `${fingerPos.y * 100}%`,
             transform: "translate(-50%, -50%)",
           }}
-        />
+          >
+            👆
+       </div>
       )}
 
       {countdown !== null && <CountdownOverlay count={countdown} />}

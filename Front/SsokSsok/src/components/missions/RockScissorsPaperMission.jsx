@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { useTrackingCore } from "../../hooks/useTrackingCore";
-import { captureCompositeImage} from "../../utils/captureCompositeImage";
+import { captureCompositeImage } from "../../utils/captureCompositeImage";
 import { useHandGesture } from "../../hooks/useHandGesture";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
@@ -22,9 +22,13 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
   const [countdown, setCountdown] = useState(null); // 카운트다운
   const [gameOver, setGameOver] = useState(false); // 게임 종료 여부
   const [missionMessage, setMissionMessage] = useState(""); // 결과 메시지
+  const [noHandDetected, setNoHandDetected] = useState(false);
+  
 
   // 이미 결과 처리했는지 체크 (한 번만 처리)
   const handledRef = useRef(false);
+
+
 
   // MediaPipe/캡처 관련 훅
   const {
@@ -41,7 +45,11 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     handLandmarks,
     isPlaying
   );
+  const handLandmarksRef = useRef(null);
 
+  useEffect(() => {
+    handLandmarksRef.current = handLandmarks;
+  }, [handLandmarks]);
   // [1] 결과 판정: 한 번만 처리
   useEffect(() => {
     // 아직 게임오버 아니거나, 결과가 없거나, 이미 처리했다면 무시
@@ -68,20 +76,35 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     handledRef.current = false;
     setGameOver(false);
     setIsPlaying(true);
-    setMissionMessage(""); // 결과 메시지 초기화
-    setCountdown(3); // 카운트다운 시작
+    setNoHandDetected(false);
+    setMissionMessage("");
+    setCountdown(3);
 
     let count = 3;
+    let handDetected = false;
+
+    const checkHandInterval = setInterval(() => {
+      const current = handLandmarksRef.current;
+      if (current && current.length > 0) {
+        handDetected = true;
+      }
+    }, 200);
+
     const timer = setInterval(() => {
       count -= 1;
       setCountdown(count);
       if (count === 0) {
         clearInterval(timer);
+        clearInterval(checkHandInterval);
         setCountdown(null);
-        // 1초 후 게임 종료
         setTimeout(() => {
           setIsPlaying(false);
           setGameOver(true);
+          if (!handDetected) {
+            setNoHandDetected(true);
+            handledRef.current = true;
+            setMissionMessage("🙅 손이 인식되지 않았습니다.");
+          }
         }, 1000);
       }
     }, 1000);
@@ -141,9 +164,27 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
         </div>
       );
     }
+    if (noHandDetected) {
+      return (
+        <div
+          className="relative flex flex-row items-center justify-center gap-4 text-center text-2xl font-bold text-red-600 animate-pulse font-cafe24"
+          style={{ transform: "translateY(-20px)" }}
+        >
+          <div>🙅 손이 인식되지 않았습니다!</div>
+          <button
+            onClick={startGame}
+            className="relative inline-block text-black rounded-lg text-xl"
+          >
+            <img src={startBtn} alt="버튼" className="w-40 mx-auto" />
+            <span className="absolute inset-0 flex items-center justify-center font-bold text-2xl mb-2">
+              재도전
+            </span>
+          </button>
+        </div>
+      );
+    }
 
-
-    return null;
+    return <div style={{ minHeight: "40px" }}></div>;
   }, [isPlaying, countdown, gameOver, missionMessage, result]);
 
   // [2] 무조건 setStatusContent 호출 (최초 렌더 포함)
