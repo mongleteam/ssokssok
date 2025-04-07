@@ -51,46 +51,49 @@ const MyAlbumPage = () => {
               alt="MyAlbumBoard"
               className="w-[22rem] mt-20 -translate-y-80 z-10"
             />
-            {/* 앨범 스크롤 컨테이너 */}
-            <div className="absolute bottom-[5.5rem] left-1/2 translate-x-[-52.5%] w-[43rem] h-[27rem] overflow-y-scroll z-10 custom-scrollbar">
-              <div className="flex justify-end px-4 pt-0">
-              <button
-                className="bg-red-400 text-white py-1.5 px-4 rounded font-whitechalk text-sm"
-                onClick={deleteSelectedImages}
-              >
-                선택 삭제
-              </button>
-              </div>
-              <div className="grid grid-cols-4 gap-4 px-4 py-2">
-              {albumData.map((item) => (
-                <div
-                  key={item.myalbumPk}
-                  className="relative flex flex-col items-center bg-[#fef5e7] p-1 rounded-lg shadow-md"
-                >
-                  <input
-                    type="checkbox"
-                    className="absolute top-1 right-1 w-4 h-4"
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedImages((prev) => [...prev, item.myalbumPk]);
-                      } else {
-                        setSelectedImages((prev) => prev.filter((id) => id !== item.myalbumPk));
-                      }
-                    }}
-                  />
-                  <img
-                    src={item.myalbumImgUrl}
-                    alt="album"
-                    onClick={() => setPreviewImage(item.myalbumImgUrl)}
-                    className="w-full aspect-square object-cover rounded-md cursor-pointer"
-                  />
-                  <p className="text-xs mt-1 text-gray-700 font-dodam">{item.createdDate}</p>
-                  <p className="text-sm font-semibold text-brown-800 font-dodam">{item.title}</p>
-                </div>
-              ))}
+            {/* 선택 삭제 버튼 */}
+            <button
+              className="absolute top-[12rem] right-[22.5rem] bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded-lg z-30 text-xl font-whitechalk shadow-md transition"
+              onClick={deleteSelectedImages}
+            >
+              선택 삭제
+            </button>
+            </div>
 
+            {/* 앨범 스크롤 컨테이너 */}
+            <div className="absolute bottom-[3.5rem] left-1/2 translate-x-[-52.5%] w-[43rem] h-[30rem] overflow-y-scroll z-10 custom-scrollbar">
+              <div className="grid grid-cols-4 gap-4 px-4 py-2">
+                {albumData.map((item) => (
+                  <div
+                    key={item.myalbumPk}
+                    className="relative flex flex-col items-center bg-[#fef5e7] p-1 rounded-lg shadow-md"
+                  >
+                    <input
+                      type="checkbox"
+                      className="absolute top-1 right-1 w-4 h-4"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedImages((prev) => [...prev, item.myalbumPk]);
+                        } else {
+                          setSelectedImages((prev) =>
+                            prev.filter((id) => id !== item.myalbumPk)
+                          );
+                        }
+                      }}
+                    />
+                    <img
+                      src={item.myalbumImgUrl}
+                      alt="album"
+                      onClick={() => setPreviewImage(item.myalbumImgUrl)}
+                      className="w-full aspect-square object-cover rounded-md cursor-pointer"
+                    />
+                    <p className="text-xs mt-1 text-gray-700 font-dodam">{item.createdDate}</p>
+                    <p className="text-sm font-semibold text-brown-800 font-dodam">{item.title}</p>
+                  </div>
+                ))}
               </div>
             </div>
+
 
             {previewImage && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
@@ -113,7 +116,6 @@ const MyAlbumPage = () => {
               alt="albumBoard"
               className="w-[57rem] max-w-none absolute bottom-[-7rem] left-1/2 translate-x-[-50%]"
             />
-          </div>
         </>
       );
     };
