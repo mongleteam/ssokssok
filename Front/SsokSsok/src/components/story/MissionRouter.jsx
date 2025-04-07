@@ -35,6 +35,7 @@ const MissionRouter = ({
           roomId={roomId}
           userName={role}
           from={from}
+          setStatusContent={setStatusContent}
         />
       );
     case "webcam-eatcookie":
