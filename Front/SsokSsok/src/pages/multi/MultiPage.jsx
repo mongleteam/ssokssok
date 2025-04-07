@@ -376,7 +376,7 @@ function MultiPage() {
             from === "inviter" &&
             missionSuccessMap.inviter &&
             missionSuccessMap.invitee
-              ? "animate-pulse"
+              ? "animate-bounce"
               : ""
           }`}
         />
@@ -397,7 +397,6 @@ function MultiPage() {
                   assets={assets}
                   publisher={publisher}
                   onSuccess={() => {
-                    setIsMissionVisible(false);
                     setViewedMissions((prev) => ({
                       ...prev,
                       [currentPage]: true,
