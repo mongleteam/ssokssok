@@ -12,19 +12,11 @@ import PhotoModal from "../../components/story/PhotoModal";
 import WaitingModal from "../../components/multi/WaitingModal";
 import JSZip from "jszip";
 import VideoWithOverlay from "../../components/multi/VideoWithOverlay";
-import CollectStoneOverlay from "../../components/multi/mission/CollectStoneOverlay.jsx";
 import MissionRouter from "../../components/story/MissionRouter.jsx";
 import IllustrationRouter from "../../components/story/IllustrationRouter.jsx";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
-import {
-  connectSocket,
-  disconnectSocket,
-  joinRoom,
-  sendMessage,
-  onSocketEvent,
-  offSocketEvent,
-} from "../../services/socket";
+import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
 
 import nextIcon from "../../assets/images/pagenext_icon.png";
 import previousIcon from "../../assets/images/pageprevious_icon.png";
@@ -480,8 +472,21 @@ function MultiPage() {
       )}
       {!isMissionVisible && (
         <button
-          onClick={() => {
+          onClick={async() => {
             if (currentPage === storyData.length - 1) {
+              if (from === "inviter" && progressPk) {
+                try {
+                  await updateProgressApi(progressPk, {
+                    nowPage: pageIndex,
+                    finish: true,
+                  });
+                  console.log("✅ 읽기 완료 처리 완");
+                } catch (err) {
+                  console.error("❌ 읽기 완료 처리 실패:", err);
+                }
+              }
+              sendMessage("leaveGame", { roomId, username: role });
+              disconnectSocket();
               setIsCompleteModalOpen(true);
             } else {
               setIsPauseModalOpen(true);
