@@ -6,8 +6,11 @@ import MyAlbumBoard from "../../assets/images/mybookpicture.png"
 import AlbumBoard from "../../assets/images/wood_board_album.png"
 import { deleteAlbumApi, getAlbumApi } from "../../apis/albumApi";
 import './MyAlbumPage.css';
+import CustomAlert from "../../components/CustomAlert";
+import CustomConfirm from "../../components/CustomConfirm";
 const MyAlbumPage = () => {
-
+    const [alertMessage, setAlertMessage] = useState("");
+    const [showAlert, setShowAlert] = useState(false);  
     const [albumData, setAlbumData] = useState([])
     const [selectedImages, setSelectedImages] = useState([]); // 삭제할 이미지 선택
     const [previewImage, setPreviewImage] = useState(null);    // 모달용 이미지
@@ -21,20 +24,23 @@ const MyAlbumPage = () => {
 
     const deleteSelectedImages = async () => {
       if (selectedImages.length === 0) {
-        alert("삭제할 사진을 선택해주세요!");
+        setAlertMessage("삭제할 사진을 선택해주세요!");
+        setShowAlert(true);
         return;
       }
-    
       try {
         await deleteAlbumApi({ myalbumPks: selectedImages });
-        alert("삭제가 완료되었습니다!");
-    
-        // 삭제된 항목을 화면에서 제거
-        setAlbumData((prev) => prev.filter(item => !selectedImages.includes(item.myalbumPk)));
+      
+        setAlbumData((prev) =>
+          prev.filter((item) => !selectedImages.includes(item.myalbumPk))
+        );
         setSelectedImages([]);
+        setAlertMessage("삭제가 완료되었습니다!");
+        setShowAlert(true);
       } catch (err) {
         console.error("삭제 실패:", err);
-        alert("삭제 중 오류가 발생했습니다.");
+        setAlertMessage("삭제 중 오류가 발생했습니다.");
+        setShowAlert(true);
       }
     };
 
@@ -62,8 +68,13 @@ const MyAlbumPage = () => {
 
             {/* 앨범 스크롤 컨테이너 */}
             <div className="absolute bottom-[3.5rem] left-1/2 translate-x-[-52.5%] w-[43rem] h-[30rem] overflow-y-scroll z-10 custom-scrollbar">
-              <div className="grid grid-cols-4 gap-4 px-4 py-2">
-                {albumData.map((item) => (
+            <div className="grid grid-cols-4 gap-4 px-4 py-2">
+              {albumData.length === 0 ? (
+                <p className="text-gray-500 text-xl col-span-4 text-center font-whitechalk">
+                  저장된 사진이 없습니다.
+                </p>
+              ) : (
+                albumData.map((item) => (
                   <div
                     key={item.myalbumPk}
                     className="relative flex flex-col items-center bg-[#fef5e7] p-1 rounded-lg shadow-md"
@@ -90,8 +101,10 @@ const MyAlbumPage = () => {
                     <p className="text-xs mt-1 text-gray-700 font-dodam">{item.createdDate}</p>
                     <p className="text-sm font-semibold text-brown-800 font-dodam">{item.title}</p>
                   </div>
-                ))}
-              </div>
+                ))
+              )}
+            </div>
+
             </div>
 
 
@@ -109,7 +122,12 @@ const MyAlbumPage = () => {
               </div>
             )}
 
-    
+            {showAlert && (
+              <CustomAlert
+                message={alertMessage}
+                onClose={() => setShowAlert(false)}
+              />
+            )}
             {/* 나무 앨범 보드 배경 */}
             <img
               src={AlbumBoard}
@@ -117,7 +135,9 @@ const MyAlbumPage = () => {
               className="w-[57rem] max-w-none absolute bottom-[-7rem] left-1/2 translate-x-[-50%]"
             />
         </>
+        
       );
+      
     };
     
     export default MyAlbumPage;
