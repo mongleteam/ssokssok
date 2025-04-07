@@ -19,6 +19,8 @@ const MissionRouter = ({
   roomId,
   from,
   setStatusContent, // EatCookieMission에 필요하므로 추가
+  setPeerStones,       // ✅ 추가
+  setStoneImage        // ✅ 추가
 }) => {
   const parsedRole = role === "헨젤" ? 1 : role === "그레텔" ? 2 : null;
   const isMatched =
@@ -38,6 +40,8 @@ const MissionRouter = ({
           userName={role}
           from={from}
           setStatusContent={setStatusContent}
+          setPeerStones={setPeerStones}
+          setStoneImage={setStoneImage}
         />
       );
     case "webcam-eatcookie":

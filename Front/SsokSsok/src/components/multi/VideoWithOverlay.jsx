@@ -3,7 +3,7 @@ import { OpenVidu } from "openvidu-browser";
 import VideoPlayer from "./VideoPlayer";
 import { getTokenFromServer } from "../../services/openviduApi";
 
-const VideoWithOverlay = ({ roomId, userName, children }) => {
+const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
   const [OV, setOV] = useState(null);
   const [session, setSession] = useState(null);
   const [publisher, setPublisher] = useState(null);
@@ -110,6 +110,12 @@ const VideoWithOverlay = ({ roomId, userName, children }) => {
             {userName === "헨젤" ? "그레텔" : "헨젤"}(친구)
           </p>
           <VideoPlayer streamManager={sub} />
+          {/* 오버레이 요소 */}
+          {typeof peerOverlay === "function" && (
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-20">
+              {peerOverlay(sub)}
+            </div>
+          )}
         </div>
       ))}
     </div>

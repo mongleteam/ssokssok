@@ -56,6 +56,10 @@ function MultiPage() {
     invitee: false,
   });
 
+  const [peerStones, setPeerStones] = useState([]);
+  const [stoneImage, setStoneImage] = useState(null); // ← assets에서 꺼내놓기
+
+
   const navigate = useNavigate();
 
   const handleNextPage = useCallback(async () => {
@@ -437,7 +441,28 @@ function MultiPage() {
             )}
         </div>
         <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
-          <VideoWithOverlay roomId={roomId} userName={role}>
+          <VideoWithOverlay
+            roomId={roomId}
+            userName={role}
+            peerOverlay={() =>
+              isMissionVisible &&
+              currentMission?.type === "webcam-collect-stone-multi" &&
+              peerStones.length > 0 &&
+              peerStones.map((stone) => (
+                <img
+                  key={`peer-${stone.id}`}
+                  src={stoneImage}
+                  alt="peer-stone"
+                  className="absolute w-12 h-12 z-10 opacity-70"
+                  style={{
+                    left: `${stone.x * 100}%`,
+                    top: `${stone.y * 100}%`,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                />
+              ))
+            }
+          >
             {(pub) => {
               if (!publisher) setPublisher(pub);
               const mission = storyData[currentPage]?.mission;
@@ -462,6 +487,8 @@ function MultiPage() {
                     roomId={roomId}
                     from={from}
                     setStatusContent={setStatusContent}
+                    setPeerStones={setPeerStones}
+                    setStoneImage={setStoneImage}
                   />
                 )
               );

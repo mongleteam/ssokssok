@@ -14,6 +14,8 @@ const CollectStoneOverlay = ({
   userName,
   setStatusContent,
   from,
+  setPeerStones,      // 🔽 추가
+  setStoneImage       // 🔽 추가
 }) => {
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
@@ -22,7 +24,7 @@ const CollectStoneOverlay = ({
   const collectedIdsRef = useRef(new Set());
   const [success, setSuccess] = useState(false);
   const [stoneCountReady, setStoneCountReady] = useState(false);
-  const [peerStones, setPeerStones] = useState([]);
+  
   const stoneInitRef = useRef(false);
   const [peerCollectedCount, setPeerCollectedCount] = useState(0);
 
@@ -82,6 +84,24 @@ const CollectStoneOverlay = ({
       })
     );
   };
+
+  useEffect(() => {
+    if (missionData?.instructionImages?.length && assets) {
+      const image = assets[missionData.instructionImages[0]];
+      if (image) {
+        setStoneImage(image);
+      }
+    }
+  }, [missionData, assets, setStoneImage]);
+
+  const handleInitStones = ({ senderName, stones: incomingStones }) => {
+    if (senderName !== userName) {
+      console.log("📩 initStones received from", senderName, "→", incomingStones);
+      setPeerStones(incomingStones); // 🔽 상위 전달
+    }
+  };
+  
+  
 
   useEffect(() => {
     const hands = new Hands({
@@ -301,21 +321,6 @@ const CollectStoneOverlay = ({
               transform: "translate(-50%, -50%)",
             }}
           />
-        ))}
-
-        {stoneImage &&
-          peerStones.map((stone) => (
-            <img
-              key={stone.id}
-              src={stoneImage}
-              alt="peer-stone"
-              className="absolute w-12 h-12 z-10 opacity-70"
-              style={{
-                left: `${(stone.x / 640) * 100}%`,
-                top: `${(stone.y / 480) * 100}%`,
-                transform: "translate(-50%, -50%)",
-              }}
-            />
         ))}
 
     </>
