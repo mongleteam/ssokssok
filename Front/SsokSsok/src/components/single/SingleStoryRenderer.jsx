@@ -95,6 +95,9 @@ useEffect(() => {
     setMissionReady(false);
     setIsAudioEnded(false);
 
+   
+
+
     // 진행사항 업데이트 api
     if (progressPk) {
       try {
@@ -104,6 +107,11 @@ useEffect(() => {
           nowPage: nextPage + 1,
           finish: isLast,
         });
+        
+        // console.log("현재 페이지:", currentPage);
+        // console.log("다음 페이지:", nextPage + 1);
+        // console.log("총 페이지 수:", totalPageCount);
+        // console.log("마지막 페이지인가?", isLast);
         
         await updateSingleProgressApi(progressPk, {
           nowPage: nextPage + 1,
@@ -144,24 +152,24 @@ useEffect(() => {
 
   const navigate = useNavigate();
 
-  const handleQuit = async () => {
-    const nowPage = currentPage + 1; // 1-based
-    const isLast = nowPage === totalPageCount;
+  // const handleQuit = async () => {
+  //   const nowPage = currentPage + 1; // 1-based
+  //   const isLast = nowPage === totalPageCount;
 
-    if (progressPk) {
-      try {
-        await updateSingleProgressApi(progressPk, {
-          nowPage,
-          finish: isLast,
-        });
-        console.log("✅ 그만읽기: 진행 저장 완료!");
-      } catch (err) {
-        console.error("❌ 진행 저장 실패:", err);
-      }
-    }
+  //   if (progressPk) {
+  //     try {
+  //       await updateSingleProgressApi(progressPk, {
+  //         nowPage,
+  //         finish: isLast,
+  //       });
+  //       console.log("✅ 그만읽기: 진행 저장 완료!");
+  //     } catch (err) {
+  //       console.error("❌ 진행 저장 실패:", err);
+  //     }
+  //   }
 
-    navigate("/main"); // 메인으로 이동
-  };
+  //   navigate("/main"); // 메인으로 이동
+  // };
 
   
   return (
