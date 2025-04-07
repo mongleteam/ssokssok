@@ -65,13 +65,13 @@ function MultiPage() {
     const shouldSave = from === "inviter" && !isMissionVisible && progressPk;
   
     // 미션 중이고, 초대한 쪽이면 성공 여부 체크
-    if (isMissionVisible && from === "inviter") {
-      const bothSuccess = missionSuccessMap.inviter && missionSuccessMap.invitee;
-      if (!bothSuccess) {
-        alert("양쪽 모두 미션을 성공해야 다음 페이지로 넘어갈 수 있어요!");
-        return;
-      }
-    }
+    // if (isMissionVisible && from === "inviter") {
+    //   const bothSuccess = missionSuccessMap.inviter && missionSuccessMap.invitee;
+    //   if (!bothSuccess) {
+    //     alert("양쪽 모두 미션을 성공해야 다음 페이지로 넘어갈 수 있어요!");
+    //     return;
+    //   }
+    // }
   
     // 미션 종료 처리
     if (isMissionVisible) {
