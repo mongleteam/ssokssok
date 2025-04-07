@@ -127,6 +127,7 @@ const MyPageModal = ({openModal}) => {
               <input
                 type="text"
                 value={nickname}
+                maxLength={6}
                 onChange={(e) => setNickname(e.target.value)}
                 className="text-2xl px-2 py-1 rounded border border-gray-400"
               />
