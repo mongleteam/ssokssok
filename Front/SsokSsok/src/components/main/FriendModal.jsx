@@ -5,13 +5,17 @@ import boardImage from "../../assets/images/friend_board.png"
 import plusIcon from "../../assets/images/plus_icon.png"
 import DeleteIcon from "../../assets/images/remove_icon.png"
 import CustomAlert from "../CustomAlert";
-
+import CustomConfirm from "../CustomConfirm";
 const FriendModal = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [myFriend, setMyFriend] = useState([])
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [onConfirmDelete, setOnConfirmDelete] = useState(() => () => {});
+
     useEffect(() => {
         const fetchMyFriend = async () => {
             try {
@@ -48,22 +52,24 @@ const FriendModal = () => {
         }
     }
 
-    const handleDeleteFriend = async (friendId, friendNickname) => {
-        const confirmDelete = window.confirm(`${friendNickname}님을 삭제하시겠습니까?`)
-        if (!confirmDelete) return
+    const handleDeleteFriend = (friendId, friendNickname) => {
+        setConfirmMessage(`${friendNickname}님을 삭제하시겠습니까?`);
+        setShowConfirm(true);
+        setOnConfirmDelete(() => async () => {
+          try {
+            await deleteFriendApi(friendId);
+            setAlertMessage(`${friendNickname}님이 삭제되었습니다!`);
+            setShowAlert(true);
+            setMyFriend(prev => prev.filter(friend => friend.friendId !== friendId));
+          } catch (err) {
+            setAlertMessage("친구 삭제에 실패했습니다.");
+            setShowAlert(true);
+          } finally {
+            setShowConfirm(false); // 모달 닫기
+          }
+        });
+      };
       
-        try {
-          await deleteFriendApi(friendId);
-          setAlertMessage(`${friendNickname}님이 삭제되었습니다!`)
-          setShowAlert(true)
-          
-          setMyFriend(prev => prev.filter(friend => friend.friendId !== friendId))
-        } catch (err) {
-        //   console.error("친구 삭제 실패", err)
-        setAlertMessage("친구 삭제에 실패했습니다.")
-        setShowAlert(true)
-        }
-      }
 
     return (
         <div className="flex w-full h-full font-whitechalk text-black text-2xl sm:text-3xl md:text-3xl lg:text-4xl tracking-wide">
@@ -143,6 +149,13 @@ const FriendModal = () => {
                 <CustomAlert
                     message={alertMessage}
                     onClose={() => setShowAlert(false)}
+                />
+                )}
+            {showConfirm && (
+                <CustomConfirm
+                    message={confirmMessage}
+                    onConfirm={onConfirmDelete}
+                    onCancel={() => setShowConfirm(false)}
                 />
                 )}
 

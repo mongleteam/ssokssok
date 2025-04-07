@@ -33,7 +33,6 @@
         WHERE p.fairytale_pk = #{fairytalePk}
           AND p.user_pk = #{userPk}
           AND p.mode = 'SINGLE'
-          AND p.finish = 0
         ORDER BY p.created_date DESC
             LIMIT 1
     </select>

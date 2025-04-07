@@ -45,7 +45,13 @@ public class FairytaleServiceImpl implements FairytaleService {
         var multiList = fairytaleMapper.findMultiProgress(fairytalePk, userPk);
 
         List<ProgressInfoDTO> progressList = new ArrayList<>();
-        progressList.addAll(single);
+        if (single != null && !single.isEmpty()) {
+            ProgressInfoDTO singleProgress = single.get(0);
+
+            if (!singleProgress.getFinish()) {
+                progressList.add(singleProgress);
+            }
+        }
         progressList.addAll(multiList);
         // 3. 응답 DTO 조립
         var response = new FairytaleInfoResponseDTO();

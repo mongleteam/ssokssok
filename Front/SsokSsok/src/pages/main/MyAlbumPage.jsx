@@ -4,11 +4,16 @@ import FlowerAnimation from "../../components/animations/FlowerAnimation";
 import Header from "../../components/Header";
 import MyAlbumBoard from "../../assets/images/mybookpicture.png"
 import AlbumBoard from "../../assets/images/wood_board_album.png"
-import { getAlbumApi } from "../../apis/albumApi";
+import { deleteAlbumApi, getAlbumApi } from "../../apis/albumApi";
 import './MyAlbumPage.css';
+import CustomAlert from "../../components/CustomAlert";
+import CustomConfirm from "../../components/CustomConfirm";
 const MyAlbumPage = () => {
-
+    const [alertMessage, setAlertMessage] = useState("");
+    const [showAlert, setShowAlert] = useState(false);  
     const [albumData, setAlbumData] = useState([])
+    const [selectedImages, setSelectedImages] = useState([]); // 삭제할 이미지 선택
+    const [previewImage, setPreviewImage] = useState(null);    // 모달용 이미지
     useEffect(() => {
         getAlbumApi()
         .then((res) => {
@@ -17,48 +22,122 @@ const MyAlbumPage = () => {
         })
     }, [])
 
+    const deleteSelectedImages = async () => {
+      if (selectedImages.length === 0) {
+        setAlertMessage("삭제할 사진을 선택해주세요!");
+        setShowAlert(true);
+        return;
+      }
+      try {
+        await deleteAlbumApi({ myalbumPks: selectedImages });
+      
+        setAlbumData((prev) =>
+          prev.filter((item) => !selectedImages.includes(item.myalbumPk))
+        );
+        setSelectedImages([]);
+        setAlertMessage("삭제가 완료되었습니다!");
+        setShowAlert(true);
+      } catch (err) {
+        console.error("삭제 실패:", err);
+        setAlertMessage("삭제 중 오류가 발생했습니다.");
+        setShowAlert(true);
+      }
+    };
+
     return (
         <>
           <BeeAnimation />
           <FlowerAnimation />
           <Header />
           <div className="background-container relative flex flex-col items-center min-h-screen">
+
             {/* 타이틀 이미지 */}
             <img
               src={MyAlbumBoard}
               alt="MyAlbumBoard"
               className="w-[22rem] mt-20 -translate-y-80 z-10"
             />
-    
+            {/* 선택 삭제 버튼 */}
+            <button
+              className="absolute top-[12rem] right-[22.5rem] bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded-lg z-30 text-xl font-whitechalk shadow-md transition"
+              onClick={deleteSelectedImages}
+            >
+              선택 삭제
+            </button>
+            </div>
+
             {/* 앨범 스크롤 컨테이너 */}
-            <div className="absolute bottom-[5.5rem] left-1/2 translate-x-[-52.5%] w-[43rem] h-[27rem] overflow-y-scroll z-10 custom-scrollbar">
-              <div className="grid grid-cols-4 gap-4 px-4 py-2">
-                {albumData.map((item) => (
+            <div className="absolute bottom-[3.5rem] left-1/2 translate-x-[-52.5%] w-[43rem] h-[30rem] overflow-y-scroll z-10 custom-scrollbar">
+            <div className="grid grid-cols-4 gap-4 px-4 py-2">
+              {albumData.length === 0 ? (
+                <p className="text-gray-500 text-xl col-span-4 text-center font-whitechalk">
+                  저장된 사진이 없습니다.
+                </p>
+              ) : (
+                albumData.map((item) => (
                   <div
                     key={item.myalbumPk}
-                    className="flex flex-col items-center bg-[#fef5e7] p-1 rounded-lg shadow-md"
+                    className="relative flex flex-col items-center bg-[#fef5e7] p-1 rounded-lg shadow-md"
                   >
+                    <input
+                      type="checkbox"
+                      className="absolute top-1 right-1 w-4 h-4"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedImages((prev) => [...prev, item.myalbumPk]);
+                        } else {
+                          setSelectedImages((prev) =>
+                            prev.filter((id) => id !== item.myalbumPk)
+                          );
+                        }
+                      }}
+                    />
                     <img
                       src={item.myalbumImgUrl}
                       alt="album"
-                      className="w-full aspect-square object-cover rounded-md"
+                      onClick={() => setPreviewImage(item.myalbumImgUrl)}
+                      className="w-full aspect-square object-cover rounded-md cursor-pointer"
                     />
                     <p className="text-xs mt-1 text-gray-700 font-dodam">{item.createdDate}</p>
                     <p className="text-sm font-semibold text-brown-800 font-dodam">{item.title}</p>
                   </div>
-                ))}
-              </div>
+                ))
+              )}
             </div>
-    
+
+            </div>
+
+
+            {previewImage && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+                <div className="bg-white p-4 rounded-lg shadow-lg">
+                  <img src={previewImage} alt="preview" className="max-w-[80vw] max-h-[80vh]" />
+                  <button
+                    className="mt-4 px-4 py-2 bg-red-500 text-white rounded font-whitechalk"
+                    onClick={() => setPreviewImage(null)}
+                  >
+                    닫기
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {showAlert && (
+              <CustomAlert
+                message={alertMessage}
+                onClose={() => setShowAlert(false)}
+              />
+            )}
             {/* 나무 앨범 보드 배경 */}
             <img
               src={AlbumBoard}
               alt="albumBoard"
               className="w-[57rem] max-w-none absolute bottom-[-7rem] left-1/2 translate-x-[-50%]"
             />
-          </div>
         </>
+        
       );
+      
     };
     
     export default MyAlbumPage;

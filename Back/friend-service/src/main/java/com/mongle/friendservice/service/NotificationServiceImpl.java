@@ -145,7 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (Boolean.FALSE.equals(result)) {
             throw new CustomException(ErroCode.NOTIFICATION_NOT_FOUND);
         }
-        sendNotification(friendPk);
+        
     }
 
 

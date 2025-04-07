@@ -5,6 +5,7 @@ import PhotoModal from "../../components/story/PhotoModal";
 import SingleStoryRenderer from "../../components/single/SingleStoryRenderer";
 import JSZip from "jszip";
 import { useLocation } from "react-router-dom";
+import { getFromIndexedDB } from "../../utils/indexedDbUtils";
 
 function SinglePage() {
     const [showModal, setShowModal ] = useState(true); // 진입 시 자동 오픈픈
@@ -13,19 +14,20 @@ function SinglePage() {
     
     const location = useLocation();
     const { progressPk, fairytale, nowPage, role } = location.state || {};
-    // console.log("storypage.pk🍕", progressPk, fairytale)
-
+    
     useEffect(() => {
         // 진입하자마자 preload 시작!
         const preload = async () => {
-          console.log("📦 ZIP 다운로드 시작");
-          const zipUrl = "https://ssafy-mongle.s3.ap-southeast-2.amazonaws.com/HanselAndGretelData_single.zip";
-          const res = await fetch(zipUrl);
-          const blob = await res.blob();
-          console.log("📥 ZIP 다운로드 완료. 해제 중...");
-          const zip = await JSZip.loadAsync(blob);
+          const ZIP_KEY = "HanselAndGretel_ZIP"  // 캐시키
+          
+          let zipBlob = await getFromIndexedDB(ZIP_KEY);
 
-          console.log("🔓 ZIP 해제 완료");
+          if (!zipBlob) {
+            console.error("❌ ZIP 파일이 IndexedDB에 없습니다. MainPage에서 preload가 안 된 것 같아요.");
+            return;
+          }
+
+          const zip = await JSZip.loadAsync(zipBlob);
     
           const fileMap = {};
           const fileNames = Object.keys(zip.files);
@@ -51,7 +53,7 @@ function SinglePage() {
       }, []);
     return (
         <div className="book-background-container">
-        {/* 싱글글 모드 화면 콘텐츠 */}
+        {/* 싱글 모드 화면 콘텐츠 */}
         <StoryHeader />
 
         {/* 포토모달 */}
