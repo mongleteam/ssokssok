@@ -5,6 +5,8 @@ import RockScissorsPaper from "../multi/mission/RockScissorsPaper";
 import WebcamGetKey from "../multi/mission/WebcamGetKey";
 import CleanMissionMulti from "../multi/mission/CleanMission";
 import SilentMissionMulti from "../multi/mission/SilentMissionMulti";
+import HanselReadText from "../multi/mission/HanselReadText";
+import GretelReadText from "../multi/mission/GretelReadText";
 
 const MissionRouter = ({
   type,
@@ -92,17 +94,38 @@ const MissionRouter = ({
         />
       );
 
-      case "webcam-silent-multi":
-        return (
-          <SilentMissionMulti
-            onSuccess={onSuccess}
-            setStatusContent={setStatusContent}
-            roomId={roomId}
-            userName={role}
-            publisher={publisher} // ✅ 꼭 추가
-          />
-        );
-      
+    case "webcam-silent-multi":
+      return (
+        <SilentMissionMulti
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          roomId={roomId}
+          userName={role}
+          publisher={publisher} // ✅ 꼭 추가
+        />
+      );
+    case "webcam-readtext-multi-second":
+      return (
+        <HanselReadText
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          missionData={missionData}
+          roomId={roomId}
+          userName={role}
+          publisher={publisher}
+        />
+      );
+    case "webcam-readtext-multi-first":
+      return (
+        <GretelReadText
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          missionData={missionData}
+          roomId={roomId}
+          userName={role}
+          publisher={publisher}
+        />
+      );
 
     // case "webcam-draw-star-multi":
     //   return <DrawStarMission ... />;
