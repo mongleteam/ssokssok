@@ -14,9 +14,17 @@ import JSZip from "jszip";
 import VideoWithOverlay from "../../components/multi/VideoWithOverlay";
 import MissionRouter from "../../components/story/MissionRouter.jsx";
 import IllustrationRouter from "../../components/story/IllustrationRouter.jsx";
+import { getFromIndexedDB } from "../../utils/indexedDbUtils";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
-import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
+import {
+  connectSocket,
+  disconnectSocket,
+  joinRoom,
+  sendMessage,
+  onSocketEvent,
+  offSocketEvent,
+} from "../../services/socket";
 
 import nextIcon from "../../assets/images/pagenext_icon.png";
 import previousIcon from "../../assets/images/pageprevious_icon.png";
@@ -47,7 +55,6 @@ function MultiPage() {
     inviter: false,
     invitee: false,
   });
-  
 
   const navigate = useNavigate();
 
@@ -56,7 +63,7 @@ function MultiPage() {
     const nextPage = currentPage + 1;
     const shouldSave = from === "inviter" && !isMissionVisible && progressPk;
     const shouldSaveOnMissionEnd = from === "inviter" && progressPk;
-  
+
     // 미션 중이고, 초대한 쪽이면 성공 여부 체크
     // if (isMissionVisible && from === "inviter") {
     //   const bothSuccess = missionSuccessMap.inviter && missionSuccessMap.invitee;
@@ -65,14 +72,14 @@ function MultiPage() {
     //     return;
     //   }
     // }
-  
+
     // 미션 종료 처리
     if (isMissionVisible) {
       setIsMissionVisible(false);
       setViewedMissions((prev) => ({ ...prev, [currentPage]: true }));
       setCurrentPage(nextPage);
       setPageIndex(nextPage + 1);
-  
+
       if (from === "inviter") {
         sendMessage("prevNext", { roomId, next: true, prev: false });
         if (shouldSaveOnMissionEnd) {
@@ -82,11 +89,11 @@ function MultiPage() {
             finish: false,
           });
           console.log("✅ 저장 완료 (미션 종료):", nextPage + 1);
-        }        
+        }
       }
       return;
     }
-  
+
     // 새로운 미션 진입
     const isMission = currentData.mission && !viewedMissions[currentPage];
     if (isMission) {
@@ -97,7 +104,7 @@ function MultiPage() {
       }
       return;
     }
-  
+
     // 일반 페이지 이동
     setCurrentPage(nextPage);
     setPageIndex(nextPage + 1);
@@ -121,7 +128,6 @@ function MultiPage() {
     roomId,
     missionSuccessMap, // ⚠️ 상태 쓰고 있으니 이거도 의존성에 꼭!
   ]);
-  
 
   const handlePreviousPage = useCallback(() => {
     const prevPage = currentPage - 1;
@@ -153,12 +159,11 @@ function MultiPage() {
         return { ...prev, [key]: isSuccess === "성공" };
       });
     });
-  
+
     return () => {
       offSocketEvent("isSuccess");
     };
   }, [role]);
-  
 
   useEffect(() => {
     const index = location.state?.pageIndex;
@@ -195,11 +200,17 @@ function MultiPage() {
   useEffect(() => {
     const loadStoryData = async () => {
       try {
-        const zipUrl =
-          "https://ssafy-mongle.s3.ap-southeast-2.amazonaws.com/HanselAndGretelData_single.zip";
-        const res = await fetch(zipUrl);
-        const blob = await res.blob();
-        const zip = await JSZip.loadAsync(blob);
+        const ZIP_KEY = "HanselAndGretel_ZIP"; // 캐시키
+
+        let zipBlob = await getFromIndexedDB(ZIP_KEY);
+
+        if (!zipBlob) {
+          console.error(
+            "❌ ZIP 파일이 IndexedDB에 없습니다. MainPage에서 preload가 안 된 것 같아요."
+          );
+          return;
+        }
+        const zip = await JSZip.loadAsync(zipBlob);
 
         const fileMap = {};
         const fileNames = Object.keys(zip.files);
@@ -264,14 +275,13 @@ function MultiPage() {
     onSocketEvent("leaveGame", ({ username, exitMessage }) => {
       alert(exitMessage || `${username} 님이 연결을 종료했습니다.`);
       disconnectSocket(); // 연결 정리
-      navigate("/main");  // 메인으로 이동
+      navigate("/main"); // 메인으로 이동
     });
-  
+
     return () => {
       offSocketEvent("leaveGame");
     };
   }, []);
-  
 
   const handleInviteeJoined = async () => {
     sendMessage("sendStartInfo", {
@@ -298,7 +308,7 @@ function MultiPage() {
           role: role === fairytale.first ? "FIRST" : "SECOND",
         });
         const newPk = res.data?.data;
-        
+
         if (newPk) {
           setProgressPk(newPk); // ✅ 상태 저장!
           // console.log("✅ 진행상황 pk 받아오기 완!", newPk);
@@ -447,7 +457,6 @@ function MultiPage() {
                         ...prev,
                         [currentPage]: true,
                       }));
-                   
                     }}
                     roomId={roomId}
                     from={from}
@@ -467,16 +476,12 @@ function MultiPage() {
       )}
       {isPauseModalOpen && (
         <div className="absolute inset-0 flex items-center justify-center z-50">
-          <PauseModal
-            roomId={roomId}
-            userName={role}
-          />
-
+          <PauseModal roomId={roomId} userName={role} />
         </div>
       )}
       {!isMissionVisible && (
         <button
-          onClick={async() => {
+          onClick={async () => {
             if (currentPage === storyData.length - 1) {
               if (from === "inviter" && progressPk) {
                 try {
