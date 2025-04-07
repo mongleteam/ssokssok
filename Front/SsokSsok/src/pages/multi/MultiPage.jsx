@@ -371,7 +371,14 @@ function MultiPage() {
           altText="다음 페이지"
           onClick={handleNextPage}
           disabled={currentPage === storyData.length - 1 && !isMissionVisible}
-          className="pointer-events-auto"
+          className={`pointer-events-auto ${
+            isMissionVisible &&
+            from === "inviter" &&
+            missionSuccessMap.inviter &&
+            missionSuccessMap.invitee
+              ? "animate-pulse"
+              : ""
+          }`}
         />
       </div>
 
@@ -442,7 +449,6 @@ function MultiPage() {
                     assets={assets}
                     publisher={pub}
                     onSuccess={() => {
-                      setIsMissionVisible(false);
                       setViewedMissions((prev) => ({
                         ...prev,
                         [currentPage]: true,
