@@ -55,6 +55,7 @@ function MultiPage() {
     const currentData = storyData[currentPage];
     const nextPage = currentPage + 1;
     const shouldSave = from === "inviter" && !isMissionVisible && progressPk;
+    const shouldSaveOnMissionEnd = from === "inviter" && progressPk;
   
     // 미션 중이고, 초대한 쪽이면 성공 여부 체크
     if (isMissionVisible && from === "inviter") {
@@ -74,13 +75,14 @@ function MultiPage() {
   
       if (from === "inviter") {
         sendMessage("prevNext", { roomId, next: true, prev: false });
-        if (shouldSave) {
+        if (shouldSaveOnMissionEnd) {
+          console.log("📝 진행상황 저장 시도 (미션 종료):", progressPk);
           await updateProgressApi(progressPk, {
             nowPage: nextPage + 1,
             finish: false,
           });
           console.log("✅ 저장 완료 (미션 종료):", nextPage + 1);
-        }
+        }        
       }
       return;
     }
@@ -295,9 +297,11 @@ function MultiPage() {
           fairytalePk: fairytale.fairytalePk,
           role: role === fairytale.first ? "FIRST" : "SECOND",
         });
-        const newPk = res.data?.data?.progressPk;
+        const newPk = res.data?.data;
+        
         if (newPk) {
           setProgressPk(newPk); // ✅ 상태 저장!
+          // console.log("✅ 진행상황 pk 받아오기 완!", newPk);
         }
         console.log("진행상황 등록 완료!");
       } catch (err) {
