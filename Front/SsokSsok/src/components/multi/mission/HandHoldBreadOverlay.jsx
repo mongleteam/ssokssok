@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import * as handPose from "@mediapipe/hands";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
-import { sendMessage } from "../../../services/socket";
+import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
+
 
 const MAX_BREAD = 3;
 const HOLD_DURATION = 3000;
@@ -15,8 +16,9 @@ const HandHoldBreadOverlay = ({
   assets,
   onSuccess,
   publisher,
-  userName,
   roomId,
+  userName,
+  setStatusContent,
 }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -51,6 +53,49 @@ const HandHoldBreadOverlay = ({
     }
     setBreads(placed);
   }, [assets, breadImg]);
+
+  useEffect(() => {
+    if (collectedCount > 0) {
+      sendMessage("objectCount", {
+        senderName: userName,
+        roomId,
+        objectCount: collectedCount,
+      });
+    }
+  
+    if (collectedCount === MAX_BREAD) {
+      sendMessage("isSuccess", {
+        senderName: userName,
+        roomId,
+        isSuccess: "성공",
+      });
+  
+      // setStatusContent?.(
+      //   <p className="text-lg font-bold">{userName}이 빵을 모두 찾았어요!</p>
+      // );
+  
+      onSuccess?.(); // 여기서 바로 페이지 이동은 안 하도록 MultiPage에서 막혀 있어야 함
+    }
+  }, [collectedCount]);
+
+  useEffect(() => {
+    const handleObjectCount = ({ senderName, objectCount }) => {
+      if (senderName !== userName) {
+        const text =
+          objectCount < MAX_BREAD
+            ? `${senderName}이 빵을 찾는 중... (${objectCount}/${MAX_BREAD})`
+            : `${senderName}이 빵을 모두 찾았어요!`;
+  
+        setStatusContent?.(<p className="text-lg font-bold">{text}</p>);
+      }
+    };
+  
+    onSocketEvent("objectCount", handleObjectCount);
+    return () => offSocketEvent("objectCount");
+  }, [userName, roomId]);
+  
+  
+  
 
   const updateBreadHold = (fingerPos) => {
     const now = Date.now();
@@ -129,32 +174,33 @@ const HandHoldBreadOverlay = ({
       }
     });
 
-    if (videoRef.current && publisher?.stream) {
-      const stream = publisher.stream.getMediaStream();
-      videoRef.current.srcObject = stream;
-      videoRef.current.play();
-
-      const camera = new Camera(videoRef.current, {
-        onFrame: async () => {
-          await hands.send({ image: videoRef.current });
-        },
-        width: CANVAS_WIDTH,
-        height: CANVAS_HEIGHT,
-      });
-      camera.start();
-    }
+    const setupCamera = async () => {
+      if (videoRef.current && publisher?.stream) {
+        const stream = publisher.stream.getMediaStream();
+        videoRef.current.srcObject = stream;
+    
+        try {
+          await videoRef.current.play(); // ✅ play 대기
+        } catch (err) {
+          console.error("🎥 Video play error:", err);
+          return;
+        }
+    
+        const camera = new Camera(videoRef.current, {
+          onFrame: async () => {
+            await hands.send({ image: videoRef.current });
+          },
+          width: CANVAS_WIDTH,
+          height: CANVAS_HEIGHT,
+        });
+    
+        camera.start();
+      }
+    };
+    setupCamera();
+    
   }, [publisher, missionData, assets, breads]);
 
-  useEffect(() => {
-    if (collectedCount >= MAX_BREAD) {
-      onSuccess?.();
-      sendMessage("isSuccess", {
-        senderName: userName,
-        roomId,
-        isSuccess: "성공",
-      });
-    }
-  }, [collectedCount, onSuccess]);
 
   return (
     <div
