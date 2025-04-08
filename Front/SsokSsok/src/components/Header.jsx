@@ -48,7 +48,7 @@ const Header = () => {
                     <motion.img
                         src={SsokSsokLogo}
                         alt="SsokSsokLogo"
-                        className="w-[7rem] cursor-pointer object-contain" // 로고만 키우기
+                        className="w-[10rem] cursor-pointer object-contain" // 로고만 키우기
                         whileHover={{ scale: 1.1 }}
                         transition={{ type: "spring", stiffness: 300 }}
                         onClick={() => navigate("/main")}
@@ -59,7 +59,7 @@ const Header = () => {
                     <motion.img
                         src={mybookIcon}
                         alt="My Album"
-                        className="w-[3.5rem] cursor-pointer object-contain"
+                        className="w-[4rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}
@@ -68,7 +68,7 @@ const Header = () => {
                     <motion.img
                         src={myPageIcon}
                         alt="My Page"
-                        className="w-[3.5rem] cursor-pointer object-contain"
+                        className="w-[4rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}
@@ -78,7 +78,7 @@ const Header = () => {
                         <motion.img
                             src={alarmIcon}
                             alt="Alarm"
-                            className="w-[3.5rem] cursor-pointer object-contain"
+                            className="w-[4rem] cursor-pointer object-contain"
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.9 }}
                             transition={{ type: "spring", stiffness: 300 }}
@@ -96,7 +96,7 @@ const Header = () => {
                     <motion.img
                         src={settingsIcon}
                         alt="Settings"
-                        className="w-[3.5rem] cursor-pointer object-contain"
+                        className="w-[4rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}

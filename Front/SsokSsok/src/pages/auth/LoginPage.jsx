@@ -9,8 +9,10 @@ import { jwtDecode } from "jwt-decode";
 import useAuthStore from "../../stores/authStore";
 import { mypageInfoApi } from "../../apis/myPageApi";
 import { isTokenExpired } from "../../utils/tokenUtils";
+import CustomAlert from "../../components/CustomAlert";
 const LoginPage = () => {
-
+    const [alertMessage, setAlertMessage] = useState("")
+    const [showAlert, setShowAlert] = useState(false);
     const navigate = useNavigate()
     const {setAccessToken, setUser} = useAuthStore()
     const [formData, setFormData] = useState({
@@ -51,11 +53,13 @@ const LoginPage = () => {
       
           setAccessToken(accessToken) // Zustand + localStorage 저장
 
-          alert("로그인 성공!")
+          // setAlertMessage("로그인 성공!")
+          // setShowAlert(true)
           navigate("/main")
         } catch (error) {
-          console.error("로그인 실패:", error)
-          alert("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.")
+          // console.error("로그인 실패:", error)
+          setAlertMessage("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.")
+          setShowAlert(true)
         }
       }
       
@@ -91,6 +95,12 @@ const LoginPage = () => {
 
 
             </div>
+            {showAlert && (
+              <CustomAlert 
+                message={alertMessage} 
+                onClose={() => setShowAlert(false)} 
+              />
+            )}
         </>
     )
 }
