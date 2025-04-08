@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserServiceClient {
 
     @GetMapping("/api/user/nicknameList")
-    List<String> getNicknameList(@RequestParam("idList") List<String> idList);
+    List<String[]> getNicknameList(@RequestParam("idList") List<String> idList);
 
     @GetMapping("/api/user/getUUID")
     String getUUID(@RequestParam("id") String id);

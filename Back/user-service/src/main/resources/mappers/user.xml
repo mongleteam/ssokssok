@@ -113,4 +113,10 @@
             )
     </select>
 
+    <select id="findNicknameByUserId" parameterType="string" resultType="string">
+        SELECT nickname
+        FROM user
+        WHERE id = #{id}
+    </select>
+
 </mapper>

@@ -43,4 +43,6 @@ public interface UserMapper {
                            @Param("currentUserId") String currentUserId,
                            @Param("currentUserPk") String currentUserPk
                            );
+
+    String findNicknameByUserId(@Param("id") String id);
 }
