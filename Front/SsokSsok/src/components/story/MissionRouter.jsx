@@ -22,6 +22,7 @@ const MissionRouter = ({
   setPeerStones, 
   setStoneImage,
   setPeerCookieCount,
+  setPeerCleanCount,
 }) => {
   const alwaysRenderTypes = ["webcam-readtext-multi-first", "webcam-readtext-multi-second"];
   const parsedRole = role === "헨젤" ? 1 : role === "그레텔" ? 2 : null;
@@ -102,6 +103,7 @@ const MissionRouter = ({
           roomId={roomId}
           userName={role}
           from={from}
+          setPeerCleanCount={setPeerCleanCount} // 🔥 추가
         />
       );
 

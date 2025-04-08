@@ -63,6 +63,7 @@ function MultiPage() {
   const hasMountedRef = useRef(false);
   const previousPath = useRef(location.pathname);
   const [showPageAlert, setShowPageAlert] = useState(false);
+  const [peerCleanCount, setPeerCleanCount] = useState(0);
 
   const navigate = useNavigate();
 
@@ -403,6 +404,26 @@ function MultiPage() {
   };
   const currentMission = storyData[currentPage]?.mission;
   const currentMissionRole = storyData[currentPage]?.role;
+
+  useEffect(() => {
+    const handleCleanCount = (data) => {
+      const { senderName, objectCount } = data;
+
+      if (
+        senderName !== role &&
+        currentPage === 30 &&
+        isMissionVisible &&
+        currentMission?.type === "webcam-clean-multi"
+      ) {
+        console.log("[CLEAN] 31페이지에서 objectCount 수신:", objectCount);
+        setPeerCleanCount(objectCount);
+      }
+    };
+
+    onSocketEvent("objectCount", handleCleanCount);
+    return () => offSocketEvent("objectCount", handleCleanCount);
+  }, [role, currentPage, isMissionVisible, currentMission]);
+  
   return (
     <div className="relative book-background-container flex flex-col items-center">
       {showWaiting && (
@@ -606,6 +627,24 @@ function MultiPage() {
                       />
                   )}
 
+                  {/* 청소 미션용 */}
+                  {isMissionVisible &&
+                    currentMission?.type === "webcam-clean-multi" &&
+                    currentMission.instructionImages?.length >= 4 && // 0: 빗자루, 1~3: dust
+                    peerCleanCount < 3 && role === "헨젤" && (
+                      <img
+                        key="peer-dust"
+                        src={
+                          assets[
+                            currentMission.instructionImages[3 - peerCleanCount] // 0회면 3번, 1회면 2번, ...
+                          ]
+                        }
+                        alt="peer-dust"
+                        className="absolute top-20 right-0 w-[10rem] z-10 opacity-80"
+                      />
+                    )}
+
+
                 </>
               );
             }}
@@ -636,6 +675,7 @@ function MultiPage() {
                     setPeerStones={setPeerStones}
                     setStoneImage={setStoneImage}
                     setPeerCookieCount={setPeerCookieCount}
+                    setPeerCleanCount={setPeerCleanCount}
                   />
                 )
               );

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
-import { sendMessage } from "../../../services/socket";
+import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
 
 const CleanMissionMulti = ({
   missionData,
@@ -12,6 +12,7 @@ const CleanMissionMulti = ({
   userName,
   from,
   setStatusContent,
+  setPeerCleanCount,
 }) => {
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
@@ -39,6 +40,9 @@ const CleanMissionMulti = ({
     return null;
   };
 
+  const [isHandDetected, setIsHandDetected] = useState(false);
+
+
   useEffect(() => {
 
     if (handsRef.current) return; // 💥 이미 초기화돼 있으면 생략
@@ -62,6 +66,12 @@ const CleanMissionMulti = ({
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // ✅ 손이 감지됐는지 상태로 저장
+      const isDetected = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
+      setIsHandDetected(isDetected);
+
+      if (!isDetected) return;
 
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const landmarks = results.multiHandLandmarks[0];
@@ -93,6 +103,13 @@ const CleanMissionMulti = ({
         ) {
           countRef.current += 1;
           setMotionCount(countRef.current);
+
+          sendMessage("objectCount", {
+            roomId,
+            senderName: userName,
+            objectCount: countRef.current,
+          });
+
           motionRef.current = {
             startX: currentX,
             movedLeft: false,
@@ -150,6 +167,21 @@ const CleanMissionMulti = ({
     };
   }, [publisher]);
 
+  // 🔥 상대방 청소 횟수 수신
+  useEffect(() => {
+    const handleCleanCount = (data) => {
+      console.log("[CLEAN] objectCount 수신됨:", data);
+
+      if (data.senderName !== userName) {
+        setPeerCleanCount?.(data.objectCount);
+      }
+    };
+
+    onSocketEvent("objectCount", handleCleanCount);
+    return () => offSocketEvent("objectCount", handleCleanCount);
+  }, [userName]);
+
+
   useEffect(() => {
     if (motionCount >= 3) {
       onSuccess?.();
@@ -191,7 +223,7 @@ const CleanMissionMulti = ({
       )}
 
       {/* 🧹 빗자루 */}
-      {broomImg && (
+      {broomImg && isHandDetected && (
         <img
           ref={broomRef}
           src={broomImg}
