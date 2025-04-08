@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands/hands";
 import { Camera } from "@mediapipe/camera_utils/camera_utils";
-import { sendMessage } from "../../../services/socket";
+import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
 
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 480;
@@ -20,11 +20,13 @@ const DrawStarMission = ({
   const canvasRef = useRef(null);
   const bgRef = useRef(null);
 
+  const isGretel = userName === "그레텔";
+  const hasSentSuccess = useRef(false);
+
   const [starPoints, setStarPoints] = useState([]);
   const [visited, setVisited] = useState([]);
   const [drawPath, setDrawPath] = useState([]);
   const [currentFingerPos, setCurrentFingerPos] = useState(null);
-  const [isBackToStart, setIsBackToStart] = useState(false);
 
   const makeStarPoints = (cx, cy, outerR, innerR, numPoints = 5) => {
     const points = [];
@@ -40,6 +42,53 @@ const DrawStarMission = ({
     points.push(points[0]);
     return points;
   };
+
+  // 성공 조건 체크 및 처리
+  useEffect(() => {
+    if (!isGretel || !starPoints.length || !drawPath.length) return;
+  
+    const allVisited = visited.every((v) => v);
+    const backToStart = isNear(drawPath.at(-1), starPoints[0]);
+  
+    // console.log("✅ 성공 조건 체크:", { allVisited, backToStart, visited, last: drawPath.at(-1) });
+  
+    if (allVisited && backToStart && !hasSentSuccess.current) {
+      hasSentSuccess.current = true;
+      // console.log("🎉 성공! 메시지 보냄");
+      sendMessage("isSuccess", {
+        senderName: userName,
+        roomId,
+        isSuccess: "성공",
+      });
+      onSuccess?.();
+    }
+  }, [visited, drawPath, starPoints, isGretel]);
+
+  // 상대방 좌표 받기
+  useEffect(() => {
+    const handleDraw = ({ senderName: sender, x, y }) => {
+      if (sender === userName) return; // 내 좌표 무시
+      const tip = { x, y };
+      setDrawPath((prev) => [...prev, tip]);
+
+        // 헨젤도 visited 업데이트 추가
+      setVisited((prev) => {
+        const updated = [...prev];
+        starPoints.forEach((point, i) => {
+          if (!updated[i] && isNear(tip, point)) {
+            updated[i] = true;
+          }
+        });
+        return updated;
+      });
+    };
+
+    onSocketEvent("draw", handleDraw);
+    return () => {
+      offSocketEvent("draw", handleDraw);
+    };
+  }, [userName, starPoints]);
+
 
   useEffect(() => {
     const points = makeStarPoints(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 120, 50);
@@ -116,6 +165,8 @@ const DrawStarMission = ({
   }, [visited, drawPath, starPoints, currentFingerPos]);
 
   useEffect(() => {
+    if (!isGretel) return; // 🎯 헨젤은 손 인식 + 카메라 스킵
+
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
@@ -145,6 +196,13 @@ const DrawStarMission = ({
       if (isDrawing) {
         setDrawPath((prev) => [...prev, tip]);
 
+        sendMessage("draw", {
+          roomId,
+          senderName: userName,
+          x: tip.x,
+          y: tip.y,
+        });
+
         setVisited((prev) => {
           const updated = [...prev];
           starPoints.forEach((point, i) => {
@@ -155,15 +213,6 @@ const DrawStarMission = ({
 
           const allVisited = updated.every((v) => v);
           const backToStart = isNear(tip, starPoints[0]);
-          if (allVisited && backToStart && !isBackToStart) {
-            setIsBackToStart(true);
-            onSuccess?.();
-            sendMessage("isSuccess", {
-              senderName: userName,
-              roomId,
-              isSuccess: "성공",
-            });
-          }
 
           return updated;
         });
@@ -173,19 +222,27 @@ const DrawStarMission = ({
     const setupCamera = async () => {
       if (videoRef.current && publisher?.stream) {
         const stream = publisher.stream.getMediaStream();
+
+      // ✅ 중복 방지
+      if (!videoRef.current.srcObject) {
         videoRef.current.srcObject = stream;
+      }
 
         try {
           await videoRef.current.play();
-          const camera = new Camera(videoRef.current, {
-            onFrame: async () => await hands.send({ image: videoRef.current }),
-            width: CANVAS_WIDTH,
-            height: CANVAS_HEIGHT,
-          });
-          camera.start();
         } catch (err) {
-          console.error("❌ video play error", err);
+          console.warn("🚨 videoRef play error:", err);
         }
+
+        const camera = new Camera(videoRef.current, {
+          onFrame: async () => {
+            if (hands) await hands.send({ image: videoRef.current });
+          },
+          width: CANVAS_WIDTH,
+          height: CANVAS_HEIGHT,
+        });
+
+        camera.start();
       }
     };
 
@@ -198,9 +255,14 @@ const DrawStarMission = ({
       : 0;
 
   useEffect(() => {
+    const message =
+    progress === 100
+      ? "✨ 마법진 그리기 성공! ✨"
+      : `마법진 그리기 진행률: ${progress}%`;
+
     setStatusContent?.(
       <div className="text-3xl font-cafe24 text-green-700 text-center animate-pulse">
-        마법진 그리기 진행률: {progress}%
+      {message}
       </div>
     );
     return () => setStatusContent?.(null);

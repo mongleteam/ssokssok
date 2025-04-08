@@ -164,12 +164,22 @@ const BookStartPage = () => {
                     />
                   </div>
                   <div className="flex gap-1">
-                    {[...Array(fairytale.count)].slice(0, 5).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-7 h-5 rounded-sm ${i < progress.nowPage / 8 ? "bg-green-400" : "bg-red-400"}`}
-                      ></div>
-                    ))}
+                    {[...Array(5)].map((_, i) => {
+                      const threshold = Math.ceil(fairytale.count / 5) * (i + 1);
+                      const isFilled = progress.nowPage >= threshold;
+
+                      // ✅ 최소 한 칸은 채워지도록
+                      const isFirst = i === 0 && progress.nowPage > 0;
+
+                      return (
+                        <div
+                          key={i}
+                          className={`w-7 h-5 rounded-sm ${
+                            isFilled || isFirst ? "bg-green-400" : "bg-red-400"
+                          }`}
+                        ></div>
+                      );
+                    })}
                   </div>
                 </div>
               ))
@@ -213,13 +223,24 @@ const BookStartPage = () => {
                     <img src={continueBtn} alt="이어하기" className="w-[6rem] cursor-pointer" onClick={() => handleClickContinueMulti(progress)} />
                   </div>
                   <div className="flex gap-1">
-                    {[...Array(fairytale.count)].slice(0, 5).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-7 h-5 rounded-sm ${i < progress.nowPage / 8 ? "bg-green-400" : "bg-red-400"}`}
-                      ></div>
-                    ))}
+                    {[...Array(5)].map((_, i) => {
+                      const threshold = Math.ceil(fairytale.count / 5) * (i + 1);
+                      const isFilled = progress.nowPage >= threshold;
+
+                      // ✅ 최소 한 칸은 채워지도록
+                      const isFirst = i === 0 && progress.nowPage > 0;
+
+                      return (
+                        <div
+                          key={i}
+                          className={`w-7 h-5 rounded-sm ${
+                            isFilled || isFirst ? "bg-green-400" : "bg-red-400"
+                          }`}
+                        ></div>
+                      );
+                    })}
                   </div>
+
                 </div>
               ))
             ) : (
