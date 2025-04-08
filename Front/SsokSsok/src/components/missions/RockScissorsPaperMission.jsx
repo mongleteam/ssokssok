@@ -5,6 +5,7 @@ import { useHandGesture } from "../../hooks/useHandGesture";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import startBtn from "../../assets/images/btn_green.png";
+import { judgeRPS } from "../../utils/judgeRPS";
 
 // 가위바위보 이모지 매핑
 const gestureToEmoji = {
@@ -23,12 +24,9 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
   const [gameOver, setGameOver] = useState(false); // 게임 종료 여부
   const [missionMessage, setMissionMessage] = useState(""); // 결과 메시지
   const [noHandDetected, setNoHandDetected] = useState(false);
-  
 
   // 이미 결과 처리했는지 체크 (한 번만 처리)
   const handledRef = useRef(false);
-
-
 
   // MediaPipe/캡처 관련 훅
   const {
@@ -41,34 +39,39 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
   } = useTrackingCore(videoRef, captureCompositeImage);
 
   // 가위바위보 제스처 훅
-  const { playerGesture, witchGesture, result, resetGesture } = useHandGesture(
-    handLandmarks,
-    isPlaying
-  );
+  const {
+    playerGesture,
+    witchGesture,
+    result,
+    resetGesture,
+    playerGestureRef,
+    witchGestureRef,
+    setResult
+  } = useHandGesture(handLandmarks, isPlaying);
   const handLandmarksRef = useRef(null);
 
   useEffect(() => {
     handLandmarksRef.current = handLandmarks;
   }, [handLandmarks]);
   // [1] 결과 판정: 한 번만 처리
-  useEffect(() => {
-    // 아직 게임오버 아니거나, 결과가 없거나, 이미 처리했다면 무시
-    if (!gameOver || !result || result === "Waiting..." || handledRef.current) {
-      return;
-    }
-    handledRef.current = true;
+  // useEffect(() => {
+  //   // 아직 게임오버 아니거나, 결과가 없거나, 이미 처리했다면 무시
+  //   if (!gameOver || !result || result === "Waiting..." || handledRef.current) {
+  //     return;
+  //   }
+  //   handledRef.current = true;
 
-    // 결과에 따라 메시지 세팅
-    if (result === "win") {
-      setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
-      onComplete?.();
-    } else if (result === "lose") {
-      setMissionMessage("😵 패배 - 다시 도전해보세요!");
-    } else {
-      // 무승부
-      setMissionMessage("😐 무승부 - 다시 도전해보세요!");
-    }
-  }, [result, gameOver, onComplete]);
+  //   // 결과에 따라 메시지 세팅
+  //   if (result === "win") {
+  //     setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
+  //     onComplete?.();
+  //   } else if (result === "lose") {
+  //     setMissionMessage("😵 패배 - 다시 도전해보세요!");
+  //   } else {
+  //     // 무승부
+  //     setMissionMessage("😐 무승부 - 다시 도전해보세요!");
+  //   }
+  // }, [result, gameOver, onComplete]);
 
   // [2] "도전" 버튼 → 게임 시작
   const startGame = () => {
@@ -100,10 +103,30 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
         setTimeout(() => {
           setIsPlaying(false);
           setGameOver(true);
+
+          // 손이 전혀 인식되지 않았다면 바로 "손 미인식" 처리
           if (!handDetected) {
             setNoHandDetected(true);
-            handledRef.current = true;
             setMissionMessage("🙅 손이 인식되지 않았습니다.");
+            return;
+          }
+
+          // === 최종 판단 ===
+          // useHandGesture 훅 내부에서 playerGestureRef와 witchGestureRef로 최신 값을 보관하도록 수정한 후 사용합니다.
+          const finalPlayerGesture = playerGestureRef.current;
+          const finalWitchGesture = witchGestureRef.current;
+          const finalResult = judgeRPS(finalPlayerGesture, finalWitchGesture);
+
+          setResult(finalResult);
+
+          // 결과에 따라 UI 업데이트
+          if (finalResult === "win") {
+            setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
+            onComplete?.();
+          } else if (finalResult === "lose") {
+            setMissionMessage("😵 패배 - 다시 도전해보세요!");
+          } else {
+            setMissionMessage("😐 무승부 - 다시 도전해보세요!");
           }
         }, 1000);
       }
