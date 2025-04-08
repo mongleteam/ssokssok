@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
-import { sendMessage } from "../../../services/socket";
+import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
 
 const CleanMissionMulti = ({
   missionData,
@@ -12,6 +12,7 @@ const CleanMissionMulti = ({
   userName,
   from,
   setStatusContent,
+  setPeerCleanCount,
 }) => {
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
@@ -93,6 +94,13 @@ const CleanMissionMulti = ({
         ) {
           countRef.current += 1;
           setMotionCount(countRef.current);
+
+          sendMessage("objectCount", {
+            roomId,
+            senderName: userName,
+            objectCount: countRef.current,
+          });
+
           motionRef.current = {
             startX: currentX,
             movedLeft: false,
@@ -149,6 +157,21 @@ const CleanMissionMulti = ({
       cameraRef.current?.stop();
     };
   }, [publisher]);
+
+  // 🔥 상대방 청소 횟수 수신
+  useEffect(() => {
+    const handleCleanCount = (data) => {
+      console.log("[CLEAN] objectCount 수신됨:", data);
+
+      if (data.senderName !== userName) {
+        setPeerCleanCount?.(data.objectCount);
+      }
+    };
+
+    onSocketEvent("objectCount", handleCleanCount);
+    return () => offSocketEvent("objectCount", handleCleanCount);
+  }, [userName]);
+
 
   useEffect(() => {
     if (motionCount >= 3) {
