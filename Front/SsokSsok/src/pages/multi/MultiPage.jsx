@@ -17,7 +17,14 @@ import IllustrationRouter from "../../components/story/IllustrationRouter.jsx";
 import { getFromIndexedDB } from "../../utils/indexedDbUtils";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
-import { connectSocket, disconnectSocket, joinRoom, sendMessage, onSocketEvent, offSocketEvent } from "../../services/socket";
+import {
+  connectSocket,
+  disconnectSocket,
+  joinRoom,
+  sendMessage,
+  onSocketEvent,
+  offSocketEvent,
+} from "../../services/socket";
 
 import nextIcon from "../../assets/images/pagenext_icon.png";
 import previousIcon from "../../assets/images/pageprevious_icon.png";
@@ -48,7 +55,6 @@ function MultiPage() {
     inviter: false,
     invitee: false,
   });
-
   const [peerStones, setPeerStones] = useState([]);
   const [stoneImage, setStoneImage] = useState(null); // ← assets에서 꺼내놓기
 
@@ -272,14 +278,13 @@ function MultiPage() {
     onSocketEvent("leaveGame", ({ username, exitMessage }) => {
       alert(exitMessage || `${username} 님이 연결을 종료했습니다.`);
       disconnectSocket(); // 연결 정리
-      navigate("/main");  // 메인으로 이동
+      navigate("/main"); // 메인으로 이동
     });
 
     return () => {
       offSocketEvent("leaveGame");
     };
   }, []);
-
 
   const handleInviteeJoined = async () => {
     sendMessage("sendStartInfo", {
@@ -486,7 +491,6 @@ function MultiPage() {
                         ...prev,
                         [currentPage]: true,
                       }));
-                      
                     }}
                     roomId={roomId}
                     from={from}
