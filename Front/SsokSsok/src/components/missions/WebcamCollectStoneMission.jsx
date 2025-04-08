@@ -7,6 +7,7 @@ import  { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
 const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
   const videoRef = useRef(null);
   const missionRef = useRef(null);
+  const hoverCountRef = useRef(0);  // Hover 유지 프레임 체크
 
   const [collected, setCollected] = useState(0);
   const [stones, setStones] = useState([]);
@@ -39,7 +40,7 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
     if (!assets[targetImage]) return;
 
     const newStones = [];
-    const minDistance = 22;
+    const minDistance = 23;
     while (newStones.length < MAX_STONES) {
       const newStone = {
         id: newStones.length,
@@ -66,8 +67,8 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
     const hovered = stones.find(
       (stone) =>
         !stone.collected &&
-        Math.abs(stone.x / 100 - (1 - center.x)) < 0.05 &&
-        Math.abs(stone.y / 100 - center.y) < 0.05
+        Math.abs(stone.x / 100 - (1 - center.x)) < 0.08 &&
+        Math.abs(stone.y / 100 - center.y) < 0.09
     );
 
     if (hovered) {
@@ -97,6 +98,16 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
       return updated;
     });
   }, [lastHoveredStoneId, isHandClosed, getHandCenter, soundSrc, assets]);
+
+  // Hover 유지 프레임 체크(2 이상일때만 수집 허용)
+  useEffect(() => {
+    if (hoveredStoneId !== null) {
+      hoverCountRef.current += 1;
+    } else {
+      hoverCountRef.current = 0;
+    }
+  }, [hoveredStoneId]);
+
 
   useEffect(() => {
     if (collected >= MAX_STONES) {
@@ -129,7 +140,9 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
               key={stone.id}
               src={assets[targetImage]}
               alt="stone"
-              className="absolute w-16 h-16 z-[40] pointer-events-none"
+              className={`absolute w-14 h-14 z-[40] pointer-events-none transition-transform duration-200 ${
+                hoveredStoneId === stone.id ? "scale-110 brightness-125" : ""
+              }`}
               style={{ left: `${stone.x}%`, top: `${stone.y}%` }}
             />
           )

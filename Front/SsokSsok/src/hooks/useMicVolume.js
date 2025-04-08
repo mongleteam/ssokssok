@@ -7,6 +7,7 @@ export const useMicVolume = () => {
   const audioContextRef = useRef(null);  // 오디오 컨텍스트
   const analyserRef = useRef(null);   // 주파수 분석기
   const streamRef = useRef(null);    // 마이크 스트림림
+  const prevVolumeRef = useRef(0);
 
   useEffect(() => {
 
@@ -47,12 +48,17 @@ export const useMicVolume = () => {
           }
 
           const rms = Math.sqrt(sum / dataArray.length);
-          setVolume(rms);
+
+           // 변화 있을 때만 상태 업데이트
+          if (Math.abs(rms - prevVolumeRef.current) > 0.005) {
+            setVolume(rms);
+            prevVolumeRef.current = rms;
+          }
 
           requestAnimationFrame(tick);
         };
 
-        // 루프 시작작
+        // 루프 시작
         tick();
       } catch (err) {
         console.error("🎤 마이크 사용 실패:", err);

@@ -7,7 +7,6 @@ import { captureCompositeImage } from "../../utils/captureCompositeImage";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 
-
 const TARGET_TEXT = "반짝이는 조약돌을 따라가자";
 
 const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
@@ -15,41 +14,47 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
   const [finished, setFinished] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [matchedLength, setMatchedLength] = useState(0);
-  const [showSuccess, setShowSuccess] = useState(false); // ✅ 추가
+  const [missionState, setMissionState] = useState("idle"); // "idle" | "listening" | "success" | "fail"
 
   const {
-      previewUrl,
-      showModal,
-      handleSave,
-      countdown,
-      setShowModal,
-    } = useTrackingCore(videoRef, 1, captureCompositeImage);
+    previewUrl,
+    showModal,
+    handleSave,
+    countdown,
+    setShowModal,
+  } = useTrackingCore(videoRef, 1, captureCompositeImage, {
+    useHands: true,
+    useHolistic: false,
+  });
 
-  const onResult = useCallback((event) => {
-    let transcript = "";
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) {
-        transcript += event.results[i][0].transcript;
+  const onResult = useCallback(
+    (event) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          transcript += event.results[i][0].transcript;
+        }
       }
-    }
-    console.log("🗣 인식된 음성:", transcript);
+      console.log("🗣 인식된 음성:", transcript);
 
-    const normalizedTarget = TARGET_TEXT.replace(/\s/g, "");
-    const normalizedTranscript = transcript.replace(/\s/g, "");
+      const normalizedTarget = TARGET_TEXT.replace(/\s/g, "");
+      const normalizedTranscript = transcript.replace(/\s/g, "");
 
-    let match = 0;
-    for (let i = 0; i < normalizedTranscript.length; i++) {
-      if (normalizedTranscript[i] === normalizedTarget[matchedLength + i]) {
-        match++;
-      } else {
-        break;
+      let match = 0;
+      for (let i = 0; i < normalizedTranscript.length; i++) {
+        if (normalizedTranscript[i] === normalizedTarget[matchedLength + i]) {
+          match++;
+        } else {
+          break;
+        }
       }
-    }
 
-    if (match > 0) {
-      setMatchedLength((prev) => Math.min(prev + match, normalizedTarget.length));
-    }
-  }, [matchedLength]);
+      if (match > 0) {
+        setMatchedLength((prev) => Math.min(prev + match, normalizedTarget.length));
+      }
+    },
+    [matchedLength]
+  );
 
   const { startListening, stopListening } = useSpeechRecognition({ onResult });
 
@@ -71,7 +76,7 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
     const normalizedTarget = TARGET_TEXT.replace(/\s/g, "");
     if (matchedLength >= normalizedTarget.length && !finished) {
       setFinished(true);
-      setShowSuccess(true); // ✅ 성공 메시지 표시
+      setMissionState("success");
       stopListening();
       onComplete?.();
     }
@@ -96,9 +101,26 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
     if (!setStatusContent) return;
     const statusUI = (
       <div className="text-center text-2xl font-cafe24 leading-relaxed">
-        {showSuccess ? (
+        {missionState === "success" ? (
           <div className="text-green-600 font-bold animate-pulse">
             ✅ 성공! 다음 페이지로 넘어가세요.
+          </div>
+        ) : missionState === "fail" ? (
+          <div className="font-bold animate-pulse space-y-4">
+            <div className="text-red-600 ">❌ 다시 시도해보세요!</div>
+            <button
+              onClick={() => {
+                setMatchedLength(0);
+                setMissionState("idle");         // 상태를 idle로 초기화
+                setIsListening(false);   
+              }}
+              className="relative inline-block"
+            >
+              <img src={stopBtn} alt="재도전 버튼" className="w-36 mx-auto -mt-7" />
+              <span className="absolute inset-0 flex items-center justify-center font-bold text-xl -mt-6">
+                재도전
+              </span>
+            </button>
           </div>
         ) : (
           <>
@@ -110,6 +132,7 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
                   onClick={() => {
                     setMatchedLength(0);
                     setIsListening(true);
+                    setMissionState("listening");
                     startListening();
                   }}
                 >
@@ -122,6 +145,13 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
                   onClick={() => {
                     setIsListening(false);
                     stopListening();
+                    const normalizedTarget = TARGET_TEXT.replace(/\s/g, "");
+                    if (matchedLength >= normalizedTarget.length) {
+                      setMissionState("success");
+                      onComplete?.();
+                    } else {
+                      setMissionState("fail");
+                    }
                   }}
                 >
                   <img src={stopBtn} alt="종료 버튼" className="w-36 mx-auto mt-3" />
@@ -134,7 +164,7 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
       </div>
     );
     setStatusContent(statusUI);
-  }, [coloredText, isListening, showSuccess]);
+  }, [coloredText, isListening, missionState]);
 
   return (
     <div id="capture-container" className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden">
