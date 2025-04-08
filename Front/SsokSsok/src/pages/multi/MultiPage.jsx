@@ -15,6 +15,7 @@ import VideoWithOverlay from "../../components/multi/VideoWithOverlay";
 import MissionRouter from "../../components/story/MissionRouter.jsx";
 import IllustrationRouter from "../../components/story/IllustrationRouter.jsx";
 import { getFromIndexedDB } from "../../utils/indexedDbUtils";
+import PageAlert from "../../components/multi/PageAlert.jsx";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
 import {
@@ -61,6 +62,7 @@ function MultiPage() {
   const [isPeerFreed, setIsPeerFreed] = useState(false);
   const hasMountedRef = useRef(false);
   const previousPath = useRef(location.pathname);
+  const [showPageAlert, setShowPageAlert] = useState(false);
 
   const navigate = useNavigate();
 
@@ -452,21 +454,33 @@ function MultiPage() {
         <PageNavigationButton
           icon={previousIcon}
           altText="이전 페이지"
-          onClick={handlePreviousPage}
+          onClick={() => {
+            if (from !== "inviter") {
+              setShowPageAlert(true);
+              return;
+            }
+            handlePreviousPage();
+          }}
           disabled={currentPage === 0 && !isMissionVisible}
           className="pointer-events-auto"
         />
         <PageNavigationButton
           icon={nextIcon}
           altText="다음 페이지"
-          onClick={handleNextPage}
+          onClick={() => {
+            if (from !== "inviter") {
+              setShowPageAlert(true);
+              return;
+            }
+            handleNextPage();
+          }}
           disabled={currentPage === storyData.length - 1 && !isMissionVisible}
           className={`pointer-events-auto ${
             isMissionVisible &&
             from === "inviter" &&
             missionSuccessMap.inviter &&
             missionSuccessMap.invitee
-              ? "animate-bounce"
+              ? "animate-blinkTwice"
               : ""
           }`}
         />
@@ -639,6 +653,9 @@ function MultiPage() {
         <div className="absolute inset-0 flex items-center justify-center z-50">
           <PauseModal roomId={roomId} userName={role} />
         </div>
+      )}
+      {showPageAlert && (
+        <PageAlert message="먼저 초대한 친구가 넘겨줄 때까지 기다려주세요!" onClose={() => setShowPageAlert(false)} />
       )}
       {!isMissionVisible && (
         <button
