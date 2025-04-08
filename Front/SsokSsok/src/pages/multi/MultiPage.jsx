@@ -465,6 +465,8 @@ function MultiPage() {
                 storyData={storyData[currentPage]}
                 assets={assets}
                 statusContent={statusContent}
+                setStatusContent={setStatusContent}
+                userName = {role}
               />
             )}
         </div>

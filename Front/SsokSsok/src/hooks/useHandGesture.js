@@ -52,6 +52,7 @@ export const useHandGesture = (handLandmarks, isActive = false) => {
     resetGesture,
     playerGestureRef, // 최종 판정에 사용할 수 있도록 Ref 반환
     witchGestureRef,
-    setResult
+    setResult,
+    setWitchGesture
   };
 };
