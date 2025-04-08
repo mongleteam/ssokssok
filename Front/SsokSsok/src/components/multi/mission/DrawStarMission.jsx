@@ -211,19 +211,27 @@ const DrawStarMission = ({
     const setupCamera = async () => {
       if (videoRef.current && publisher?.stream) {
         const stream = publisher.stream.getMediaStream();
+
+      // ✅ 중복 방지
+      if (!videoRef.current.srcObject) {
         videoRef.current.srcObject = stream;
+      }
 
         try {
           await videoRef.current.play();
-          const camera = new Camera(videoRef.current, {
-            onFrame: async () => await hands.send({ image: videoRef.current }),
-            width: CANVAS_WIDTH,
-            height: CANVAS_HEIGHT,
-          });
-          camera.start();
         } catch (err) {
-          console.error("❌ video play error", err);
+          console.warn("🚨 videoRef play error:", err);
         }
+
+        const camera = new Camera(videoRef.current, {
+          onFrame: async () => {
+            if (hands) await hands.send({ image: videoRef.current });
+          },
+          width: CANVAS_WIDTH,
+          height: CANVAS_HEIGHT,
+        });
+
+        camera.start();
       }
     };
 
