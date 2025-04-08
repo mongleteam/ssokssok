@@ -19,8 +19,9 @@ const MissionRouter = ({
   roomId,
   from,
   setStatusContent, // EatCookieMission에 필요하므로 추가
-  setPeerStones,       // ✅ 추가
-  setStoneImage        // ✅ 추가
+  setPeerStones, 
+  setStoneImage,
+  setPeerCookieCount,
 }) => {
   const parsedRole = role === "헨젤" ? 1 : role === "그레텔" ? 2 : null;
   const isMatched =
@@ -55,6 +56,7 @@ const MissionRouter = ({
           roomId={roomId}
           userName={role}
           from={from}
+          setPeerCookieCount={setPeerCookieCount}
         />
       );
     case "webcam-get-magicbook-multi":
@@ -133,7 +135,7 @@ const MissionRouter = ({
       );
 
     // case "webcam-draw-star-multi":
-    //   return <DrawStarMission ... />;              
+    //   return <DrawStarMission ... />;
     default:
       return null;
   }

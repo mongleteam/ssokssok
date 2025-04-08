@@ -57,6 +57,7 @@ function MultiPage() {
   });
   const [peerStones, setPeerStones] = useState([]);
   const [stoneImage, setStoneImage] = useState(null); // ← assets에서 꺼내놓기
+  const [peerCookieCount, setPeerCookieCount] = useState(0);
 
   const navigate = useNavigate();
 
@@ -168,14 +169,6 @@ function MultiPage() {
       }
     }
   }, [currentPage, isMissionVisible, from, roomId]);
-
-  // useEffect(() => {
-  //   console.log("✅ currentPage:", currentPage);
-  //   console.log("✅ storyData[currentPage]:", storyData[currentPage]);
-  //   console.log("✅ isMissionVisible:", isMissionVisible);
-  //   console.log("✅ role:", role);
-  //   console.log("✅ missionSuccessMap:", missionSuccessMap);
-  // }, [currentPage, isMissionVisible]);
 
   useEffect(() => {
     onSocketEvent("isSuccess", ({ senderName, isSuccess }) => {
@@ -474,29 +467,59 @@ function MultiPage() {
           <VideoWithOverlay
             roomId={roomId}
             userName={role}
-            peerOverlay={(sub, overlayRef) =>
-              isMissionVisible &&
-              currentMission?.type === "webcam-collect-stone-multi" &&
-              peerStones.length > 0 &&
-              peerStones.map((stone) => {
-                const width = overlayRef?.current?.offsetWidth || 640;
-                const height = overlayRef?.current?.offsetHeight || 480;
+            peerOverlay={(sub, overlayRef) => {
+              const width = overlayRef?.current?.offsetWidth || 640;
+              const height = overlayRef?.current?.offsetHeight || 480;
 
-                return (
-                  <img
-                    key={`peer-${stone.id}`}
-                    src={stoneImage}
-                    alt="peer-stone"
-                    className="absolute w-12 h-12 z-10 opacity-70"
-                    style={{
-                      left: `${stone.x * width}px`,
-                      top: `${stone.y * height}px`,
-                      transform: "translate(-50%, -50%)",
-                    }}
-                  />
-                );
-              })
-            }
+              return (
+                <>
+                  {/* 돌 미션용 */}
+                  {isMissionVisible &&
+                    currentMission?.type === "webcam-collect-stone-multi" &&
+                    peerStones.map((stone) => (
+                      <img
+                        key={`peer-stone-${stone.id}`}
+                        src={stoneImage}
+                        alt="peer-stone"
+                        className="absolute w-12 h-12 z-10 opacity-90"
+                        style={{
+                          left: `${stone.x * width}px`,
+                          top: `${stone.y * height}px`,
+                          transform: "translate(-50%, -50%)",
+                        }}
+                      />
+                    ))}
+
+                  {/* 쿠키 미션용 */}
+                  {isMissionVisible &&
+                    currentMission?.type === "webcam-eatcookie" &&
+                    currentMission.instructionImages?.length > 0 &&
+                    peerCookieCount <
+                      currentMission.instructionImages.length && (
+                      <img
+                        key="peer-cookie"
+                        src={
+                          assets[
+                            currentMission.instructionImages[
+                              Math.min(
+                                peerCookieCount,
+                                currentMission.instructionImages.length - 1
+                              )
+                            ]
+                          ]
+                        }
+                        alt="peer-cookie"
+                        className="absolute w-24 h-24 z-10 opacity-80"
+                        style={{
+                          left: "50%",
+                          top: "50%",
+                          transform: "translate(-50%, -50%)",
+                        }}
+                      />
+                    )}
+                </>
+              );
+            }}
           >
             {(pub) => {
               if (!publisher) setPublisher(pub);
@@ -523,6 +546,7 @@ function MultiPage() {
                     setStatusContent={setStatusContent}
                     setPeerStones={setPeerStones}
                     setStoneImage={setStoneImage}
+                    setPeerCookieCount={setPeerCookieCount}
                   />
                 )
               );

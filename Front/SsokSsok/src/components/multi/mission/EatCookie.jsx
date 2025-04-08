@@ -4,7 +4,6 @@ import { Camera } from "@mediapipe/camera_utils";
 import { useMouthTracker } from "../../../hooks/useMouthTracker";
 import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
 
-
 const EatCookie = ({
   onSuccess, // 미션 성공 시 호출되는 콜백
   setStatusContent, // 상태 UI 업데이트 함수
@@ -14,6 +13,7 @@ const EatCookie = ({
   roomId, // 필요 시 사용 (예: 소켓 통신)
   userName, // 필요 시 사용
   from, // 필요 시 사용
+  setPeerCookieCount,
 }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -27,9 +27,6 @@ const EatCookie = ({
   const MAX_COOKIE = 3;
   const cookieImages = missionData.instructionImages;
   const currentCookieImage = cookieImages[count] || cookieImages[cookieImages.length - 1];
-  const [peerCookieCount, setPeerCookieCount] = useState(0);
-  
-
 
   // Mediapipe Holistic 초기화 및 카메라 설정 (publisher 스트림 사용)
   useEffect(() => {
@@ -84,17 +81,16 @@ const EatCookie = ({
     const handleCookieCount = (data) => {
       console.log("[📩 수신됨] objectCount:", data);
       const { senderName, objectCount } = data;
-    
+
       if (senderName !== userName) {
         console.log("[COOKIE] 📩 상대방 쿠키 개수:", objectCount);
-        setPeerCookieCount(count);
+        setPeerCookieCount(objectCount);
       }
     };
-  
+
     onSocketEvent("objectCount", handleCookieCount);
     return () => offSocketEvent("objectCount", handleCookieCount);
   }, [userName]);
-  
 
   // useMouthTracker로 입 열림 여부 감지
   const { mouthOpen } = useMouthTracker(faceLandmarks);
@@ -109,30 +105,29 @@ const EatCookie = ({
     // 입이 열렸다가 닫히면 쿠키 먹은 것으로 처리
     if (prevMouthOpenLocal.current === true && mouthOpen === false) {
       console.log("[COOKIE] 입이 닫혔어요 → 쿠키 먹기!");
-    
+          
       // ✅ 이미 성공했으면 아무 처리도 하지 않음
       if (success || count >= MAX_COOKIE) return;
-    
+
       if (soundSrc && assets[soundSrc]) {
         const audio = new Audio(assets[soundSrc]);
         audio.play().catch(() => {});
       }
-    
       setCount((prev) => {
         const newCount = prev + 1;
-    
+
         // ✅ 카운트는 MAX_COOKIE까지만 증가
         if (newCount <= MAX_COOKIE) {
-          sendMessage("objectCount", {
-            roomId,
-            senderName: userName,
-            objectCount: newCount,
-          });
-          console.log("[COOKIE] 쿠키 먹은 개수:", newCount);
-        }
-    
+        sendMessage("objectCount", {
+          roomId,
+          senderName: userName,
+          objectCount: newCount,
+        });
+        console.log("[COOKIE] 쿠키 먹은 개수:", newCount);
+      }
+
         // ✅ 성공 조건 처리
-        if (newCount >= MAX_COOKIE && !success) {
+      if (newCount >= MAX_COOKIE && !success) {
           setSuccess(true);
           setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
           sendMessage("isSuccess", {
@@ -140,18 +135,15 @@ const EatCookie = ({
             roomId,
             isSuccess: "성공",
           });
+          
           setTimeout(() => {
             onSuccess?.();
-          }, 0);
-        }
-    
+          }, 0);        }
         return newCount;
       });
     }
-    
     prevMouthOpenLocal.current = mouthOpen;
   }, [mouthOpen, soundSrc, assets]);
-
 
   // 상태 UI 업데이트
   useEffect(() => {
@@ -188,7 +180,6 @@ const EatCookie = ({
           }}
         />
       )}
-      
     </>
   );
 };
