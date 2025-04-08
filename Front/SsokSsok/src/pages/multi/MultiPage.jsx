@@ -65,13 +65,29 @@ function MultiPage() {
     const nextPage = currentPage + 1;
     const shouldSave = from === "inviter" && !isMissionVisible && progressPk;
     const shouldSaveOnMissionEnd = from === "inviter" && progressPk;
+    const currentMissionRole = currentData?.role;
 
-    // 미션 중이고, 초대한 쪽이면 성공 여부 체크
+    // 역할 조건에 따라 성공 여부 판별
+    const missionCleared = (() => {
+      switch (currentMissionRole) {
+        case 1: // 헨젤만
+          return role === "헨젤" ? missionSuccessMap.inviter : missionSuccessMap.invitee;
+        case 2: // 그레텔만
+          return role === "그레텔" ? missionSuccessMap.inviter : missionSuccessMap.invitee;
+        case 3: // 둘 다 해야 함
+        default:
+          return missionSuccessMap.inviter && missionSuccessMap.invitee;
+      }
+    })();
+
+    console.log("🧠 currentMissionRole:", currentMissionRole);
+    console.log("🧠 role:", role);
+    console.log("🧠 missionCleared:", missionCleared);
+    
+    // 미션 성공해야 다음 페이지 버튼 활성화
     if (isMissionVisible && from === "inviter") {
-      const bothSuccess =
-        missionSuccessMap.inviter && missionSuccessMap.invitee;
-      if (!bothSuccess) {
-        alert("양쪽 모두 미션을 성공해야 다음 페이지로 넘어갈 수 있어요!");
+      if (!missionCleared) {
+        alert("해당 역할의 미션을 성공해야 다음 페이지로 넘어갈 수 있어요!");
         return;
       }
     }
@@ -152,6 +168,14 @@ function MultiPage() {
       }
     }
   }, [currentPage, isMissionVisible, from, roomId]);
+
+  useEffect(() => {
+    console.log("✅ currentPage:", currentPage);
+    console.log("✅ storyData[currentPage]:", storyData[currentPage]);
+    console.log("✅ isMissionVisible:", isMissionVisible);
+    console.log("✅ role:", role);
+    console.log("✅ missionSuccessMap:", missionSuccessMap);
+  }, [currentPage, isMissionVisible]);
 
   useEffect(() => {
     onSocketEvent("isSuccess", ({ senderName, isSuccess }) => {

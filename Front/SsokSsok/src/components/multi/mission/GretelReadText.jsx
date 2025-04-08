@@ -1,13 +1,8 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import useSpeechRecognition from "../../../hooks/useSpeechRecognition";
 import startBtn from "../../../assets/images/btn_green.png";
 import stopBtn from "../../../assets/images/btn_gold.png";
+import { sendMessage } from "../../../services/socket";
 
 const TARGET_TEXT = "집에 빨리 가고 싶어";
 
@@ -89,6 +84,11 @@ const GretelReadText = ({
       setShowSuccess(true);
       stopListening();
       onSuccess?.();
+      sendMessage("isSuccess", {
+        roomId,
+        senderName: userName,
+        isSuccess: "성공",
+      });
     }
   }, [matchedLength, finished, onSuccess, stopListening]);
 
