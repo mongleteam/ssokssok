@@ -21,12 +21,12 @@ const DrawStarMission = ({
   const bgRef = useRef(null);
 
   const isGretel = userName === "그레텔";
+  const hasSentSuccess = useRef(false);
 
   const [starPoints, setStarPoints] = useState([]);
   const [visited, setVisited] = useState([]);
   const [drawPath, setDrawPath] = useState([]);
   const [currentFingerPos, setCurrentFingerPos] = useState(null);
-  const [isBackToStart, setIsBackToStart] = useState(false);
 
   const makeStarPoints = (cx, cy, outerR, innerR, numPoints = 5) => {
     const points = [];
@@ -192,14 +192,15 @@ const DrawStarMission = ({
 
           const allVisited = updated.every((v) => v);
           const backToStart = isNear(tip, starPoints[0]);
-          if (allVisited && backToStart && !isBackToStart) {
-            setIsBackToStart(true);
-            onSuccess?.();
+          if (allVisited && backToStart && !hasSentSuccess.current) {
+            hasSentSuccess.current = true; // 한 번만 true로 바뀌면 끝
+
             sendMessage("isSuccess", {
               senderName: userName,
               roomId,
               isSuccess: "성공",
             });
+            onSuccess?.();
           }
 
           return updated;
