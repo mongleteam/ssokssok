@@ -5,6 +5,8 @@ import RockScissorsPaper from "../multi/mission/RockScissorsPaper";
 import WebcamGetKey from "../multi/mission/WebcamGetKey";
 import CleanMissionMulti from "../multi/mission/CleanMission";
 import SilentMissionMulti from "../multi/mission/SilentMissionMulti";
+import HanselReadText from "../multi/mission/HanselReadText";
+import GretelReadText from "../multi/mission/GretelReadText";
 
 const MissionRouter = ({
   type,
@@ -17,6 +19,8 @@ const MissionRouter = ({
   roomId,
   from,
   setStatusContent, // EatCookieMission에 필요하므로 추가
+  setPeerStones,       // ✅ 추가
+  setStoneImage        // ✅ 추가
 }) => {
   const parsedRole = role === "헨젤" ? 1 : role === "그레텔" ? 2 : null;
   const isMatched =
@@ -36,6 +40,8 @@ const MissionRouter = ({
           userName={role}
           from={from}
           setStatusContent={setStatusContent}
+          setPeerStones={setPeerStones}
+          setStoneImage={setStoneImage}
         />
       );
     case "webcam-eatcookie":
@@ -93,20 +99,41 @@ const MissionRouter = ({
         />
       );
 
-      case "webcam-silent-multi":
-        return (
-          <SilentMissionMulti
-            onSuccess={onSuccess}
-            setStatusContent={setStatusContent}
-            roomId={roomId}
-            userName={role}
-            publisher={publisher} // ✅ 꼭 추가
-          />
-        );
-      
+    case "webcam-silent-multi":
+      return (
+        <SilentMissionMulti
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          roomId={roomId}
+          userName={role}
+          publisher={publisher} // ✅ 꼭 추가
+        />
+      );
+    case "webcam-readtext-multi-second":
+      return (
+        <HanselReadText
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          missionData={missionData}
+          roomId={roomId}
+          userName={role}
+          publisher={publisher}
+        />
+      );
+    case "webcam-readtext-multi-first":
+      return (
+        <GretelReadText
+          onSuccess={onSuccess}
+          setStatusContent={setStatusContent}
+          missionData={missionData}
+          roomId={roomId}
+          userName={role}
+          publisher={publisher}
+        />
+      );
 
     // case "webcam-draw-star-multi":
-    //   return <DrawStarMission ... />;
+    //   return <DrawStarMission ... />;              
     default:
       return null;
   }
