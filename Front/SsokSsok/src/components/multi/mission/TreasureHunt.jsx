@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
-import { sendMessage } from "../../../services/socket";
+import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
 
 const HOLD_DURATION = 3000; // 3초 머물기
 const CANVAS_WIDTH = 640;
@@ -19,6 +19,7 @@ const TreasureHunt = ({ onSuccess, setStatusContent, missionData, assets, userNa
   const [resultImage, setResultImage] = useState(null);
   const [showNotice, setShowNotice] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isPeerCompleted, setIsPeerCompleted] = useState(false);  
 
   const doors = ["left", "mid", "right"];
   const [treasureDoor, setTreasureDoor] = useState(null);
@@ -151,6 +152,11 @@ const TreasureHunt = ({ onSuccess, setStatusContent, missionData, assets, userNa
       };
       setResultImage(assets[imgMap[door]]);
       setIsCompleted(true);
+      sendMessage("objectCount", {
+        senderName: userName,
+        roomId,
+        objectCount: 1
+      });
       if (soundSuccess && assets[soundSuccess]) {
         const audio = new Audio(assets[soundSuccess]);
         audio.play().catch(() => {});
@@ -212,24 +218,34 @@ const TreasureHunt = ({ onSuccess, setStatusContent, missionData, assets, userNa
     draw();
   }, [baseImgObj, noticeImgObj, fingerPos, resultImgObj, showNotice]);
 
+  useEffect(() => {
+    const handleObjectCount = ({ senderName, objectCount }) => {
+      if (senderName !== userName && objectCount === 1) {
+        setIsPeerCompleted(true);
+      }
+    };
+  
+    onSocketEvent("objectCount", handleObjectCount);
+    return () => offSocketEvent("objectCount", handleObjectCount);
+  }, [userName]);
+  
+
   // 상태 UI 업데이트: 텍스트 안내 메시지
   useEffect(() => {
     if (!setStatusContent) return;
-    const ui = isCompleted ? (
-      <div className="text-2xl font-bold text-green-700 animate-pulse">
-        보물을 찾았어요! 🎉
-      </div>
-    ) : showNotice ? (
-      <div className="text-2xl font-cafe24 text-red-600 animate-shake">
-        다시 시도해보세요!
-      </div>
-    ) : (
-      <div className="text-2xl text-gray-700 font-cafe24">
-        문 위에 3초간 손을 머물러 보세요!
-      </div>
-    );
-    setStatusContent(ui);
-  }, [isCompleted, showNotice, setStatusContent]);
+    let content;
+    if (isCompleted && isPeerCompleted) {
+      content = <div className="text-2xl font-bold text-green-700 animate-pulse">숨겨진 보물을 모두 찾았어요! 🎉</div>;
+    } else if (isCompleted && !isPeerCompleted) {
+      content = <div className="text-2xl font-bold text-blue-700 animate-pulse">보물을 찾았어요! 친구가 찾을 때까지 기다려주세요!</div>;
+    } else if (showNotice) {
+      content = <div className="text-2xl font-cafe24 text-red-600 animate-shake">다시 시도해보세요!</div>;
+    } else {
+      content = <div className="text-2xl text-gray-700 font-cafe24">문 위에 3초간 손을 머물러 보세요!</div>;
+    }
+  
+    setStatusContent(content);
+  }, [isCompleted, isPeerCompleted, showNotice, setStatusContent]);
 
   return (
     <div
