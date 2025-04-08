@@ -94,8 +94,8 @@ const VideoManager = ({ roomId, userName }) => {
       {!!publisher && (
         <div>
           <p className="text-center font-semibold">{userName}(나)</p>
-          <VideoPlayer streamManager={publisher} />
-        </div>
+          <VideoPlayer streamManager={publisher} isPublisher={true} />
+          </div>
       )}
 
       {subscribers.map((sub) => (
@@ -103,8 +103,8 @@ const VideoManager = ({ roomId, userName }) => {
           <p className="text-center font-semibold">
             {userName === "헨젤" ? "그레텔" : "헨젤"}(친구)
           </p>
-          <VideoPlayer streamManager={sub} />
-        </div>
+          <VideoPlayer streamManager={sub} isPublisher={false} />
+          </div>
       ))}
     </div>
 

@@ -95,6 +95,7 @@ const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
               muted
               ref={videoRef}
               className="w-full h-auto"
+              style={{ transform: "scaleX(-1)" }} // ✅ 여기!
             />
             {/* 오버레이 요소 */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
