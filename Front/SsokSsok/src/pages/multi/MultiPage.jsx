@@ -80,9 +80,9 @@ function MultiPage() {
       }
     })();
 
-    console.log("🧠 currentMissionRole:", currentMissionRole);
-    console.log("🧠 role:", role);
-    console.log("🧠 missionCleared:", missionCleared);
+    // console.log("🧠 currentMissionRole:", currentMissionRole);
+    // console.log("🧠 role:", role);
+    // console.log("🧠 missionCleared:", missionCleared);
     
     // 미션 성공해야 다음 페이지 버튼 활성화
     if (isMissionVisible && from === "inviter") {
@@ -169,13 +169,13 @@ function MultiPage() {
     }
   }, [currentPage, isMissionVisible, from, roomId]);
 
-  useEffect(() => {
-    console.log("✅ currentPage:", currentPage);
-    console.log("✅ storyData[currentPage]:", storyData[currentPage]);
-    console.log("✅ isMissionVisible:", isMissionVisible);
-    console.log("✅ role:", role);
-    console.log("✅ missionSuccessMap:", missionSuccessMap);
-  }, [currentPage, isMissionVisible]);
+  // useEffect(() => {
+  //   console.log("✅ currentPage:", currentPage);
+  //   console.log("✅ storyData[currentPage]:", storyData[currentPage]);
+  //   console.log("✅ isMissionVisible:", isMissionVisible);
+  //   console.log("✅ role:", role);
+  //   console.log("✅ missionSuccessMap:", missionSuccessMap);
+  // }, [currentPage, isMissionVisible]);
 
   useEffect(() => {
     onSocketEvent("isSuccess", ({ senderName, isSuccess }) => {
