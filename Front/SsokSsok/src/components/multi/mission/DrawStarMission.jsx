@@ -43,14 +43,35 @@ const DrawStarMission = ({
     return points;
   };
 
-  // 🔁 상대방 좌표 받기
+  // 성공 조건 체크 및 처리
+  useEffect(() => {
+    if (!isGretel || !starPoints.length || !drawPath.length) return;
+  
+    const allVisited = visited.every((v) => v);
+    const backToStart = isNear(drawPath.at(-1), starPoints[0]);
+  
+    // console.log("✅ 성공 조건 체크:", { allVisited, backToStart, visited, last: drawPath.at(-1) });
+  
+    if (allVisited && backToStart && !hasSentSuccess.current) {
+      hasSentSuccess.current = true;
+      // console.log("🎉 성공! 메시지 보냄");
+      sendMessage("isSuccess", {
+        senderName: userName,
+        roomId,
+        isSuccess: "성공",
+      });
+      onSuccess?.();
+    }
+  }, [visited, drawPath, starPoints, isGretel]);
+
+  // 상대방 좌표 받기
   useEffect(() => {
     const handleDraw = ({ senderName: sender, x, y }) => {
       if (sender === userName) return; // 내 좌표 무시
       const tip = { x, y };
       setDrawPath((prev) => [...prev, tip]);
 
-        // ✅ 헨젤도 visited 업데이트 추가
+        // 헨젤도 visited 업데이트 추가
       setVisited((prev) => {
         const updated = [...prev];
         starPoints.forEach((point, i) => {
@@ -192,16 +213,6 @@ const DrawStarMission = ({
 
           const allVisited = updated.every((v) => v);
           const backToStart = isNear(tip, starPoints[0]);
-          if (allVisited && backToStart && !hasSentSuccess.current) {
-            hasSentSuccess.current = true; // 한 번만 true로 바뀌면 끝
-
-            sendMessage("isSuccess", {
-              senderName: userName,
-              roomId,
-              isSuccess: "성공",
-            });
-            onSuccess?.();
-          }
 
           return updated;
         });
