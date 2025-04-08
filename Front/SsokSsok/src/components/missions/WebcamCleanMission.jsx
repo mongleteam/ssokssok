@@ -15,6 +15,7 @@ const WebcamCleanMission = ({
   const broomRef = useRef(null);
   const missionRef = useRef(null);
   const [motionCount, setMotionCount] = useState(0);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const {
     handLandmarks,
@@ -23,98 +24,72 @@ const WebcamCleanMission = ({
     handleSave,
     countdown,
     setShowModal,
-  } = useTrackingCore(videoRef, 1, captureWithVideoOverlay);
+  } = useTrackingCore(videoRef, 1, captureWithVideoOverlay, {
+    useHands: true,
+    useHolistic: false,
+  });
 
-  const { getHandCenter } = useHandPose(handLandmarks);
+  const { isHandOpen, getHandCenter } = useHandPose(handLandmarks);
 
   const broomImg = assets[missionProps.instructionImages?.[0]];
   const dustImg1 = assets[missionProps.instructionImages?.[1]];
   const dustImg2 = assets[missionProps.instructionImages?.[2]];
   const dustImg3 = assets[missionProps.instructionImages?.[3]];
 
-  const motionRef = useRef({
-    startX: null,
-    movedLeft: false,
-    movedRight: false,
-  });
+  const motionRef = useRef({ startX: null });
   const countRef = useRef(0);
-  const [successMessage, setSuccessMessage] = useState("");
 
-  // 💨 손 흔들기 감지
+
+  // 💨 좌/우 끝으로 손 흔들면 청소 카운트
   useEffect(() => {
-    if (!handLandmarks || countRef.current >= 3) return;
+    if (!handLandmarks || countRef.current >= 3 || !isHandOpen) return;
 
     const wrist = handLandmarks[0];
     if (!wrist) return;
 
     const currentX = wrist.x;
-    const sensitivity = 0.1;
+    const prevX = motionRef.current.startX;
 
-    if (motionRef.current.startX === null) {
+    if (prevX === null) {
       motionRef.current.startX = currentX;
       return;
     }
 
-    const deltaX = currentX - motionRef.current.startX;
+    const movedFromLeftToRight = prevX < 0.3 && currentX > 0.7;
+    const movedFromRightToLeft = prevX > 0.7 && currentX < 0.3;
 
-    if (deltaX > sensitivity && !motionRef.current.movedRight) {
-      motionRef.current.movedRight = true;
-      motionRef.current.startX = currentX;
-    } else if (deltaX < -sensitivity && !motionRef.current.movedLeft) {
-      motionRef.current.movedLeft = true;
-      motionRef.current.startX = currentX;
-    }
-
-    if (motionRef.current.movedLeft && motionRef.current.movedRight) {
+    if (movedFromLeftToRight || movedFromRightToLeft) {
       countRef.current += 1;
       setMotionCount(countRef.current);
-      motionRef.current = {
-        startX: currentX,
-        movedLeft: false,
-        movedRight: false,
-      };
+      motionRef.current.startX = null;
     }
-  }, [handLandmarks]);
+  }, [handLandmarks, isHandOpen]);
 
-  // ✅ 빗자루 DOM 직접 조작 (최적화)
+  // 🧹 손 위에 빗자루 따라다니기 (빠르게)
   useEffect(() => {
-    if (!getHandCenter || !broomRef.current) return;
-    broomRef.current.style.left = `${(1 - getHandCenter.x) * 100}%`;
-    broomRef.current.style.top = `${getHandCenter.y * 100}%`;
+    let animationId;
+
+    const updatePosition = () => {
+      if (broomRef.current && getHandCenter) {
+        broomRef.current.style.left = `${(1 - getHandCenter.x) * 100}%`;
+        broomRef.current.style.top = `${getHandCenter.y * 100 - 10}%`;
+      }
+      animationId = requestAnimationFrame(updatePosition);
+    };
+
+    animationId = requestAnimationFrame(updatePosition);
+    return () => cancelAnimationFrame(animationId);
   }, [getHandCenter]);
 
+  // ✅ 미션 완료 메시지 + onComplete
   useEffect(() => {
-    if (motionCount >= 3) {
-      onComplete?.();
-    }
-  }, [motionCount]);
-
-  useEffect(() => {
-    if (!setStatusContent) return;
-    const ui = (
-      <div className="text-4xl font-cafe24 text-center font-bold text-blue-700 animate-bounce">
-        {motionCount} / 3
-      </div>
-    );
-    setStatusContent(ui);
-  }, [motionCount]);
-
-  const renderDust = () => {
-    if (motionCount === 0) return dustImg3;
-    if (motionCount === 1) return dustImg2;
-    if (motionCount === 2) return dustImg1;
-    return null;
-  };
-
-  // ✅ 2. 미션 완료 시 메시지 설정
-  useEffect(() => {
-    if (motionCount >= 3) {
+    if (motionCount >= 3 && !successMessage) {
       setSuccessMessage("✅ 청소 완료! 다음 페이지로 이동하세요.");
       onComplete?.();
     }
-  }, [motionCount, onComplete]);
+  }, [motionCount, successMessage, onComplete]);
 
-  // ✅ 3. 상태 UI 업데이트
+  // 💬 상태 UI 업데이트
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = successMessage ? (
@@ -129,7 +104,13 @@ const WebcamCleanMission = ({
     setStatusContent(ui);
   }, [motionCount, successMessage]);
 
-
+  // 먼지 이미지 단계별 표시
+  const renderDust = () => {
+    if (motionCount === 0) return dustImg3;
+    if (motionCount === 1) return dustImg2;
+    if (motionCount === 2) return dustImg1;
+    return null;
+  };
 
   return (
     <div
@@ -144,30 +125,32 @@ const WebcamCleanMission = ({
         className="w-full h-full object-cover scale-x-[-1]"
       />
 
-      {/* 💨 먼지 */}
+      {/* 💨 먼지 이미지 */}
       {renderDust() && (
         <img
           src={renderDust()}
           alt="dust"
-          className="absolute top-20 right-0 w-[20rem]  object-cover z-10 pointer-events-none"
+          className="absolute top-20 right-0 w-[20rem] object-cover z-10 pointer-events-none"
         />
       )}
 
-      {/* 🧹 빗자루 */}
-      {broomImg && (
+      {/* 🧹 손이 열려 있고 좌표 있을 때만 빗자루 표시 */}
+      {broomImg && getHandCenter && isHandOpen && (
         <img
           ref={broomRef}
           src={broomImg}
           alt="broom"
-          className="absolute w-80 h-80 pointer-events-none z-20 transition-transform duration-75"
+          className="absolute w-40 h-40 pointer-events-none z-20"
           style={{
             transform: "translate(-50%, -50%)",
           }}
         />
       )}
 
-      {/* ⏱️ 카운트다운 + 📸 캡처 모달 */}
+      {/* ⏱️ 카운트다운 */}
       {countdown !== null && <CountdownOverlay count={countdown} />}
+
+      {/* 📸 캡처 모달 */}
       <PhotoCaptureModal
         isOpen={showModal}
         previewUrl={previewUrl}
