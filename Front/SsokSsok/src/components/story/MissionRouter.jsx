@@ -23,9 +23,13 @@ const MissionRouter = ({
   setStoneImage,
   setPeerCookieCount,
 }) => {
+  const alwaysRenderTypes = ["webcam-readtext-multi-first", "webcam-readtext-multi-second"];
   const parsedRole = role === "헨젤" ? 1 : role === "그레텔" ? 2 : null;
   const isMatched =
-    !missionRole || missionRole === 3 || missionRole === parsedRole;
+    alwaysRenderTypes.includes(type) || // 대사 미션은 예외 처리
+    !missionRole ||
+    missionRole === 3 ||
+    missionRole === parsedRole;
 
   if (!isMatched) return null;
 

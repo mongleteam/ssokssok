@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback, useMemo } from "react"
 import useSpeechRecognition from "../../../hooks/useSpeechRecognition";
 import startBtn from "../../../assets/images/btn_green.png";
 import stopBtn from "../../../assets/images/btn_gold.png";
-import { sendMessage } from "../../../services/socket";
+import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
 
 const TARGET_TEXT = "집에 빨리 가고 싶어";
 
@@ -19,6 +19,8 @@ const GretelReadText = ({
   const [isListening, setIsListening] = useState(false);
   const [matchedLength, setMatchedLength] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [peerSuccess, setPeerSuccess] = useState(false);
+  const isMyMission = userName === "그레텔";
 
   const onResult = useCallback(
     (event) => {
@@ -89,8 +91,14 @@ const GretelReadText = ({
         senderName: userName,
         isSuccess: "성공",
       });
+      sendMessage("objectCount", {
+        roomId,
+        senderName: userName,
+        objectCount: 1,
+      });
     }
   }, [matchedLength, finished, onSuccess, stopListening]);
+  
 
   const coloredText = useMemo(() => {
     const normalizedTarget = TARGET_TEXT.replace(/\s/g, "");
@@ -111,15 +119,31 @@ const GretelReadText = ({
   }, [matchedLength]);
 
   useEffect(() => {
+    const handlePeerSuccess = ({ senderName, objectCount }) => {
+      if (senderName !== userName && objectCount === 1) {
+        setPeerSuccess(true);
+      }
+    };
+    onSocketEvent("objectCount", handlePeerSuccess);
+    return () => offSocketEvent("objectCount", handlePeerSuccess);
+  }, [userName]);
+
+  useEffect(() => {
     if (!setStatusContent) return;
-    const statusUI = (
-      <div className="text-center text-2xl font-cafe24 leading-relaxed">
-        {showSuccess ? (
-          <div className="text-green-600 font-bold animate-pulse">
-            ✅ 성공! 다음 페이지로 넘어가세요.
-          </div>
-        ) : (
-          <>
+  
+    let statusUI;
+  
+    if (isMyMission) {
+      // 내가 직접 미션 수행 중
+      if (showSuccess) {
+        statusUI = (
+          <div className="text-green-600 font-bold animate-pulse text-2xl font-cafe24 text-center">
+            ✅ 미션 성공! 멋지게 읽었어요!
+            </div>
+        );
+      } else {
+        statusUI = (
+          <div className="text-center text-2xl font-cafe24 leading-relaxed">
             "{coloredText}"
             <div className=" -mt-3">
               {!isListening ? (
@@ -159,12 +183,25 @@ const GretelReadText = ({
                 </button>
               )}
             </div>
-          </>
-        )}
-      </div>
-    );
+          </div>
+        );
+      }
+    } else {
+      // 내가 미션 주체가 아닐 때
+      statusUI = peerSuccess ? (
+        <div className="text-indigo-600 font-bold animate-pulse text-2xl font-cafe24 text-center">
+          🎉 친구가 미션을 성공했어요!
+        </div>
+      ) : (
+        <div className="text-gray-500 text-xl font-cafe24 text-center">
+          친구가 미션을 하고 있어요.
+        </div>
+      );
+    }
+  
     setStatusContent(statusUI);
-  }, [coloredText, isListening, showSuccess]);
+  }, [coloredText, isListening, showSuccess, isMyMission, peerSuccess]);
+  
 
   return (
     <div className="relative w-[48rem] aspect-video torn-effect overflow-hidden">
