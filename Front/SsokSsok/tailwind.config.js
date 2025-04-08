@@ -18,9 +18,20 @@ export default {
           '25%, 75%': { opacity: '0' },
           '50%': { opacity: '1' },
         },
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        floatUp: {
+          '0%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+          '100%': { transform: 'translateY(0)' },
+        },
       },
       animation: {
         blinkTwice: 'blinkTwice 1s ease-in-out 1',
+        fadeIn: 'fadeIn 0.3s ease-out',
+        floatUp: 'floatUp 1.5s ease-in-out infinite',
       },
       // ✅ 커서 유틸리티 확장
       cursor: {

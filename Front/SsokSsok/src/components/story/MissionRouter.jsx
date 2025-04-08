@@ -19,12 +19,17 @@ const MissionRouter = ({
   roomId,
   from,
   setStatusContent, // EatCookieMission에 필요하므로 추가
-  setPeerStones,       // ✅ 추가
-  setStoneImage        // ✅ 추가
+  setPeerStones, 
+  setStoneImage,
+  setPeerCookieCount,
 }) => {
+  const alwaysRenderTypes = ["webcam-readtext-multi-first", "webcam-readtext-multi-second"];
   const parsedRole = role === "헨젤" ? 1 : role === "그레텔" ? 2 : null;
   const isMatched =
-    !missionRole || missionRole === 3 || missionRole === parsedRole;
+    alwaysRenderTypes.includes(type) || // 대사 미션은 예외 처리
+    !missionRole ||
+    missionRole === 3 ||
+    missionRole === parsedRole;
 
   if (!isMatched) return null;
 
@@ -55,6 +60,7 @@ const MissionRouter = ({
           roomId={roomId}
           userName={role}
           from={from}
+          setPeerCookieCount={setPeerCookieCount}
         />
       );
     case "webcam-get-magicbook-multi":
@@ -133,7 +139,7 @@ const MissionRouter = ({
       );
 
     // case "webcam-draw-star-multi":
-    //   return <DrawStarMission ... />;              
+    //   return <DrawStarMission ... />;
     default:
       return null;
   }
