@@ -538,7 +538,7 @@ function MultiPage() {
                         key="peer-jail"
                         src={assets[currentMission.instructionImages[0]]}
                         alt="peer-jail"
-                        className="absolute inset-0 w-full h-full object-cover z-30 pointer-events-none opacity-90"
+                        className="absolute inset-0 w-full h-full object-cover z-30 pointer-events-none opacity-90 pt-6"
                       />
                   )}
 
