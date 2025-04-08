@@ -97,7 +97,7 @@ const MainPage = () => {
 
                 {/* 📌 첫 번째 책장과 책들 */}
                 <div className="relative flex flex-col items-center">
-                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[50rem] -mb-13 rotate-2 z-0" />
+                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[52rem] -mb-13 rotate-2 z-0" />
                     <div className="flex justify-center -mt-[26rem] z-10">
                     {books.slice(0, 4).map((book, index) => {
                         const isLocked = book.title !== "헨젤과 그레텔";
@@ -129,7 +129,7 @@ const MainPage = () => {
                 
                 {/* 📌 두 번째 책장과 책들 */}
                 <div className="relative flex flex-col items-center mt-8">
-                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[50rem] -mb-18 rotate-2 z-0" />
+                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[52rem] -mb-18 rotate-2 z-0" />
                     <div className="flex justify-center -mt-[26rem] z-10">
                     {books.slice(4, 8).map((book, index) => {
                         const isLocked = book.title !== "헨젤과 그레텔";
