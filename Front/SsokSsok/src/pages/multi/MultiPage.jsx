@@ -80,10 +80,6 @@ function MultiPage() {
           return missionSuccessMap.inviter && missionSuccessMap.invitee;
       }
     })();
-
-    // console.log("🧠 currentMissionRole:", currentMissionRole);
-    // console.log("🧠 role:", role);
-    // console.log("🧠 missionCleared:", missionCleared);
     
     // 미션 성공해야 다음 페이지 버튼 활성화
     if (isMissionVisible && from === "inviter") {

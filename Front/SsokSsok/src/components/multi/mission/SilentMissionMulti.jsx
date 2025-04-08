@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useMicVolume } from "../../../hooks/useMicVolume";
-import { sendMessage } from "../../../services/socket";
+import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
 
 const SilentMissionMulti = ({
   onSuccess,           // 미션 성공 콜백 (MultiPage에서 전달)
@@ -14,6 +14,7 @@ const SilentMissionMulti = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [quietDuration, setQuietDuration] = useState(0); // ms 누적
   const [missionStarted, setMissionStarted] = useState(false);
+  const [peerSuccess, setPeerSuccess] = useState(false);
 
   const QUIET_THRESHOLD = 0.04;      // 🔇 음성 임계값
   const REQUIRED_DURATION = 5000;    // ✅ 조용히 있어야 하는 시간 (5초)
@@ -48,6 +49,17 @@ const SilentMissionMulti = ({
     return () => clearInterval(interval);
   }, [missionStarted, isSuccess]);
 
+  useEffect(() => {
+    const handlePeerSuccess = ({ senderName, objectCount }) => {
+      if (senderName !== userName && objectCount === 1) {
+        setPeerSuccess(true);
+      }
+    };
+  
+    onSocketEvent("objectCount", handlePeerSuccess);
+    return () => offSocketEvent("objectCount", handlePeerSuccess);
+  }, [userName]);
+
   // ✅ 성공 조건 충족 시 처리
   useEffect(() => {
     if (quietDuration >= REQUIRED_DURATION && !isSuccess) {
@@ -60,6 +72,12 @@ const SilentMissionMulti = ({
         isSuccess: "성공",
       });
 
+      sendMessage("objectCount", {
+        senderName: userName,
+        roomId,
+        objectCount: 1, // 이 미션에서 1은 성공!
+      });
+
       // 2. 상위 콜백 호출
       onSuccess?.();
     }
@@ -69,16 +87,23 @@ const SilentMissionMulti = ({
   useEffect(() => {
     if (!setStatusContent) return;
     const secondsLeft = Math.max(0, Math.ceil((REQUIRED_DURATION - quietDuration) / 1000));
-
-    const ui = (
-      <div className="text-3xl font-cafe24 font-bold text-center text-blue-800 animate-pulse">
-        {isSuccess
-          ? "✅ 성공! 다음 페이지로 넘어가세요."
-          : `조용히 하세요... ${secondsLeft}초 남음`}
+    
+    let message = "";
+  
+    if (isSuccess && peerSuccess) {
+      message = "🎉 모두 미션 성공!";
+    } else if (isSuccess && !peerSuccess) {
+      message = "🥳 성공! 친구를 기다려볼까요?";
+    } else {
+      message = `🤫 조용히! ${secondsLeft}초 남았어요.`;
+    }
+  
+    setStatusContent(
+      <div className="text-2xl font-cafe24 font-bold text-center text-blue-800 animate-pulse whitespace-pre-line">
+        {message}
       </div>
     );
-    setStatusContent(ui);
-  }, [quietDuration, isSuccess]);
+  }, [quietDuration, isSuccess, peerSuccess]);
 
   // ✅ 자동 미션 시작
   useEffect(() => {
