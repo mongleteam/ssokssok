@@ -53,7 +53,7 @@ const CollectStoneOverlay = ({
   };
 
   const checkCollision = (landmarks) => {
-    const handX = landmarks[9].x * 640;
+    const handX = (1 - landmarks[9].x) * 640;
     const handY = landmarks[9].y * 480;
 
     setStones((prev) =>
@@ -123,21 +123,31 @@ const CollectStoneOverlay = ({
       const ctx = canvas.getContext("2d");
       canvas.width = 640;
       canvas.height = 480;
+    
+      ctx.save(); // 🎯 이전 상태 저장
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
+      // 🎯 좌우 반전 적용
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+    
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const landmarks = results.multiHandLandmarks[0];
+    
         drawConnectors(ctx, landmarks, handPose.HAND_CONNECTIONS, {
           color: "#00FF00",
           lineWidth: 2,
         });
         drawLandmarks(ctx, landmarks, { color: "#FF0000", lineWidth: 1 });
-
+    
         if (isHandClosed(landmarks)) {
           checkCollision(landmarks);
         }
       }
+    
+      ctx.restore(); // 🎯 상태 복원
     });
+    
 
     const setupCamera = async () => {
       if (videoRef.current && publisher?.stream) {
@@ -165,40 +175,6 @@ const CollectStoneOverlay = ({
     setupCamera();
 
   }, [missionData, assets, publisher]);
-
-  // useEffect(() => {
-  //   if (!missionData || !assets || !publisher) return;
-  //   if (stoneInitRef.current) return; // ✅ 이미 한 번 실행했으면 무시
-
-  //   const initialStones = generateRandomStones(5).map((stone, i) => ({
-  //     ...stone,
-  //     id: `${userName}_stone_${i}`,
-  //     owner: userName,
-  //   }));
-  //   setStones(initialStones);
-  //   stoneInitRef.current = true; // ✅ 실행 플래그 설정
-
-  //   console.log("📦 내 조약돌 위치 전송 전 확인:", initialStones);
-
-  //   // emit 전송을 약간 늦춰줌 (3000ms 정도)
-  //   setTimeout(() => {
-  //     const normalizedStones = initialStones.map(({ id, x, y }) => ({
-  //       id,
-  //       x: x / 640,
-  //       y: y / 480,
-  //     }));
-
-  //     sendMessage("initStones", {
-  //       senderName: userName,
-  //       roomId,
-  //       stones: normalizedStones,
-  //     });
-
-  //     // ✅ emit 직후 로그
-  //     console.log("🚀 initStones emitted:", normalizedStones);
-  //   }, 3000);
-
-  // }, [missionData, assets, publisher, userName, roomId]);
 
   useEffect(() => {
     const handleInitStones = ({ senderName, stones: incomingStones }) => {
