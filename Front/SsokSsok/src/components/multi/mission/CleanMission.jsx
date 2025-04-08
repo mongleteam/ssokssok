@@ -40,6 +40,9 @@ const CleanMissionMulti = ({
     return null;
   };
 
+  const [isHandDetected, setIsHandDetected] = useState(false);
+
+
   useEffect(() => {
 
     if (handsRef.current) return; // 💥 이미 초기화돼 있으면 생략
@@ -63,6 +66,12 @@ const CleanMissionMulti = ({
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // ✅ 손이 감지됐는지 상태로 저장
+      const isDetected = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
+      setIsHandDetected(isDetected);
+
+      if (!isDetected) return;
 
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const landmarks = results.multiHandLandmarks[0];
@@ -214,7 +223,7 @@ const CleanMissionMulti = ({
       )}
 
       {/* 🧹 빗자루 */}
-      {broomImg && (
+      {broomImg && isHandDetected && (
         <img
           ref={broomRef}
           src={broomImg}
