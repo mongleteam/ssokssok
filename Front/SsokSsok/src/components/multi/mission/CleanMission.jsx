@@ -102,21 +102,35 @@ const CleanMissionMulti = ({
     const setupCamera = async () => {
       if (videoRef.current && publisher?.stream) {
         const mediaStream = publisher.stream.getMediaStream();
+        
+      // ✅ 중복 설정 방지: 이미 srcObject가 있으면 다시 덮어쓰지 않음
+      if (!videoRef.current.srcObject) {
         videoRef.current.srcObject = mediaStream;
-
+      }
+      
+        // play()는 try-catch로 감싸고, 중복 호출 피하기
         try {
           await videoRef.current.play();
+    
           const camera = new Camera(videoRef.current, {
-            onFrame: async () => await hands.send({ image: videoRef.current }),
+            onFrame: async () => {
+              try {
+                await hands.send({ image: videoRef.current });
+              } catch (e) {
+                console.error("🙅‍♂️ hands.send() 오류:", e);
+              }
+            },
             width: 640,
             height: 480,
           });
+    
           camera.start();
         } catch (err) {
-          console.error("🎥 Video play error:", err);
+          console.error("🎥 Video play error (중단됨):", err);
         }
       }
     };
+    
 
     setupCamera();
   }, [publisher]);
