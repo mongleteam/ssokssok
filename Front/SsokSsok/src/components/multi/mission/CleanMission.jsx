@@ -16,6 +16,8 @@ const CleanMissionMulti = ({
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
   const broomRef = useRef(null);
+  const handsRef = useRef(null);
+  const cameraRef = useRef(null);
 
   const [motionCount, setMotionCount] = useState(0);
   const countRef = useRef(0);
@@ -38,18 +40,21 @@ const CleanMissionMulti = ({
   };
 
   useEffect(() => {
-    const hands = new Hands({
+
+    if (handsRef.current) return; // 💥 이미 초기화돼 있으면 생략
+
+    handsRef.current = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
 
-    hands.setOptions({
+    handsRef.current.setOptions({
       maxNumHands: 1,
       modelComplexity: 1,
       minDetectionConfidence: 0.6,
       minTrackingConfidence: 0.5,
     });
 
-    hands.onResults((results) => {
+    handsRef.current.onResults((results) => {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
 
@@ -81,7 +86,11 @@ const CleanMissionMulti = ({
           motionRef.current.startX = currentX;
         }
 
-        if (motionRef.current.movedLeft && motionRef.current.movedRight) {
+        if (
+          motionRef.current.movedLeft &&
+          motionRef.current.movedRight &&
+          countRef.current < 3
+        ) {
           countRef.current += 1;
           setMotionCount(countRef.current);
           motionRef.current = {
@@ -90,6 +99,7 @@ const CleanMissionMulti = ({
             movedRight: false,
           };
         }
+        
 
         // ✅ 빗자루 따라다니기
         if (broomRef.current) {
@@ -112,27 +122,32 @@ const CleanMissionMulti = ({
         try {
           await videoRef.current.play();
     
-          const camera = new Camera(videoRef.current, {
+          cameraRef.current = new Camera(videoRef.current, {
             onFrame: async () => {
-              try {
-                await hands.send({ image: videoRef.current });
-              } catch (e) {
-                console.error("🙅‍♂️ hands.send() 오류:", e);
+              if (videoRef.current && handsRef.current) {
+                try {
+                  await handsRef.current.send({ image: videoRef.current });
+                } catch (e) {
+                  console.error("🙅‍♂️ hands.send() 오류:", e);
+                }
               }
             },
             width: 640,
             height: 480,
           });
     
-          camera.start();
+          cameraRef.current.start();
         } catch (err) {
           console.error("🎥 Video play error (중단됨):", err);
         }
       }
     };
     
-
     setupCamera();
+    return () => {
+      handsRef.current?.close();  // 👈 반드시 해줘야 다음 mount에서 충돌 안 남
+      cameraRef.current?.stop();
+    };
   }, [publisher]);
 
   useEffect(() => {
@@ -150,7 +165,7 @@ const CleanMissionMulti = ({
     if (!setStatusContent) return;
     const ui = (
       <div className="text-3xl font-cafe24 font-bold text-blue-700 text-center animate-bounce">
-        청소 진행률: {motionCount} / 3
+      {motionCount >= 3 ? "청소 완료!" : `청소 진행률: ${motionCount} / 3`}
       </div>
     );
     setStatusContent(ui);

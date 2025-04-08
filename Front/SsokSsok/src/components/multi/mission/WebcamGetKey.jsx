@@ -37,6 +37,8 @@ const WebcamGetKey = ({
 
   // mediapipe Hands와 Camera 초기화
   useEffect(() => {
+    if (handsRef.current) return; // 💥 중복 초기화 방지
+
     handsRef.current = new Hands({
       locateFile: (file) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
@@ -59,7 +61,7 @@ const WebcamGetKey = ({
       cameraRef.current = new Camera(videoRef.current, {
         onFrame: async () => {
           try {
-            if (videoRef.current && handsRef) {
+            if (videoRef.current && handsRef.current) {
               await handsRef.current.send({ image: videoRef.current });
             }
           } catch (err) {
