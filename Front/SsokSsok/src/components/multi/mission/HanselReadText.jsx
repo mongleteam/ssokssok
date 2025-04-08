@@ -1,24 +1,12 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import useSpeechRecognition from "../../../hooks/useSpeechRecognition";
 import startBtn from "../../../assets/images/btn_green.png";
 import stopBtn from "../../../assets/images/btn_gold.png";
+import { sendMessage } from "../../../services/socket";
 
 const TARGET_TEXT = "반짝이는 조약돌을 따라가자";
 
-const HanselReadText = ({
-  onSuccess,
-  setStatusContent,
-  roomId,
-  userName,
-  publisher,
-  missionData,
-}) => {
+const HanselReadText = ({ onSuccess, setStatusContent, roomId, userName, publisher, missionData }) => {
   const videoRef = useRef(null);
   const [finished, setFinished] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -89,6 +77,11 @@ const HanselReadText = ({
       setShowSuccess(true);
       stopListening();
       onSuccess?.();
+      sendMessage("isSuccess", {
+        roomId,
+        senderName: userName,
+        isSuccess: "성공",
+      });
     }
   }, [matchedLength, finished, onSuccess, stopListening]);
 

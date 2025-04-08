@@ -31,7 +31,7 @@ const TreasureHunt = ({ onSuccess, setStatusContent, missionData, assets, userNa
   useEffect(() => {
     const rand = Math.floor(Math.random() * 3);
     setTreasureDoor(doors[rand]);
-  }, [doors]);
+  }, []);
 
   useEffect(() => {
     if (assets["page35_interaction.jpg"]) {
