@@ -58,6 +58,7 @@ function MultiPage() {
   const [peerStones, setPeerStones] = useState([]);
   const [stoneImage, setStoneImage] = useState(null); // ← assets에서 꺼내놓기
   const [peerCookieCount, setPeerCookieCount] = useState(0);
+  const [isPeerFreed, setIsPeerFreed] = useState(false);
 
   const navigate = useNavigate();
 
@@ -174,12 +175,25 @@ function MultiPage() {
         const key = senderName === role ? "inviter" : "invitee";
         return { ...prev, [key]: isSuccess === "성공" };
       });
+
+      const isNotMe = senderName !== role;
+      const currentMission = storyData[currentPage]?.mission; // ✅ 최신 상태 가져오기
+
+      // 🔑 내가 그레텔이고 헨젤이 열쇠 미션 중에 성공했다면 바로 철창 제거
+      if (
+        isSuccess === "성공" &&
+        isNotMe &&
+        isMissionVisible &&
+        currentMission?.type === "webcam-getkey-multi"
+      ) {
+        setIsPeerFreed(true);
+      }
     });
 
     return () => {
       offSocketEvent("isSuccess");
     };
-  }, [role]);
+  }, [role, currentPage, storyData, isMissionVisible]);
 
   useEffect(() => {
     const index = location.state?.pageIndex;
@@ -513,6 +527,21 @@ function MultiPage() {
                         }}
                       />
                     )}
+
+                  {/* 감옥(창살) 미션용 */}
+                  {isMissionVisible &&
+                    currentMission?.type === "webcam-getkey-multi" &&
+                    role === "그레텔" &&
+                    !isPeerFreed &&
+                    currentMission.instructionImages?.[0] && (
+                      <img
+                        key="peer-jail"
+                        src={assets[currentMission.instructionImages[0]]}
+                        alt="peer-jail"
+                        className="absolute inset-0 w-full h-full object-cover z-30 pointer-events-none opacity-90"
+                      />
+                  )}
+
                 </>
               );
             }}
