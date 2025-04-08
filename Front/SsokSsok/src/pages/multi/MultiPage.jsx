@@ -55,6 +55,8 @@ function MultiPage() {
     inviter: false,
     invitee: false,
   });
+  const [peerStones, setPeerStones] = useState([]);
+  const [stoneImage, setStoneImage] = useState(null); // ← assets에서 꺼내놓기
 
   const navigate = useNavigate();
 
@@ -65,14 +67,14 @@ function MultiPage() {
     const shouldSaveOnMissionEnd = from === "inviter" && progressPk;
 
     // 미션 중이고, 초대한 쪽이면 성공 여부 체크
-    // if (isMissionVisible && from === "inviter") {
-    //   const bothSuccess = missionSuccessMap.inviter && missionSuccessMap.invitee;
-    //   if (!bothSuccess) {
-    //     alert("양쪽 모두 미션을 성공해야 다음 페이지로 넘어갈 수 있어요!");
-    //     return;
-    //   }
-    // }
-
+    if (isMissionVisible && from === "inviter") {
+      const bothSuccess =
+        missionSuccessMap.inviter && missionSuccessMap.invitee;
+      if (!bothSuccess) {
+        alert("양쪽 모두 미션을 성공해야 다음 페이지로 넘어갈 수 있어요!");
+        return;
+      }
+    }
 
     // 미션 종료 처리
     if (isMissionVisible) {
@@ -382,7 +384,14 @@ function MultiPage() {
           altText="다음 페이지"
           onClick={handleNextPage}
           disabled={currentPage === storyData.length - 1 && !isMissionVisible}
-          className="pointer-events-auto"
+          className={`pointer-events-auto ${
+            isMissionVisible &&
+            from === "inviter" &&
+            missionSuccessMap.inviter &&
+            missionSuccessMap.invitee
+              ? "animate-bounce"
+              : ""
+          }`}
         />
       </div>
 
@@ -401,7 +410,6 @@ function MultiPage() {
                   assets={assets}
                   publisher={publisher}
                   onSuccess={() => {
-                    setIsMissionVisible(false);
                     setViewedMissions((prev) => ({
                       ...prev,
                       [currentPage]: true,
@@ -437,7 +445,33 @@ function MultiPage() {
             )}
         </div>
         <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
-          <VideoWithOverlay roomId={roomId} userName={role}>
+          <VideoWithOverlay
+            roomId={roomId}
+            userName={role}
+            peerOverlay={(sub, overlayRef) =>
+              isMissionVisible &&
+              currentMission?.type === "webcam-collect-stone-multi" &&
+              peerStones.length > 0 &&
+              peerStones.map((stone) => {
+                const width = overlayRef?.current?.offsetWidth || 640;
+                const height = overlayRef?.current?.offsetHeight || 480;
+
+                return (
+                  <img
+                    key={`peer-${stone.id}`}
+                    src={stoneImage}
+                    alt="peer-stone"
+                    className="absolute w-12 h-12 z-10 opacity-70"
+                    style={{
+                      left: `${stone.x * width}px`,
+                      top: `${stone.y * height}px`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  />
+                );
+              })
+            }
+          >
             {(pub) => {
               if (!publisher) setPublisher(pub);
               const mission = storyData[currentPage]?.mission;
@@ -453,7 +487,6 @@ function MultiPage() {
                     assets={assets}
                     publisher={pub}
                     onSuccess={() => {
-                      setIsMissionVisible(false);
                       setViewedMissions((prev) => ({
                         ...prev,
                         [currentPage]: true,
@@ -462,6 +495,8 @@ function MultiPage() {
                     roomId={roomId}
                     from={from}
                     setStatusContent={setStatusContent}
+                    setPeerStones={setPeerStones}
+                    setStoneImage={setStoneImage}
                   />
                 )
               );

@@ -3,13 +3,14 @@ import { OpenVidu } from "openvidu-browser";
 import VideoPlayer from "./VideoPlayer";
 import { getTokenFromServer } from "../../services/openviduApi";
 
-const VideoWithOverlay = ({ roomId, userName, children }) => {
+const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
   const [OV, setOV] = useState(null);
   const [session, setSession] = useState(null);
   const [publisher, setPublisher] = useState(null);
   const [subscribers, setSubscribers] = useState([]);
 
   const videoRef = useRef(null);
+  const overlayRefs = useRef({}); // ✅ 모든 subscriber overlayRef 저장
   const subscribedConnectionIds = useRef(new Set());
   const alreadyInitialized = useRef(false);
 
@@ -104,14 +105,29 @@ const VideoWithOverlay = ({ roomId, userName, children }) => {
       )}
 
       {/* 상대방 영상 */}
-      {subscribers.map((sub) => (
-        <div key={sub.stream.connection.connectionId}>
-          <p className="text-center font-semibold">
-            {userName === "헨젤" ? "그레텔" : "헨젤"}(친구)
-          </p>
-          <VideoPlayer streamManager={sub} />
-        </div>
-      ))}
+      {subscribers.map((sub) => {
+        const connectionId = sub.stream.connection.connectionId;
+
+        if (!overlayRefs.current[connectionId]) {
+          overlayRefs.current[connectionId] = React.createRef();
+        }
+
+        return (
+          <div key={connectionId} className="relative">
+            <p className="text-center font-semibold">
+              {userName === "헨젤" ? "그레텔" : "헨젤"}(친구)
+            </p>
+            <VideoPlayer streamManager={sub} />
+            <div
+              ref={overlayRefs.current[connectionId]}
+              className="absolute top-0 left-0 w-full h-full pointer-events-none z-20"
+            >
+              {typeof peerOverlay === "function" &&
+                peerOverlay(sub, overlayRefs.current[connectionId])}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
