@@ -5,6 +5,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import { useHandGesture } from "../../../hooks/useHandGesture";
 import startBtn from "../../../assets/images/btn_green.png";
 import { sendMessage } from "../../../services/socket";
+import { judgeRPS } from "../../../utils/judgeRPS";
 
 // 가위바위보 이모지 매핑
 const gestureToEmoji = {
@@ -14,16 +15,17 @@ const gestureToEmoji = {
 };
 
 const RockScissorsPaper = ({
-  onSuccess, 
+  onSuccess,
   setStatusContent,
   missionData,
   assets,
   publisher,
   roomId,
   userName,
-  from
+  from,
 }) => {
   const videoRef = useRef(null);
+  const [handLandmarks, setHandLandmarks] = useState(null);
   const canvasRef = useRef(null);
 
   // 게임 상태
@@ -33,85 +35,110 @@ const RockScissorsPaper = ({
   const [missionMessage, setMissionMessage] = useState("");
   const handledRef = useRef(false);
 
-  // Hands API를 이용한 손 추적
-  const [handLandmarks, setHandLandmarks] = useState(null);
+  const handsRef = useRef(null);
+  const cameraRef = useRef(null);
+
   useEffect(() => {
     const hands = new Hands({
       locateFile: (file) =>
         `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
     });
+
     hands.setOptions({
       maxNumHands: 1,
       modelComplexity: 1,
       minDetectionConfidence: 0.6,
       minTrackingConfidence: 0.5,
     });
+
     hands.onResults((results) => {
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         setHandLandmarks(results.multiHandLandmarks[0]);
+      } else {
+        setHandLandmarks(null);
       }
-      // 캔버스에 그리려면 여기에 drawing_utils를 활용할 수도 있음
+
       if (canvasRef.current) {
         const ctx = canvasRef.current.getContext("2d");
         ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        // 예: drawLandmarks(ctx, results.multiHandLandmarks[0], {color: "#FF0000", lineWidth: 2});
       }
     });
+
+    handsRef.current = hands; // 저장
+
+    return () => {
+      hands.close();
+    };
+  }, []); // ✅ 빈 배열: 딱 한 번만 실행됨
+
+  useEffect(() => {
     const setupCamera = async () => {
-      if (videoRef.current && publisher?.stream) {
+      if (videoRef.current && publisher?.stream && handsRef.current) {
         const mediaStream = publisher.stream.getMediaStream();
         videoRef.current.srcObject = mediaStream;
+
         try {
           await videoRef.current.play();
+
           const camera = new Camera(videoRef.current, {
             onFrame: async () => {
-              await hands.send({ image: videoRef.current });
+              await handsRef.current.send({ image: videoRef.current });
             },
             width: 640,
             height: 480,
           });
+
           camera.start();
+          cameraRef.current = camera;
         } catch (err) {
           console.error("Video play error", err);
         }
       }
     };
+
     setupCamera();
+
     return () => {
-      hands.close();
+      cameraRef.current?.stop();
     };
-  }, [publisher]);
+  }, [publisher]); // publisher 바뀔 때만 다시 세팅
 
   // 가위바위보 제스처 훅 (손 랜드마크와 게임 진행 여부에 따라 제스처 판정)
-  const { playerGesture, witchGesture, result, resetGesture } = useHandGesture(
-    handLandmarks,
-    isPlaying
-  );
+  const {
+    playerGesture,
+    witchGesture,
+    result,
+    resetGesture,
+    setResult,
+    playerGestureRef,
+    witchGestureRef,
+    setWitchGesture
+  } = useHandGesture(handLandmarks, isPlaying);
 
-  // [1] 결과 판정 (한 번만 처리)
-  useEffect(() => {
-    if (!gameOver || !result || result === "Waiting..." || handledRef.current) {
-      return;
-    }
-    handledRef.current = true;
-    if (result === "win") {
-      setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
-      onSuccess?.();
-      sendMessage("isSuccess", {
-        senderName: userName,
-        roomId,
-        isSuccess: "성공",
-      });
-    } else if (result === "lose") {
-      setMissionMessage("😵 패배 - 다시 도전해보세요!");
-    } else {
-      setMissionMessage("😐 무승부 - 다시 도전해보세요!");
-    }
-  }, [result, gameOver, onSuccess]);
-
+  // // [1] 결과 판정 (한 번만 처리)
+  // useEffect(() => {
+  //   if (!gameOver || !result || result === "Waiting..." || handledRef.current) {
+  //     return;
+  //   }
+  //   handledRef.current = true;
+  //   if (result === "win") {
+  //     setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
+  //     onSuccess?.();
+  //     sendMessage("isSuccess", {
+  //       senderName: userName,
+  //       roomId,
+  //       isSuccess: "성공",
+  //     });
+  //   } else if (result === "lose") {
+  //     setMissionMessage("😵 패배 - 다시 도전해보세요!");
+  //   } else {
+  //     setMissionMessage("😐 무승부 - 다시 도전해보세요!");
+  //   }
+  // }, [result, gameOver, onSuccess]);
   // [2] 게임 시작 (도전 버튼)
   const startGame = () => {
     resetGesture();
+    setHandLandmarks(null);
     handledRef.current = false;
     setGameOver(false);
     setIsPlaying(true);
@@ -124,9 +151,52 @@ const RockScissorsPaper = ({
       if (count === 0) {
         clearInterval(timer);
         setCountdown(null);
+        // 최종 판정을 위해 1초 후에 실행
         setTimeout(() => {
           setIsPlaying(false);
+          // 최종 판정을 수행: 플레이어 손 제스처가 "None"인 경우는 손이 인식되지 않은 것으로 처리
+          const finalWitchGesture = witchGestureRef.current;
+          setWitchGesture(finalWitchGesture);
+          const finalPlayerGesture = playerGestureRef.current;
+          
+          if (finalPlayerGesture === "None") {
+            setResult("noHand");
+            setMissionMessage("🙅 손이 인식되지 않았습니다.");
+            setGameOver(true);
+            return;
+          }
+          const finalResult = judgeRPS(finalPlayerGesture, finalWitchGesture);
+          setResult(finalResult);
           setGameOver(true);
+
+          if (finalResult === "win") {
+            setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
+            onSuccess?.();
+            sendMessage("isSuccess", {
+              senderName: userName,
+              roomId,
+              isSuccess: "성공",
+            });
+            sendMessage("sendRts", {
+              roomId,
+              senderName: userName,
+              rps: "승리",
+            });
+          } else if (finalResult === "lose") {
+            setMissionMessage("😵 패배 - 다시 도전해보세요!");
+            sendMessage("sendRts", {
+              roomId,
+              senderName: userName,
+              rps: "패배",
+            });
+          } else {
+            setMissionMessage("😐 무승부 - 다시 도전해보세요!");
+            sendMessage("sendRts", {
+              roomId,
+              senderName: userName,
+              rps: "무승부",
+            });
+          }
         }, 1000);
       }
     }, 1000);
@@ -171,7 +241,14 @@ const RockScissorsPaper = ({
           <div>{missionMessage}</div>
           {!isWin && (
             <button
-              onClick={startGame}
+              onClick={() => {
+                sendMessage("sendRts", {
+                  roomId,
+                  senderName: userName,
+                  rps: "retry", 
+                });
+                startGame(); 
+              }}
               className="relative inline-block text-black rounded-lg text-xl"
             >
               <img src={startBtn} alt="버튼" className="w-48 mx-auto" />
@@ -216,8 +293,6 @@ const RockScissorsPaper = ({
           🧒 나: {playerGesture ? gestureToEmoji[playerGesture] : "..."}
         </div>
       </div>
-
-    
     </>
   );
 };
