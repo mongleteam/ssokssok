@@ -17,7 +17,7 @@ public interface UserService {
     void logout(String userPk, HttpServletResponse response);
     void updateUserPassword(String userPk, UpdatePasswordRequestDTO request);
     GetUserInfoResponseDTO getUserInfo(String userPk);
-    List<String> getNicknamesByUserId(List<String> idList);
+    List<String[]> getNicknamesByUserId(List<String> idList);
     String getUUID(String id);
     String getId(String uuid);
     List<String> getIdList(String id, String userPk);

@@ -62,18 +62,18 @@ public class FriendServiceImpl implements FriendService {
         try{
             List<Friend> list = friendMapper.getList(userPk);
             List<String> requestList = new ArrayList<>();
-            List<String> result = new ArrayList<>();
+            List<String[]> result = new ArrayList<>();
             for(Friend friend : list){
                 requestList.add(friend.getFriendId());
             }
             result = userServiceClient.getNicknameList(requestList);
             List<FriendListResponseDTO> friendListResponseDTOList = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
-                Friend friend = list.get(i);
-                String nickname = result.get(i);
+                String friendId = result.get(i)[0];
+                String nickname = result.get(i)[1];
 
                 // 작업 수행
-                FriendListResponseDTO friendListResponseDTO = new FriendListResponseDTO(friend.getFriendId(), nickname);
+                FriendListResponseDTO friendListResponseDTO = new FriendListResponseDTO(friendId, nickname);
                 friendListResponseDTOList.add(friendListResponseDTO);
             }
 
