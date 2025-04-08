@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/book_background.css";
 import StoryHeader from "../../components/StoryHeader";
@@ -59,6 +59,8 @@ function MultiPage() {
   const [stoneImage, setStoneImage] = useState(null); // ← assets에서 꺼내놓기
   const [peerCookieCount, setPeerCookieCount] = useState(0);
   const [isPeerFreed, setIsPeerFreed] = useState(false);
+  const hasMountedRef = useRef(false);
+  const previousPath = useRef(location.pathname);
 
   const navigate = useNavigate();
 
@@ -226,6 +228,54 @@ function MultiPage() {
     });
     return () => offSocketEvent("sendStartInfo");
   }, [from]);
+
+  // 브라우저 새로고침/닫기 대비
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      sendMessage("leaveGame", { roomId, username: role });
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [roomId, role]);
+
+  // 진짜 페이지 전환(언마운트)일 때만 leaveGame
+  // useEffect(() => {
+  //   return () => {
+  //     const leavingPage = previousPath.current !== location.pathname;
+  //     if (leavingPage && roomId && role) {
+  //       sendMessage("leaveGame", { roomId, username: role });
+  //       disconnectSocket();
+  //     }
+  //   };
+  // }, [location.pathname]);
+
+  // useEffect(() => {
+  //   previousPath.current = location.pathname;
+  // }, [location.pathname]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = ""; // 크롬용: 사용자에게 새로고침 경고
+      // 이건 실제 이동은 안 막고 경고창만 띄움
+    };
+  
+    const handleReload = () => {
+      alert("새로고침은 지원되지 않아요. 메인으로 돌아갑니다!");
+      navigate("/main");
+    };
+  
+    // 경고용
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    // 진짜 새로고침 시점에 처리
+    window.addEventListener("load", handleReload);
+  
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("load", handleReload);
+    };
+  }, []);
+  
 
   useEffect(() => {
     const loadStoryData = async () => {
