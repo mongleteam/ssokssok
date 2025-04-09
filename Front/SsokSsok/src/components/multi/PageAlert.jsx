@@ -4,7 +4,7 @@ function PageAlert({ message, onClose }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, 2000); // 2초 후 자동 닫힘
+    }, 1500); // 2초 후 자동 닫힘
     return () => clearTimeout(timer);
   }, [onClose]);
 
