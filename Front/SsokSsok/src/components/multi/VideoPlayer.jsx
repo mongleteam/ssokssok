@@ -2,7 +2,7 @@
 // 개별 영상 담당 (프레젠테이셔널)
 import React, { useEffect, useRef } from 'react';
 
-const VideoPlayer = ({ streamManager, isPublisher  }) => {
+const VideoPlayer = ({ streamManager, isPublisher, className = "" }) => {
   const videoRef = useRef();
 
   useEffect(() => {
@@ -15,12 +15,13 @@ const VideoPlayer = ({ streamManager, isPublisher  }) => {
   if (!streamManager) return null;
 
   return (
-    <div className="overflow-hidden shadow-md">
+    <div className="overflow-hidden">
       <video
         autoPlay
         playsInline
         ref={videoRef}
-        muted={isPublisher} // ✅ 내 비디오는 음소거
+        muted={isPublisher}
+        className={`transform ${className}`}
         style={{ width: '100%', height: 'auto', transform: 'scaleX(-1)' }}
       />
     </div>
