@@ -129,12 +129,12 @@ const BookStartPage = () => {
         <img
           src={HanselBoard}
           alt="hanselBoard"
-          className="absolute w-[18rem] top-[4%] left-[50%] -translate-x-1/2 z-10"
+          className="absolute w-[18rem] top-[7%] left-[50%] -translate-x-1/2 z-10"
         />
 
         <div className="absolute top-[18%] w-[45rem] h-[30rem] flex z-20">
           {/* 싱글모드 */}
-          <div className="w-1/2 h-full flex flex-col items-center">
+          <div className="w-1/2 h-full flex flex-col items-center mt-8">
             <h2 className="text-3xl font-whitechalk">혼자서도 즐겨요!</h2>
             <div className="relative group w-[15rem] mb-4 cursor-pointer"
              onClick={handleStartSingle}>
@@ -196,7 +196,7 @@ const BookStartPage = () => {
           )}
 
           {/* 멀티모드 */}
-          <div className="w-1/2 h-full flex flex-col items-center">
+          <div className="w-1/2 h-full flex flex-col items-center mt-8">
             <h2 className="text-3xl font-whitechalk">함께 즐겨요!</h2>
             <div
               className="relative group w-[15rem] mb-4 cursor-pointer"
