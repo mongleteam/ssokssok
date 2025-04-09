@@ -6,6 +6,7 @@ import { useHandGesture } from "../../../hooks/useHandGesture";
 import startBtn from "../../../assets/images/btn_green.png";
 import { sendMessage } from "../../../services/socket";
 import { judgeRPS } from "../../../utils/judgeRPS";
+import { getRandomWitchHand } from "../../../utils/getRandomWitchHand";
 
 // 가위바위보 이모지 매핑
 const gestureToEmoji = {
@@ -34,6 +35,7 @@ const RockScissorsPaper = ({
   const [gameOver, setGameOver] = useState(false);
   const [missionMessage, setMissionMessage] = useState("");
   const handledRef = useRef(false);
+  const [initialWitchGesture, setInitialWitchGesture] = useState(null);
 
   const handsRef = useRef(null);
   const cameraRef = useRef(null);
@@ -102,17 +104,15 @@ const RockScissorsPaper = ({
       cameraRef.current?.stop();
     };
   }, [publisher]); // publisher 바뀔 때만 다시 세팅
-
+  
   // 가위바위보 제스처 훅 (손 랜드마크와 게임 진행 여부에 따라 제스처 판정)
   const {
-    playerGesture,
     witchGesture,
     result,
     resetGesture,
     setResult,
     playerGestureRef,
     witchGestureRef,
-    setWitchGesture
   } = useHandGesture(handLandmarks, isPlaying);
 
   // // [1] 결과 판정 (한 번만 처리)
@@ -144,6 +144,8 @@ const RockScissorsPaper = ({
     setIsPlaying(true);
     setMissionMessage("");
     setCountdown(3);
+    const firstWitch = getRandomWitchHand();
+    setInitialWitchGesture(firstWitch);
     let count = 3;
     const timer = setInterval(() => {
       count -= 1;
@@ -155,10 +157,12 @@ const RockScissorsPaper = ({
         setTimeout(() => {
           setIsPlaying(false);
           // 최종 판정을 수행: 플레이어 손 제스처가 "None"인 경우는 손이 인식되지 않은 것으로 처리
-          const finalWitchGesture = witchGestureRef.current;
-          setWitchGesture(finalWitchGesture);
+          const finalWitchGesture = firstWitch;
           const finalPlayerGesture = playerGestureRef.current;
-          
+
+          console.log("마녀 손:" , finalWitchGesture);
+          console.log("내 손:" , finalPlayerGesture);
+
           if (finalPlayerGesture === "None") {
             setResult("noHand");
             setMissionMessage("🙅 손이 인식되지 않았습니다.");
@@ -201,7 +205,12 @@ const RockScissorsPaper = ({
       }
     }, 1000);
   };
+  const displayWitch = isPlaying
+    ? witchGesture // 훅에서 100ms마다 바뀌는 실시간 값
+    : initialWitchGesture; // 판정에 쓸 최종 값
 
+  // 플레이어는 항상 훅의 playerGestureRef.current
+  const displayPlayer = playerGestureRef.current;
   // [3] 상태 UI (부모에 전달할 UI)
   const statusContent = useMemo(() => {
     if (isPlaying && countdown !== null) {
@@ -245,9 +254,9 @@ const RockScissorsPaper = ({
                 sendMessage("sendRts", {
                   roomId,
                   senderName: userName,
-                  rps: "retry", 
+                  rps: "retry",
                 });
-                startGame(); 
+                startGame();
               }}
               className="relative inline-block text-black rounded-lg text-xl"
             >
@@ -287,10 +296,10 @@ const RockScissorsPaper = ({
       {/* 내 손(플레이어) vs 마녀 제스처 */}
       <div className="absolute top-4 left-4 text-white text-3xl font-semibold bg-black/50 px-6 py-4 rounded-xl space-y-1 font-cafe24">
         <div>
-          🧙 마녀: {witchGesture ? gestureToEmoji[witchGesture] : "..."}
+          🧙 마녀: {displayWitch ? gestureToEmoji[displayWitch] : "..."}
         </div>
         <div>
-          🧒 나: {playerGesture ? gestureToEmoji[playerGesture] : "..."}
+          🧒 나: {displayPlayer ? gestureToEmoji[displayPlayer] : "..."}
         </div>
       </div>
     </>
