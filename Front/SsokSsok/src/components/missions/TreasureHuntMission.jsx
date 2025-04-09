@@ -105,11 +105,11 @@ const TreasureHuntMission = ({
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = isCompleted ? (
-      <div className="text-2xl font-bold text-green-700 animate-pulse">
+      <div className="text-2xl font-bold text-green-700 animate-pulse font-cafe24">
         보물을 찾았어요! 🎉
       </div>
     ) : showNotice ? (
-      <div className="text-2xl font-cafe24 text-red-600 animate-shake">
+      <div className="text-2xl font-cafe24 text-red-600 animate-shake font-cafe24">
         다시 시도해보세요!
       </div>
     ) : (

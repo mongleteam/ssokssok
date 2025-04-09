@@ -6,6 +6,7 @@ import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import startBtn from "../../assets/images/btn_green.png";
 import { judgeRPS } from "../../utils/judgeRPS";
+import { getRandomWitchHand } from "../../utils/getRandomWitchHand";
 
 // 가위바위보 이모지 매핑
 const gestureToEmoji = {
@@ -24,6 +25,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
   const [gameOver, setGameOver] = useState(false); // 게임 종료 여부
   const [missionMessage, setMissionMessage] = useState(""); // 결과 메시지
   const [noHandDetected, setNoHandDetected] = useState(false);
+  const [initialWitchGesture, setInitialWitchGesture] = useState(null);
 
   // 이미 결과 처리했는지 체크 (한 번만 처리)
   const handledRef = useRef(false);
@@ -46,7 +48,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     resetGesture,
     playerGestureRef,
     witchGestureRef,
-    setResult
+    setResult,
   } = useHandGesture(handLandmarks, isPlaying);
   const handLandmarksRef = useRef(null);
 
@@ -82,7 +84,8 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     setNoHandDetected(false);
     setMissionMessage("");
     setCountdown(3);
-
+    const firstWitch = getRandomWitchHand();
+    setInitialWitchGesture(firstWitch);
     let count = 3;
     let handDetected = false;
 
@@ -113,8 +116,8 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
 
           // === 최종 판단 ===
           // useHandGesture 훅 내부에서 playerGestureRef와 witchGestureRef로 최신 값을 보관하도록 수정한 후 사용합니다.
+          const finalWitchGesture = firstWitch;
           const finalPlayerGesture = playerGestureRef.current;
-          const finalWitchGesture = witchGestureRef.current;
           const finalResult = judgeRPS(finalPlayerGesture, finalWitchGesture);
 
           setResult(finalResult);
@@ -225,6 +228,12 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
       setStatusContent(statusContent);
     }
   }, [statusContent, setStatusContent]);
+  const displayWitch = isPlaying
+    ? witchGesture // 훅에서 100ms마다 바뀌는 실시간 값
+    : initialWitchGesture; // 판정에 쓸 최종 값
+
+  // 플레이어는 항상 훅의 playerGestureRef.current
+  const displayPlayer = playerGestureRef.current;
 
   // [5] 언마운트 시 정리
   useEffect(() => {
@@ -250,10 +259,10 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
       {/* 내 손(플레이어) vs 마녀 제스처 */}
       <div className="absolute top-4 left-4 text-white text-3xl font-semibold bg-black/50 px-6 py-4 rounded-xl space-y-1 font-cafe24">
         <div>
-          🧙 마녀: {witchGesture ? gestureToEmoji[witchGesture] : "..."}
+          🧙 마녀: {displayWitch ? gestureToEmoji[displayWitch] : "..."}
         </div>
         <div>
-          🧒 나: {playerGesture ? gestureToEmoji[playerGesture] : "..."}
+          🧒 나: {displayPlayer ? gestureToEmoji[displayPlayer] : "..."}
         </div>
       </div>
 

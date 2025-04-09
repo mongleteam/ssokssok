@@ -119,9 +119,11 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = missionMessage ? (
-      <div className="text-2xl text-center font-bold text-green-700 animate-pulse">{missionMessage}</div>
+      <div className="text-2xl text-center font-bold text-green-700 animate-pulse font-cafe24">
+        {missionMessage}
+      </div>
     ) : (
-      <div className="text-2xl font-cafe24 text-center font-bold text-stone-900">
+      <div className="text-2xl font-cafe24 text-center font-bold text-stone-900 font-cafe24">
         {collected} / {MAX_STONES}
       </div>
     );
