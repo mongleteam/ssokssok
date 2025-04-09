@@ -80,23 +80,26 @@ const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
         alreadyInitialized.current = false;
       }
     };
-  }, [roomId, userName]);
+  }, [roomId, userName, session]);
 
   return (
     <div className="relative w-full aspect-video">
       {/* 본인 영상 */}
       {publisher && (
-        <div className="relative">
-          <p className="text-center font-semibold">{userName}(나)</p>
+        <div className="relative m-2">
+          {/* <p className="text-center font-semibold font-cafe24">{userName}(나)</p> */}
           <div className="relative">
             <video
               autoPlay
               playsInline
               muted
               ref={videoRef}
-              className="w-full h-auto"
-              style={{ transform: "scaleX(-1)" }} // ✅ 여기!
+              className="w-full h-auto rounded-3xl shadow-lg"
+              style={{ transform: "scaleX(-1)" }}
             />
+            <div className="absolute top-2 right-2 bg-white/50 text-black px-3 py-1 rounded-3xl text-base font-semibold shadow-md pointer-events-none z-30 font-cafe24">
+              {userName}
+            </div>
             {/* 오버레이 요소 */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
               {typeof children === "function" ? children(publisher) : children}
@@ -114,11 +117,18 @@ const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
         }
 
         return (
-          <div key={connectionId} className="relative">
-            <p className="text-center font-semibold">
+          <div key={connectionId} className="relative m-2">
+            {/* <p className="text-center font-semibold font-cafe24">
               {userName === "헨젤" ? "그레텔" : "헨젤"}(친구)
-            </p>
-            <VideoPlayer streamManager={sub} />
+            </p> */}
+            <VideoPlayer 
+              streamManager={sub}
+              className="w-full h-auto rounded-3xl shadow-lg"
+            />
+            {/* 역할 오버레이 */}
+            <div className="absolute top-2 right-2 bg-white/50 text-black px-3 py-1 rounded-3xl text-base font-semibold shadow-md pointer-events-none z-30 font-cafe24">
+              {userName === "헨젤" ? "그레텔" : "헨젤"}
+            </div>
             <div
               ref={overlayRefs.current[connectionId]}
               className="absolute top-0 left-0 w-full h-full pointer-events-none z-20"

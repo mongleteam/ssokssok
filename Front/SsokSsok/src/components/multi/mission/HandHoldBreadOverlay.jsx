@@ -9,7 +9,7 @@ const MAX_BREAD = 3;
 const HOLD_DURATION = 3000;
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 360;
-const BREAD_SIZE = 64;
+const BREAD_SIZE = 96;
 
 const HandHoldBreadOverlay = ({
   missionData,
@@ -25,7 +25,7 @@ const HandHoldBreadOverlay = ({
 
   const [breads, setBreads] = useState([]);
   const [collectedCount, setCollectedCount] = useState(0);
-
+  const [fingerPos, setFingerPos] = useState(null);
   const heldBreadRef = useRef(null);
   const holdStartRef = useRef(null);
 
@@ -74,7 +74,7 @@ const HandHoldBreadOverlay = ({
       //   <p className="text-lg font-bold">{userName}이 빵을 모두 찾았어요!</p>
       // );
   
-      onSuccess?.(); // 여기서 바로 페이지 이동은 안 하도록 MultiPage에서 막혀 있어야 함
+      onSuccess?.();
     }
   }, [collectedCount]);
 
@@ -108,7 +108,7 @@ const HandHoldBreadOverlay = ({
       const dx = centerX - fingerPos.x;
       const dy = centerY - fingerPos.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < 30) {
+      if (distance < 50) {
         found = bread;
         break;
       }
@@ -165,11 +165,12 @@ const HandHoldBreadOverlay = ({
           y: finger.y * canvas.height,
         };
 
-        ctx.beginPath();
-        ctx.arc(fingerPos.x, fingerPos.y, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = "#FF0000";
-        ctx.fill();
+        // ctx.beginPath();
+        // ctx.arc(fingerPos.x, fingerPos.y, 5, 0, 2 * Math.PI);
+        // ctx.fillStyle = "#FF0000";
+        // ctx.fill();
 
+        setFingerPos(fingerPos); // ← 손 위치 저장 (빨간 점 그리기 X)
         updateBreadHold(fingerPos);
       }
     });
@@ -233,6 +234,20 @@ const HandHoldBreadOverlay = ({
           />
         ) : null
       )}
+
+      {fingerPos && (
+        <div
+          className="absolute z-30 text-[40px] pointer-events-none"
+          style={{
+            left: `${fingerPos.x}px`,
+            top: `${fingerPos.y}px`,
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          👆
+        </div>
+      )}
+
 
       <video ref={videoRef} className="hidden" />
     </div>
