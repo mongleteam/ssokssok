@@ -35,8 +35,7 @@
 }
 
 html,
-body,
-input {
+body {
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -49,7 +48,11 @@ input {
 button,
 a,
 img,
-p,
-input {
+p {
+  cursor: url("/cursors/point_cursor.cur"), pointer !important;
+}
+
+.custom-slider,
+.custom-slider::-webkit-slider-thumb {
   cursor: url("/cursors/point_cursor.cur"), pointer !important;
 }
