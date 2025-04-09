@@ -1,8 +1,18 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import useSpeechRecognition from "../../../hooks/useSpeechRecognition";
 import startBtn from "../../../assets/images/btn_green.png";
 import stopBtn from "../../../assets/images/btn_gold.png";
-import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/socket";
+import {
+  sendMessage,
+  onSocketEvent,
+  offSocketEvent,
+} from "../../../services/socket";
 
 const TARGET_TEXT = "집에 빨리 가고 싶어";
 
@@ -55,6 +65,16 @@ const GretelReadText = ({
 
   const { startListening, stopListening } = useSpeechRecognition({ onResult });
 
+  // isListening 변화 감지해서 start/stop 한 번만 호출
+  useEffect(() => {
+    if (isListening) {
+      setMatchedLength(0);
+      startListening();
+    } else {
+      stopListening();
+    }
+  }, [isListening, startListening, stopListening]);
+
   // 카메라 스트림 바인딩 부분을 SilentMission처럼 publisher 스트림을 사용하도록 수정
   useEffect(() => {
     const setupCam = async () => {
@@ -84,7 +104,7 @@ const GretelReadText = ({
     if (matchedLength >= normalizedTarget.length && !finished) {
       setFinished(true);
       setShowSuccess(true);
-      stopListening();
+      setIsListening(false);
       onSuccess?.();
       sendMessage("isSuccess", {
         roomId,
@@ -98,7 +118,6 @@ const GretelReadText = ({
       });
     }
   }, [matchedLength, finished, onSuccess, stopListening]);
-  
 
   const coloredText = useMemo(() => {
     const normalizedTarget = TARGET_TEXT.replace(/\s/g, "");
@@ -130,16 +149,16 @@ const GretelReadText = ({
 
   useEffect(() => {
     if (!setStatusContent) return;
-  
+
     let statusUI;
-  
+
     if (isMyMission) {
       // 내가 직접 미션 수행 중
       if (showSuccess) {
         statusUI = (
           <div className="text-green-600 font-bold animate-pulse text-2xl font-cafe24 text-center">
             ✅ 미션 성공! 멋지게 읽었어요!
-            </div>
+          </div>
         );
       } else {
         statusUI = (
@@ -151,8 +170,7 @@ const GretelReadText = ({
                   className="relative px-6 -py-2"
                   onClick={() => {
                     setMatchedLength(0);
-                    setIsListening(true);
-                    startListening();
+                    setIsListening(true);               
                   }}
                 >
                   <img
@@ -169,7 +187,6 @@ const GretelReadText = ({
                   className="relative px-6 -mt-2"
                   onClick={() => {
                     setIsListening(false);
-                    stopListening();
                   }}
                 >
                   <img
@@ -198,10 +215,9 @@ const GretelReadText = ({
         </div>
       );
     }
-  
+
     setStatusContent(statusUI);
   }, [coloredText, isListening, showSuccess, isMyMission, peerSuccess]);
-  
 
   return (
     <div className="relative w-[48rem] aspect-video torn-effect overflow-hidden">

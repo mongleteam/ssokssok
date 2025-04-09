@@ -48,6 +48,16 @@ const HanselReadText = ({ onSuccess, setStatusContent, roomId, userName, publish
 
   const { startListening, stopListening } = useSpeechRecognition({ onResult });
 
+  // isListening 변화 감지해서 start/stop 한 번만 호출
+  useEffect(() => {
+    if (isListening) {
+      setMatchedLength(0);
+      startListening();
+    } else {
+      stopListening();
+    }
+  }, [isListening, startListening, stopListening]);
+
   // 카메라 스트림 바인딩 부분을 SilentMission처럼 publisher 스트림을 사용하도록 수정
   useEffect(() => {
     const setupCam = async () => {
@@ -77,15 +87,15 @@ const HanselReadText = ({ onSuccess, setStatusContent, roomId, userName, publish
     if (matchedLength >= normalizedTarget.length && !finished) {
       setFinished(true);
       setShowSuccess(true);
-      stopListening();
+      setIsListening(false);
       onSuccess?.();
-  
+
       sendMessage("isSuccess", {
         roomId,
         senderName: userName,
         isSuccess: "성공",
       });
-  
+
       sendMessage("objectCount", {
         roomId,
         senderName: userName,
@@ -93,7 +103,6 @@ const HanselReadText = ({ onSuccess, setStatusContent, roomId, userName, publish
       });
     }
   }, [matchedLength, finished, onSuccess, stopListening]);
-  
 
   const coloredText = useMemo(() => {
     const normalizedTarget = TARGET_TEXT.replace(/\s/g, "");
@@ -112,24 +121,23 @@ const HanselReadText = ({ onSuccess, setStatusContent, roomId, userName, publish
       );
     });
   }, [matchedLength]);
-  
+
   useEffect(() => {
     const handlePeerSuccess = ({ senderName, objectCount }) => {
       if (senderName !== userName && objectCount === 1) {
         setPeerSuccess(true);
       }
     };
-  
+
     onSocketEvent("objectCount", handlePeerSuccess);
     return () => offSocketEvent("objectCount", handlePeerSuccess);
   }, [userName]);
-  
 
   useEffect(() => {
     if (!setStatusContent) return;
-  
+
     let statusUI;
-  
+
     if (isMyMission) {
       if (showSuccess) {
         statusUI = (
@@ -147,8 +155,7 @@ const HanselReadText = ({ onSuccess, setStatusContent, roomId, userName, publish
                   className="relative px-6 -py-2"
                   onClick={() => {
                     setMatchedLength(0);
-                    setIsListening(true);
-                    startListening();
+                    setIsListening(true);               
                   }}
                 >
                   <img
@@ -165,7 +172,6 @@ const HanselReadText = ({ onSuccess, setStatusContent, roomId, userName, publish
                   className="relative px-6 -mt-2"
                   onClick={() => {
                     setIsListening(false);
-                    stopListening();
                   }}
                 >
                   <img
@@ -191,13 +197,12 @@ const HanselReadText = ({ onSuccess, setStatusContent, roomId, userName, publish
       ) : (
         <div className="text-gray-500 text-xl font-cafe24 text-center">
           친구가 미션을 하고 있어요.
-          </div>
+        </div>
       );
     }
-  
+
     setStatusContent(statusUI);
   }, [coloredText, isListening, showSuccess, isMyMission, peerSuccess]);
-  
 
   return (
     <div className="relative w-[48rem] aspect-video torn-effect overflow-hidden">
