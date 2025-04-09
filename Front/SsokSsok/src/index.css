@@ -35,7 +35,8 @@
 }
 
 html,
-body {
+body,
+input {
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -48,6 +49,7 @@ body {
 button,
 a,
 img,
-p {
+p,
+input {
   cursor: url("/cursors/point_cursor.cur"), pointer !important;
 }
