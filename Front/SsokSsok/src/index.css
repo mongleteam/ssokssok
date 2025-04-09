@@ -47,6 +47,7 @@ body {
 /* 포인트 커서 (버튼, 링크 등) */
 button,
 a,
-img {
+img,
+p {
   cursor: url("/cursors/point_cursor.cur"), pointer !important;
 }
