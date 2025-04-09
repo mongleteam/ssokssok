@@ -106,7 +106,7 @@ const WebcamGetKey = ({
         setIsHolding(true);
         setHoldStartTime(Date.now());
       } else if (Date.now() - holdingStartTime >= HOLD_DURATION) {
-        setMissionMessage("✅ 열쇠 획득! 다음 페이지로 이동하세요.");
+        setMissionMessage("✅ 탈출 성공! 다음 페이지로 이동하세요.");
         sendMessage("isSuccess", {
           senderName: userName,
           roomId,
