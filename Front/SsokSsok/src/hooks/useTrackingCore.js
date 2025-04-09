@@ -5,6 +5,7 @@ import { Holistic } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
 import { captureCompositeImage } from "../utils/captureCompositeImage";
 import { sendThumbImage } from "../apis/bookStartApi";
+import { playShutterSound } from "../utils/playShutterSound";
 
 export const useTrackingCore = (videoRef, fairytalePk = 1, captureFn = captureCompositeImage, options = {
   useHands : true, useHolistic: true }
@@ -31,6 +32,8 @@ export const useTrackingCore = (videoRef, fairytalePk = 1, captureFn = captureCo
     }
     setCountdown(null);
     await new Promise((r) => setTimeout(r, 500));
+
+    playShutterSound(); // 🎯 그냥 한 번 재생만
 
     const { url } = await captureFn("capture-container");
     setPreviewUrl(url);
