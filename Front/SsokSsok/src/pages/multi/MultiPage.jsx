@@ -64,6 +64,7 @@ function MultiPage() {
   const previousPath = useRef(location.pathname);
   const [showPageAlert, setShowPageAlert] = useState(false);
   const [peerCleanCount, setPeerCleanCount] = useState(0);
+  const [missionClearedAlert, setMissionClearedAlert] = useState(false);
 
   const navigate = useNavigate();
 
@@ -90,7 +91,7 @@ function MultiPage() {
     // 미션 성공해야 다음 페이지 버튼 활성화
     if (isMissionVisible && from === "inviter") {
       if (!missionCleared) {
-        alert("해당 역할의 미션을 성공해야 다음 페이지로 넘어갈 수 있어요!");
+        alert("아직 미션이 끝나지 않았어요. 완료하고 넘어가볼까요?");
         return;
       }
     }
@@ -175,16 +176,39 @@ function MultiPage() {
   useEffect(() => {
     onSocketEvent("isSuccess", ({ senderName, isSuccess }) => {
       console.log("📩 isSuccess 이벤트 수신:", { senderName, isSuccess });
-
+  
       setMissionSuccessMap((prev) => {
         const key = senderName === role ? "inviter" : "invitee";
-        return { ...prev, [key]: isSuccess === "성공" };
+        const updated = { ...prev, [key]: isSuccess === "성공" };
+  
+        // 🔍 여기서 조건 판단!
+        const currentMission = storyData[currentPage]?.mission;
+        const currentMissionRole = storyData[currentPage]?.role;
+  
+        const isMissionComplete = (() => {
+          switch (currentMissionRole) {
+            case 1:
+              return role === "헨젤" ? updated.inviter : updated.invitee;
+            case 2:
+              return role === "그레텔" ? updated.inviter : updated.invitee;
+            case 3:
+            default:
+              return updated.inviter && updated.invitee;
+          }
+        })();
+  
+        // ✅ 미션 성공 상태면 알림 보여주기
+        if (isMissionVisible && isMissionComplete) {
+          setMissionClearedAlert(true);
+        }
+  
+        return updated;
       });
-
+  
+      // 열쇠 미션 처리 유지
+      const currentMission = storyData[currentPage]?.mission;
       const isNotMe = senderName !== role;
-      const currentMission = storyData[currentPage]?.mission; // ✅ 최신 상태 가져오기
-
-      // 🔑 내가 그레텔이고 헨젤이 열쇠 미션 중에 성공했다면 바로 철창 제거
+  
       if (
         isSuccess === "성공" &&
         isNotMe &&
@@ -194,11 +218,12 @@ function MultiPage() {
         setIsPeerFreed(true);
       }
     });
-
+  
     return () => {
       offSocketEvent("isSuccess");
     };
   }, [role, currentPage, storyData, isMissionVisible]);
+  
 
   useEffect(() => {
     const index = location.state?.pageIndex;
@@ -697,6 +722,13 @@ function MultiPage() {
       {showPageAlert && (
         <PageAlert message="먼저 초대한 친구가 넘겨줄 때까지 기다려주세요!" onClose={() => setShowPageAlert(false)} />
       )}
+      {missionClearedAlert && (
+        <PageAlert
+          message="🎉 미션 성공! 다음 페이지로 넘어가세요!"
+          onClose={() => setMissionClearedAlert(false)}
+        />
+      )}
+
       {!isMissionVisible && (
         <button
           onClick={async () => {
