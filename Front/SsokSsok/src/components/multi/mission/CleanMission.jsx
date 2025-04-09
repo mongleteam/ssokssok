@@ -210,7 +210,7 @@ const CleanMissionMulti = ({
         ref={videoRef}
         autoPlay
         muted
-        className="w-full h-auto object-cover scale-x-[-1]"
+        className="w-full h-auto object-cover scale-x-[-1] rounded-3xl"
       />
 
       {/* 💨 먼지 */}

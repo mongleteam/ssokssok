@@ -6,7 +6,7 @@ import { sendMessage, onSocketEvent, offSocketEvent } from "../../../services/so
 
 
 const MAX_BREAD = 3;
-const HOLD_DURATION = 3000;
+const HOLD_DURATION = 2500;
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 360;
 const BREAD_SIZE = 96;
@@ -86,7 +86,7 @@ const HandHoldBreadOverlay = ({
             ? `${senderName}이 빵을 찾는 중... (${objectCount}/${MAX_BREAD})`
             : `${senderName}이 빵을 모두 찾았어요!`;
   
-        setStatusContent?.(<p className="text-lg font-bold">{text}</p>);
+        setStatusContent?.(<p className="text-2xl font-bold text-blue-700 animate-pulse">{text}</p>);
       }
     };
   
@@ -172,6 +172,9 @@ const HandHoldBreadOverlay = ({
 
         setFingerPos(fingerPos); // ← 손 위치 저장 (빨간 점 그리기 X)
         updateBreadHold(fingerPos);
+      } else {
+        // 손 인식이 안 될 때 fingerPos를 null로
+        setFingerPos(null);
       }
     });
 
