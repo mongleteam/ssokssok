@@ -22,6 +22,7 @@ const EatCookie = ({
   const [success, setSuccess] = useState(false);
   const [missionMessage, setMissionMessage] = useState("");
   const [faceLandmarks, setFaceLandmarks] = useState(null);
+  const [localPeerCookieCount, setLocalPeerCookieCount] = useState(0);
 
   const soundSrc = missionData.soundEffect?.[0];
   const MAX_COOKIE = 3;
@@ -85,6 +86,7 @@ const EatCookie = ({
       if (senderName !== userName) {
         console.log("[COOKIE] 📩 상대방 쿠키 개수:", objectCount);
         setPeerCookieCount(objectCount);
+        setLocalPeerCookieCount(objectCount);  // 내 컴포넌트에서도 로컬로 추적
       }
     };
 
@@ -129,7 +131,13 @@ const EatCookie = ({
         // ✅ 성공 조건 처리
       if (newCount >= MAX_COOKIE && !success) {
           setSuccess(true);
-          setMissionMessage("✅ 성공! 다음 페이지로 넘어가세요.");
+          
+          if (localPeerCookieCount >= MAX_COOKIE) {
+            setMissionMessage("쿠키를 모두 먹었어요! 다음 페이지로 이동하세요.");
+          } else {
+            setMissionMessage("쿠키를 다 먹었어요! 친구를 기다리는 중...");
+          }
+
           sendMessage("isSuccess", {
             senderName: userName,
             roomId,
@@ -145,15 +153,23 @@ const EatCookie = ({
     prevMouthOpenLocal.current = mouthOpen;
   }, [mouthOpen, soundSrc, assets]);
 
+  // 친구가 나중에 성공했을 때 메시지 업데이트
+  useEffect(() => {
+    if (count >= MAX_COOKIE && success && localPeerCookieCount >= MAX_COOKIE) {
+      setMissionMessage("쿠키를 모두 먹었어요! 다음 페이지로 이동하세요.");
+    }
+  }, [localPeerCookieCount]);
+
+
   // 상태 UI 업데이트
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = missionMessage ? (
-      <div className="text-3xl text-center font-bold text-green-700 animate-pulse">
+      <div className="text-2xl text-center font-bold text-green-700 animate-pulse">
         {missionMessage}
       </div>
     ) : (
-      <div className="text-5xl font-cafe24 text-center font-bold text-stone-900">
+      <div className="text-4xl font-cafe24 text-center font-bold text-stone-900">
         {count} / {MAX_COOKIE}
       </div>
     );
