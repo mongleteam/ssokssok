@@ -33,20 +33,19 @@ const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }
   const prevMouthOpenLocal = useRef(null);
 
   useEffect(() => {
-    console.log("[COOKIE] mouthOpen:", mouthOpen);
+    if(success) return;
+
     if (prevMouthOpenLocal.current === null) {
       prevMouthOpenLocal.current = mouthOpen;
       return;
     }
     if (prevMouthOpenLocal.current === true && mouthOpen === false) {
-      console.log("[COOKIE] 입이 닫혔어요 → 쿠키 먹기!");
       if (soundSrc && assets[soundSrc]) {
         const audio = new Audio(assets[soundSrc]);
         audio.play().catch(() => {});
       }
       setCount((prev) => {
         const newCount = prev + 1;
-        console.log("[COOKIE] 쿠키 먹은 개수:", newCount);
         if (newCount >= MAX_COOKIE) setSuccess(true);
         return newCount;
       });
@@ -64,7 +63,7 @@ const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }
   useEffect(() => {
     if (!setStatusContent) return;
     const ui = missionMessage ? (
-      <div className="text-2xl text-center font-bold text-green-700 animate-pulse">
+      <div className="text-2xl text-center font-bold text-green-700 animate-pulse font-cafe24">
         {missionMessage}
       </div>
     ) : (

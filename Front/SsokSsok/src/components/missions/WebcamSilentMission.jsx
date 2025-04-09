@@ -78,7 +78,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
     const statusUI = (
       <div className="flex flex-col items-center justify-center gap-4 mt-4">
         {isSuccess ? (
-          <div className="text-2xl font-bold text-green-700 animate-pulse">
+          <div className="text-2xl font-bold text-green-700 animate-pulse font-cafe24">
             ✅ 성공! 다음 페이지로 넘어가세요.
           </div>
         ) : (

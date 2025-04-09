@@ -7,11 +7,8 @@ export const useMouthTracker = (faceLandmarks) => {
   const prevMouthOpen = useRef(false);
 
   useEffect(() => {
-    // console.log("[MOUTH] faceLandmarks:", faceLandmarks);
     if (!faceLandmarks) return;
     const open = isMouthOpen(faceLandmarks);
-    console.log("[MOUTH] isMouthOpen:", open);
-
     if (open && !prevMouthOpen.current) {
       prevMouthOpen.current = true;
       setMouthOpen(true);
