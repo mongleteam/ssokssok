@@ -188,6 +188,8 @@ public class SocketEventHandler {
     }
 
     public void disconnectRoomFromRest(RoomDisconnectionRequest data) {
+        RoomExitResponse response = new RoomExitResponse("상대가","초대 요청을 거절했습니다.");
+        server.getRoomOperations(data.getRoomId()).sendEvent("leaveGame", response);
         disconnectRoom(data);
     }
 
