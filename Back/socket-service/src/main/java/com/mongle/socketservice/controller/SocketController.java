@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/socket")
 public class SocketController {
 
     private final SocketEventHandler socketEventHandler;
 
-    @PostMapping("/disconnet")
+    @PostMapping("/api/socket/disconnet")
     public void disconnet(@RequestParam String roomId) {
         RoomDisconnectionRequest roomDisconnectionRequest = new RoomDisconnectionRequest();
         roomDisconnectionRequest.setRoomId(roomId);
