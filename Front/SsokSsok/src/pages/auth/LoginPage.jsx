@@ -31,7 +31,7 @@ const LoginPage = () => {
         const { name, value } = e.target
           // 아이디 필드 유효성: 영문만 허용
           if (name === "id") {
-            if (!/^[a-zA-Z]*$/.test(value)) return; // 영문 이외 입력 차단
+            if (!/^[a-zA-Z0-9]*$/.test(value)) return; // 영문 또는 숫자만 허용
           }
 
           // 공백 입력은 모든 필드에서 금지
