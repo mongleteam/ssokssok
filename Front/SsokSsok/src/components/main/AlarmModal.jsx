@@ -79,7 +79,7 @@ const AlarmModal = () => {
         await rejectFriendApi(item.friendId);
         console.log("친구 요청 거절 완료");
       } else if (item.state === "multi") {
-        await rejectGameApi(item.friendId.item.roomId);
+        await rejectGameApi(item.friendId, item.roomId);
         console.log("게임 초대 거절");
       }
       await fetchMyAlarm();
