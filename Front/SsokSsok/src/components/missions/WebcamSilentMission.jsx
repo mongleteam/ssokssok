@@ -36,7 +36,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
-        console.error("📷 웹캠 접근 실패:", err);
+        // console.error("📷 웹캠 접근 실패:", err);
       }
     };
     setupCam();

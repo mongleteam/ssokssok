@@ -35,7 +35,7 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
           transcript += event.results[i][0].transcript;
         }
       }
-      console.log("🗣 인식된 음성:", transcript);
+      // console.log("🗣 인식된 음성:", transcript);
 
       const normalizedTarget = TARGET_TEXT.replace(/\s/g, "");
       const normalizedTranscript = transcript.replace(/\s/g, "");
@@ -66,7 +66,7 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
-        console.error("웹캠 접근 실패:", err);
+        // console.error("웹캠 접근 실패:", err);
       }
     };
     setupCam();

@@ -28,7 +28,7 @@ const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, asset
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true});
                 if (videoRef.current) videoRef.current.srcObject = stream;
             } catch (err) {
-                console.log("웹캠 접근 실패 : ", err)
+                // console.log("웹캠 접근 실패 : ", err)
             }
         };
         setupCam();

@@ -21,10 +21,10 @@ const AlarmModal = () => {
   const fetchMyAlarm = async () => {
     try {
       const res = await notiListApi();
-      console.log("✅ 알림 API 응답", res.data.data.notifications);
+      // console.log("✅ 알림 API 응답", res.data.data.notifications);
       setAlarms(res.data.data.notifications);
     } catch (err) {
-      console.error("알람 조회 실패", err);
+      // console.error("알람 조회 실패", err);
     }
   };
   useEffect(() => {
@@ -69,7 +69,7 @@ const AlarmModal = () => {
       }
       await fetchMyAlarm();
     } catch (err) {
-      console.error("수락 실패", err);
+      // console.error("수락 실패", err);
     }
   };
 
@@ -77,14 +77,14 @@ const AlarmModal = () => {
     try {
       if (item.state === "friend") {
         await rejectFriendApi(item.friendId);
-        console.log("친구 요청 거절 완료");
+        // console.log("친구 요청 거절 완료");
       } else if (item.state === "multi") {
         await rejectGameApi(item.friendId, item.roomId);
-        console.log("게임 초대 거절");
+        // console.log("게임 초대 거절");
       }
       await fetchMyAlarm();
     } catch (err) {
-      console.error("거절 실패", err);
+      // console.error("거절 실패", err);
     }
   };
 
