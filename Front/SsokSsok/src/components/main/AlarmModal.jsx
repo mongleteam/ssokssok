@@ -36,7 +36,7 @@ const AlarmModal = () => {
       case "multi":
         return `${item.friendId}님이 동화에 초대했습니다.`
       default:
-        return "조금만 기다려주세요요."
+        return "조금만 기다려주세요."
     }
   }
 
@@ -77,10 +77,10 @@ const AlarmModal = () => {
       try {
         if (item.state === "friend") {
           await rejectFriendApi(item.friendId)
-          console.log("친구 요청 거절 완료")
+          // console.log("친구 요청 거절 완료")
         } else if (item.state === "multi") {
           await rejectGameApi(item.friendId)
-          console.log("게임 초대 거절")
+          // console.log("게임 초대 거절")
         }
         await fetchMyAlarm()
       } catch (err) {
