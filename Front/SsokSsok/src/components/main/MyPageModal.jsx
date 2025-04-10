@@ -52,7 +52,7 @@ const MyPageModal = ({openModal}) => {
       await logout();
       navigate("/login");
     } catch (err) {
-      console.error("로그아웃 실패", err);
+      // console.error("로그아웃 실패", err);
     } finally {
       setShowLogoutConfirm(false);
     }
@@ -78,7 +78,7 @@ const MyPageModal = ({openModal}) => {
       // 400 에러일 때 
       const errorMessage = err?.response?.data?.message || "닉네임 수정에 실패했습니다."
       alert(errorMessage)
-      console.error("닉네임 수정 실패", err)
+      // console.error("닉네임 수정 실패", err)
     }
   }
 
@@ -98,7 +98,7 @@ const MyPageModal = ({openModal}) => {
       // 초기화면으로 이동
       navigate("/")
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       alert("회원 탈퇴에 실패했습니다.")
     }
   }

@@ -132,7 +132,7 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
   }, [visited]);
 
   const drawCanvas = () => {
-    console.log("🖌️ drawCanvas 호출됨");
+    // console.log("🖌️ drawCanvas 호출됨");
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d"); // canvas
     if (!ctx || !bgRef.current) return;

@@ -30,7 +30,7 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         if (videoRef.current) videoRef.current.srcObject = stream;
       } catch (err) {
-        console.error("포트 접근 실패:", err);
+        // console.error("포트 접근 실패:", err);
       }
     };
     setupCam();

@@ -36,7 +36,7 @@ const MissionScreen = ({
         const text = await res.text();
         setMissionText(text);
       } catch (e) {
-        console.error("지시사항 파일 로딩 실패:", e);
+        // console.error("지시사항 파일 로딩 실패:", e);
         setMissionText("지시사항을 불러올 수 없습니다.");
       }
     };
