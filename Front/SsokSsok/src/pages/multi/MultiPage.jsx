@@ -591,7 +591,7 @@ function MultiPage() {
               />
             )}
         </div>
-        <div className="relative flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
+        <div className="relative flex flex-col w-full lg:w-[40%] pl-4">
           <ManualCaptureButton captureTargetRef={captureRef} />
           <div ref={captureRef}>
           <VideoWithOverlay
