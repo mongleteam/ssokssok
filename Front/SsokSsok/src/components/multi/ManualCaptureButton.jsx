@@ -33,7 +33,7 @@ const ManualCaptureButton = ({ captureTargetRef, fairytalePk }) => {
     const blob = await res.blob();
     const formData = new FormData();
     formData.append("file", blob, "capture.png");
-    formData.append("fairytalePk", fairytalePk);
+    formData.append("fairytalePk", 1);
 
     try {
       await sendThumbImage(formData);
