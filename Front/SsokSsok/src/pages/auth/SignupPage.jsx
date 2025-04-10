@@ -4,7 +4,7 @@ import FlowerAnimation from "../../components/animations/FlowerAnimation";
 import SignupBoard from "../../assets/images/signin_board_icon.png";
 import { checkIdApi, checkNickNameApi, signupApi } from "../../apis/authApi";
 import "../../styles/auth/signup_input_container.css";
-
+import { Navigate, useNavigate } from "react-router-dom";
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     id: "",
@@ -22,6 +22,7 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isMatch, setIsMatch] = useState(null)
 
+  const navigate = useNavigate()
   useEffect(() => {
     if (confirmPassword === "") {
       setIsMatch(null)
@@ -205,6 +206,9 @@ const SignupPage = () => {
         <button className="confirm-button mt-7" onClick={handleSignup}>
           회원가입
         </button>
+        {/* <button className="confirm-button mt-2" onClick={() => navigate("/login")}>
+          로그인
+        </button> */}
       </div>
     </>
   )
