@@ -5,6 +5,8 @@ import SignupBoard from "../../assets/images/signin_board_icon.png";
 import { checkIdApi, checkNickNameApi, signupApi } from "../../apis/authApi";
 import "../../styles/auth/signup_input_container.css";
 import { Navigate, useNavigate } from "react-router-dom";
+import CustomAlert from "../../components/CustomAlert";
+
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     id: "",
@@ -21,7 +23,8 @@ const SignupPage = () => {
 
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isMatch, setIsMatch] = useState(null)
-
+  const [alertMessage, setAlertMessage] = useState(""); 
+  const [showAlert, setShowAlert] = useState(false);     
   const navigate = useNavigate()
   useEffect(() => {
     if (confirmPassword === "") {
@@ -56,8 +59,22 @@ const SignupPage = () => {
   }
 
   const handleSignup = async () => {
+    // 중복 확인이 안 된 경우
+    if (idCheckResult !== true) {
+      setAlertMessage("아이디 중복 확인을 해주세요.");
+      setShowAlert(true);
+      return;
+    }
+
+    if (nickCheckResult !== true) {
+      setAlertMessage("닉네임 중복 확인을 해주세요.");
+      setShowAlert(true);
+      return;
+    }
+
     if (!isMatch) {
-      alert("비밀번호가 일치하지 않습니다.")
+      setAlertMessage("비밀번호가 일치하지 않습니다.")
+      setShowAlert(true);
       return;
     }
 
@@ -65,15 +82,19 @@ const SignupPage = () => {
         const res = await signupApi(formData)
       
         if (res.status === 201 || res.status === 200) {
-          alert("회원가입 성공!")
-          window.location.href = "/login"
+          setAlertMessage("회원가입 성공! 로그인 페이지로 이동합니다")
+          setShowAlert(true);
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 1500);
         } else {
-          alert("회원가입에 실패했습니다.")
+          setAlertMessage("회원가입에 실패했습니다. 다른 이메일을 입력해주세요")
+          setShowAlert(true);
           // console.log("BASE_URL", import.meta.env.VITE_SPRING_API_URL)
         }
       } catch (err) {
-        // console.error("회원가입 실패:", err)
-        alert("회원가입에 실패했습니다.")
+        setAlertMessage("회원가입에 실패했습니다.")
+        setShowAlert(true);
         console.log("BASE_URL", import.meta.env.VITE_SPRING_API_URL)
       }
   }
@@ -233,6 +254,14 @@ const SignupPage = () => {
           로그인
         </button> */}
       </div>
+      
+      {/* 🔔 CustomAlert 렌더링 */}
+      {showAlert && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+        />
+      )}
     </>
   )
 }
