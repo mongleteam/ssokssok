@@ -10,9 +10,9 @@ const InviteConfirmModal = ({ friend, nickname, onConfirm, onClose, mode = "new"
 
       if (res.data.isSuccess) {
         const roomId = res.data.data.roomId;
-        if (mode === "new") {
-          alert(`${friend}님께 초대를 보냈습니다!`);
-        }
+        // if (mode === "new") {
+        //   alert(`${friend}님께 초대를 보냈습니다!`);
+        // }
         onConfirm(roomId); // ✅ 상위에서 navigate 처리
       } else {
         alert(`초대 실패: ${res.data.message}`);

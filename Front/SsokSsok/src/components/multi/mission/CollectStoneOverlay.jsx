@@ -134,11 +134,11 @@ const CollectStoneOverlay = ({
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const landmarks = results.multiHandLandmarks[0];
     
-        drawConnectors(ctx, landmarks, handPose.HAND_CONNECTIONS, {
-          color: "#00FF00",
-          lineWidth: 2,
-        });
-        drawLandmarks(ctx, landmarks, { color: "#FF0000", lineWidth: 1 });
+        // drawConnectors(ctx, landmarks, handPose.HAND_CONNECTIONS, {
+        //   color: "#00FF00",
+        //   lineWidth: 2,
+        // });
+        // drawLandmarks(ctx, landmarks, { color: "#FF0000", lineWidth: 1 });
     
         if (isHandClosed(landmarks)) {
           checkCollision(landmarks);
