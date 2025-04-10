@@ -23,7 +23,7 @@ const Header = () => {
     // 🔥 상태 각각 구독해야 함!
     const alarms = useAlarmStore((state) => state.alarms);
     const isLoaded = useAlarmStore((state) => state.isLoaded);
-    console.log("🧷 Header 렌더링 - 알림 개수:", alarms, "로딩완료:", isLoaded)
+    // console.log("🧷 Header 렌더링 - 알림 개수:", alarms, "로딩완료:", isLoaded)
 
     
     
@@ -86,7 +86,7 @@ const Header = () => {
                         />
                         {alarms.length > 0 && (
                         <>
-                            {console.log("✅ 뱃지 렌더링!")}
+                            {}
                             <span className="absolute -top-0 -right-0 bg-red-500 text-white text-2xl w-6 h-6 flex items-center justify-center rounded-full font-bold font-dodam">
                             {alarms.length}
                             </span>

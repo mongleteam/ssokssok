@@ -22,7 +22,7 @@ const HanselBookOpening = () => {
       // ✅ API 호출
       bookInfoApi()
         .then((res) => {
-          console.log("📘 동화 정보 res.data:", res.data.data)
+          // console.log("📘 동화 정보 res.data:", res.data.data)
 
           if (res.data.isSuccess) {
             navigate("/main/bookstart/hansel", { state: res.data.data })
@@ -31,7 +31,7 @@ const HanselBookOpening = () => {
           }
         })
         .catch((err) => {
-          console.error("❌ API 호출 실패:", err)
+          // console.error("❌ API 호출 실패:", err)
           alert("서버 오류가 발생했습니다.")
           logout()
           navigate("/login")

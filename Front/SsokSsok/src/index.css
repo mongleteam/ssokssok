@@ -48,6 +48,7 @@ body {
 button,
 a,
 img,
+label,
 p {
   cursor: url("/cursors/point_cursor.cur"), pointer !important;
 }

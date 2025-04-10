@@ -183,7 +183,7 @@ function MultiPage() {
 
   useEffect(() => {
     onSocketEvent("isSuccess", ({ senderName, isSuccess }) => {
-      console.log("📩 isSuccess 이벤트 수신:", { senderName, isSuccess });
+      // console.log("📩 isSuccess 이벤트 수신:", { senderName, isSuccess });
 
       setMissionSuccessMap((prev) => {
         const key = senderName === role ? "inviter" : "invitee";

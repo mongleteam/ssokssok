@@ -27,6 +27,7 @@ const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
       alreadyInitialized.current = true;
 
       const OVInstance = new OpenVidu();
+      OVInstance.setLogLevel("ERROR");
       setOV(OVInstance);
 
       const newSession = OVInstance.initSession();

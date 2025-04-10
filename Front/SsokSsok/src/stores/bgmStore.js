@@ -23,7 +23,7 @@ const useBgmStore = create((set, get) => ({
   
     bgm.play()
       .then(() => {
-        console.log("🎵 initBgm 재생됨");
+        // console.log("🎵 initBgm 재생됨");
         set({ audio: bgm, isPlaying: true }); // ✅ play 성공 후에 저장!
       })
       .catch((err) => {
