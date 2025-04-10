@@ -53,6 +53,7 @@ p {
 }
 
 .custom-slider,
-.custom-slider::-webkit-slider-thumb {
+.custom-slider::-webkit-slider-thumb,
+.checkbox {
   cursor: url("/cursors/point_cursor.cur"), pointer !important;
 }
