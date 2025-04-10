@@ -587,7 +587,6 @@ function MultiPage() {
             )}
         </div>
         <div ref={captureRef} className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
-          <ManualCaptureButton captureTargetRef={captureRef} />
           <VideoWithOverlay
             roomId={roomId}
             userName={role}
@@ -710,6 +709,7 @@ function MultiPage() {
               );
             }}
           </VideoWithOverlay>
+          <ManualCaptureButton captureTargetRef={captureRef} />
         </div>
       </div>
 
