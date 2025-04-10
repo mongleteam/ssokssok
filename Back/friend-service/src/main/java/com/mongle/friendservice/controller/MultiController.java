@@ -2,6 +2,7 @@ package com.mongle.friendservice.controller;
 
 import com.mongle.friendservice.common.ApiResponseJson;
 import com.mongle.friendservice.dto.request.FriendRequestDTO;
+import com.mongle.friendservice.dto.request.MultiRejectDTO;
 import com.mongle.friendservice.dto.response.RoomIdResponseDTO;
 import com.mongle.friendservice.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -40,9 +41,11 @@ public class MultiController {
     @PostMapping("/reject")
     public ResponseEntity<ApiResponseJson> rejectNotification(
             @RequestHeader("X-User-Id") String userPk,
-            @RequestBody FriendRequestDTO friendRequestDTO
+            @RequestBody MultiRejectDTO multiRejectDTO
     ){
+        FriendRequestDTO friendRequestDTO = new FriendRequestDTO(multiRejectDTO.getFriendId());
         notificationService.deleteMultiNotification(userPk, friendRequestDTO);
+        notificationService.disconnet(multiRejectDTO);
 
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "멀티 요청 거절에 성공했습니다.", false));
     }

@@ -18,6 +18,7 @@ import { getFromIndexedDB } from "../../utils/indexedDbUtils";
 import PageAlert from "../../components/multi/PageAlert.jsx";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
+import { cancelGameApi } from "../../apis/FriendApi";
 import {
   connectSocket,
   disconnectSocket,
@@ -79,15 +80,19 @@ function MultiPage() {
     const missionCleared = (() => {
       switch (currentMissionRole) {
         case 1: // 헨젤만
-          return role === "헨젤" ? missionSuccessMap.inviter : missionSuccessMap.invitee;
+          return role === "헨젤"
+            ? missionSuccessMap.inviter
+            : missionSuccessMap.invitee;
         case 2: // 그레텔만
-          return role === "그레텔" ? missionSuccessMap.inviter : missionSuccessMap.invitee;
+          return role === "그레텔"
+            ? missionSuccessMap.inviter
+            : missionSuccessMap.invitee;
         case 3: // 둘 다 해야 함
         default:
           return missionSuccessMap.inviter && missionSuccessMap.invitee;
       }
     })();
-    
+
     // 미션 성공해야 다음 페이지 버튼 활성화
     if (isMissionVisible && from === "inviter") {
       if (!missionCleared) {
@@ -176,15 +181,15 @@ function MultiPage() {
   useEffect(() => {
     onSocketEvent("isSuccess", ({ senderName, isSuccess }) => {
       console.log("📩 isSuccess 이벤트 수신:", { senderName, isSuccess });
-  
+
       setMissionSuccessMap((prev) => {
         const key = senderName === role ? "inviter" : "invitee";
         const updated = { ...prev, [key]: isSuccess === "성공" };
-  
+
         // 🔍 여기서 조건 판단!
         const currentMission = storyData[currentPage]?.mission;
         const currentMissionRole = storyData[currentPage]?.role;
-  
+
         const isMissionComplete = (() => {
           switch (currentMissionRole) {
             case 1:
@@ -196,19 +201,19 @@ function MultiPage() {
               return updated.inviter && updated.invitee;
           }
         })();
-  
+
         // ✅ 미션 성공 상태면 알림 보여주기
         if (isMissionVisible && isMissionComplete) {
           setMissionClearedAlert(true);
         }
-  
+
         return updated;
       });
-  
+
       // 열쇠 미션 처리 유지
       const currentMission = storyData[currentPage]?.mission;
       const isNotMe = senderName !== role;
-  
+
       if (
         isSuccess === "성공" &&
         isNotMe &&
@@ -218,12 +223,11 @@ function MultiPage() {
         setIsPeerFreed(true);
       }
     });
-  
+
     return () => {
       offSocketEvent("isSuccess");
     };
   }, [role, currentPage, storyData, isMissionVisible]);
-  
 
   useEffect(() => {
     const index = location.state?.pageIndex;
@@ -287,23 +291,22 @@ function MultiPage() {
       e.returnValue = ""; // 크롬용: 사용자에게 새로고침 경고
       // 이건 실제 이동은 안 막고 경고창만 띄움
     };
-  
+
     const handleReload = () => {
       alert("새로고침은 지원되지 않아요. 메인으로 돌아갑니다!");
       navigate("/main");
     };
-  
+
     // 경고용
     window.addEventListener("beforeunload", handleBeforeUnload);
     // 진짜 새로고침 시점에 처리
     window.addEventListener("load", handleReload);
-  
+
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("load", handleReload);
     };
   }, []);
-  
 
   useEffect(() => {
     const loadStoryData = async () => {
@@ -448,7 +451,7 @@ function MultiPage() {
     onSocketEvent("objectCount", handleCleanCount);
     return () => offSocketEvent("objectCount", handleCleanCount);
   }, [role, currentPage, isMissionVisible, currentMission]);
-  
+
   return (
     <div className="relative book-background-container flex flex-col items-center">
       {showWaiting && (
@@ -471,6 +474,7 @@ function MultiPage() {
                 "함께 읽기 요청을 취소하시겠습니까?"
               );
               if (confirmed) {
+                cancelGameApi(friend.friendId);
                 navigate("/main");
               }
             }
@@ -579,7 +583,7 @@ function MultiPage() {
                 assets={assets}
                 statusContent={statusContent}
                 setStatusContent={setStatusContent}
-                userName = {role}
+                userName={role}
               />
             )}
         </div>
@@ -650,13 +654,14 @@ function MultiPage() {
                         alt="peer-jail"
                         className="absolute inset-0 w-full h-full object-cover z-30 pointer-events-none opacity-90"
                       />
-                  )}
+                    )}
 
                   {/* 청소 미션용 */}
                   {isMissionVisible &&
                     currentMission?.type === "webcam-clean-multi" &&
                     currentMission.instructionImages?.length >= 4 && // 0: 빗자루, 1~3: dust
-                    peerCleanCount < 3 && role === "헨젤" && (
+                    peerCleanCount < 3 &&
+                    role === "헨젤" && (
                       <img
                         key="peer-dust"
                         src={
@@ -668,8 +673,6 @@ function MultiPage() {
                         className="absolute top-20 right-0 w-[10rem] z-10 opacity-80"
                       />
                     )}
-
-
                 </>
               );
             }}
@@ -720,7 +723,10 @@ function MultiPage() {
         </div>
       )}
       {showPageAlert && (
-        <PageAlert message="먼저 초대한 친구가 넘겨줄 때까지 기다려주세요!" onClose={() => setShowPageAlert(false)} />
+        <PageAlert
+          message="먼저 초대한 친구가 넘겨줄 때까지 기다려주세요!"
+          onClose={() => setShowPageAlert(false)}
+        />
       )}
       {missionClearedAlert && (
         <PageAlert

@@ -187,4 +187,8 @@ public class SocketEventHandler {
         client.disconnect();
     }
 
+    public void disconnectRoomFromRest(RoomDisconnectionRequest data) {
+        disconnectRoom(data);
+    }
+
 }
