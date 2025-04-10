@@ -3,6 +3,8 @@ import { useTrackingCore } from "../../hooks/useTrackingCore"; // ✅ 이거 추
 import { useFingerPosition } from "../../hooks/useFingerTracking"; // useFingerTracking 대신 이거 사용
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import CountdownOverlay from "../webcam/CountdownOverlay";
+import CustomAlert from "../CustomAlert";
+
 
 const HOLD_DURATION = 3000; // 3초 머물기
 
@@ -21,6 +23,8 @@ const TreasureHuntMission = ({
     countdown,
     setShowModal,
     handleSave,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
   } = useTrackingCore(videoRef);
 
   const fingerPos = useFingerPosition(handLandmarks);
@@ -162,6 +166,13 @@ const TreasureHuntMission = ({
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+    {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
 
       <video
         ref={videoRef}

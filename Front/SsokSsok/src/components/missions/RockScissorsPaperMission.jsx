@@ -7,6 +7,8 @@ import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import startBtn from "../../assets/images/btn_green.png";
 import { judgeRPS } from "../../utils/judgeRPS";
 import { getRandomWitchHand } from "../../utils/getRandomWitchHand";
+import CustomAlert from "../CustomAlert";
+
 
 // 가위바위보 이모지 매핑
 const gestureToEmoji = {
@@ -38,6 +40,8 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
     countdown: captureCountdown,
     setShowModal,
     handleSave,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
   } = useTrackingCore(videoRef, captureCompositeImage);
 
   // 가위바위보 제스처 훅
@@ -278,6 +282,13 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
     </div>
   );
 };

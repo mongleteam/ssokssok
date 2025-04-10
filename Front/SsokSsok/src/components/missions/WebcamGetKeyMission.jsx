@@ -4,6 +4,7 @@ import { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
 import { useHandPose } from "../../hooks/useHandPose";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import CustomAlert from "../CustomAlert";
 
 const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
     const videoRef = useRef(null);
@@ -13,7 +14,8 @@ const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, asset
     const [holdingStartTime, setHoldStartTime] = useState(null);
     const [missionMessage, setMissionMessage] = useState("");
 
-    const { handLandmarks, showModal, previewUrl, handleSave, countdown, setShowModal } =
+    const { handLandmarks, showModal, previewUrl, handleSave, countdown, setShowModal,     alertMessage,        // ⬅️ 추가
+      setAlertMessage, } =
     useTrackingCore(videoRef, 1, captureWithVideoOverlay);
 
     const { getHandCenter, isHandOpen } = useHandPose(handLandmarks);
@@ -117,6 +119,13 @@ const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, asset
             onSave={handleSave}
             onClose={() => setShowModal(false)}
           />
+
+        {alertMessage && (
+          <CustomAlert
+            message={alertMessage}
+            onClose={() => setAlertMessage(null)}
+          />
+        )}
         </div>
       );
     };

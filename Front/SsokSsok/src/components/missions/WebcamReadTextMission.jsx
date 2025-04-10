@@ -6,6 +6,7 @@ import { useTrackingCore } from "../../hooks/useTrackingCore";
 import { captureCompositeImage } from "../../utils/captureCompositeImage";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import CustomAlert from "../CustomAlert";
 
 const TARGET_TEXT = "반짝이는 조약돌을 따라가자";
 
@@ -15,13 +16,15 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
   const [isListening, setIsListening] = useState(false);
   const [matchedLength, setMatchedLength] = useState(0);
   const [missionState, setMissionState] = useState("idle"); // "idle" | "listening" | "success" | "fail"
-
+  const [missionMessage, setMissionMessage] = useState("");
   const {
     previewUrl,
     showModal,
     handleSave,
     countdown,
     setShowModal,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
   } = useTrackingCore(videoRef, 1, captureCompositeImage, {
     useHands: true,
     useHolistic: false,
@@ -192,6 +195,13 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
     </div>
   );
 };

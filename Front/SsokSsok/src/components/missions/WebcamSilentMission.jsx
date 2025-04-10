@@ -5,6 +5,7 @@ import { useTrackingCore } from "../../hooks/useTrackingCore";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import { captureCompositeImage } from "../../utils/captureCompositeImage";
+import CustomAlert from "../CustomAlert";
 
 
 const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
@@ -24,6 +25,8 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
     previewUrl,
     setShowModal,
     handleSave,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
   } = useTrackingCore(videoRef, 1, captureCompositeImage);
 
   const secondsLeft = Math.max(0, Math.ceil((REQUIRED_DURATION - quietDuration) / 1000));
@@ -153,6 +156,13 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
          onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
     </div>
   );
 };

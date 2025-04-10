@@ -5,6 +5,8 @@ import { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
 import { useMouthTracker } from "../../hooks/useMouthTracker";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import CustomAlert from "../CustomAlert";
+
 
 const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
   const videoRef = useRef(null);
@@ -27,6 +29,8 @@ const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }
     countdown,
     setShowModal,
     handleSave,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
   } = useTrackingCore(videoRef, 1, captureWithVideoOverlay);
 
   const { mouthOpen } = useMouthTracker(faceLandmarks);
@@ -110,6 +114,13 @@ const EatCookieMission = ({ onComplete, setStatusContent, missionProps, assets }
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
     </div>
   );
 };
