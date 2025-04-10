@@ -16,6 +16,7 @@ import MissionRouter from "../../components/story/MissionRouter.jsx";
 import IllustrationRouter from "../../components/story/IllustrationRouter.jsx";
 import { getFromIndexedDB } from "../../utils/indexedDbUtils";
 import PageAlert from "../../components/multi/PageAlert.jsx";
+import ManualCaptureButton from "../../components/multi/ManualCaptureButton";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
 import {
@@ -65,6 +66,8 @@ function MultiPage() {
   const [showPageAlert, setShowPageAlert] = useState(false);
   const [peerCleanCount, setPeerCleanCount] = useState(0);
   const [missionClearedAlert, setMissionClearedAlert] = useState(false);
+  const captureRef = useRef();
+
 
   const navigate = useNavigate();
 
@@ -583,7 +586,8 @@ function MultiPage() {
               />
             )}
         </div>
-        <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
+        <div ref={captureRef} className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
+          <ManualCaptureButton captureTargetRef={captureRef} />
           <VideoWithOverlay
             roomId={roomId}
             userName={role}
