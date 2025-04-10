@@ -45,7 +45,7 @@ function MultiPage() {
   const { roomId, friend, from, fairytale } = location.state || {};
   const [role, setRole] = useState(location.state?.role || null);
   const [showWaiting, setShowWaiting] = useState(from === "inviter");
-  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(from !== "inviter");
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [showConfirmStartModal, setShowConfirmStartModal] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
   const [progressPk, setProgressPk] = useState(
@@ -484,17 +484,17 @@ function MultiPage() {
           friend={friend}
           onClose={() => {
             setShowConfirmStartModal(false);
-            setIsPhotoModalOpen(true);
+            // setIsPhotoModalOpen(true);
           }}
         />
       )}
 
-      {isPhotoModalOpen && (
+      {/* {isPhotoModalOpen && (
         <PhotoModal
           isOpen={isPhotoModalOpen}
           onClose={() => setIsPhotoModalOpen(false)}
         />
-      )}
+      )} */}
 
       <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full flex justify-between px-8 z-40 pointer-events-none">
         <PageNavigationButton
