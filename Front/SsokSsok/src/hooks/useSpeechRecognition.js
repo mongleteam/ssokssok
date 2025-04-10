@@ -11,9 +11,9 @@ const useSpeechRecognition = ({ onResult }) => {
     try {
       recognition.start();
       isRecognizingRef.current = true;
-      console.log("🎤 인식 시작");
+      // console.log("🎤 인식 시작");
     } catch (err) {
-      console.warn("🎤 start 실패 (중복 or 에러):", err);
+      // console.warn("🎤 start 실패 (중복 or 에러):", err);
     }
   }, []);
 
@@ -23,9 +23,9 @@ const useSpeechRecognition = ({ onResult }) => {
     try {
       recognition.stop();
       isRecognizingRef.current = false;
-      console.log("🛑 인식 중단");
+      // console.log("🛑 인식 중단");
     } catch (err) {
-      console.warn("🛑 stop 실패:", err);
+      // console.warn("🛑 stop 실패:", err);
     }
     clearTimeout(restartTimeout.current);
   }, []);
@@ -33,7 +33,7 @@ const useSpeechRecognition = ({ onResult }) => {
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.warn("❌ 브라우저가 SpeechRecognition을 지원하지 않음");
+      // console.warn("❌ 브라우저가 SpeechRecognition을 지원하지 않음");
       return;
     }
 
@@ -45,7 +45,7 @@ const useSpeechRecognition = ({ onResult }) => {
     recognition.onresult = onResult;
 
     recognition.onerror = (e) => {
-      console.error("SpeechRecognition 오류", e);
+      // console.error("SpeechRecognition 오류", e);
 
       isRecognizingRef.current = false;
 
@@ -57,9 +57,9 @@ const useSpeechRecognition = ({ onResult }) => {
             try {
               recognition.start();
               isRecognizingRef.current = true;
-              console.log("🎤 오류 후 재시작");
+              // console.log("🎤 오류 후 재시작");
             } catch (err) {
-              console.warn("재시작 실패:", err);
+              // console.warn("재시작 실패:", err);
             }
           }
         }, 1000);
@@ -67,7 +67,7 @@ const useSpeechRecognition = ({ onResult }) => {
     };
 
     recognition.onend = () => {
-      console.log("🎤 음성 인식 종료됨");
+      // console.log("🎤 음성 인식 종료됨");
       isRecognizingRef.current = false;
     };
 

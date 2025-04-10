@@ -7,7 +7,7 @@ let socket = null; // 소켓 인스턴스를 외부에서 접근 가능하게 �
  * @param {string} roomId - 방 ID
  */
 export const connectSocket = () => {
-  console.log("📡 connectSocket 호출됨");
+  // console.log("📡 connectSocket 호출됨");
   if (socket) {
     // console.log("⚠️ 이미 연결된 소켓 존재:", socket.id);
     return; // 중복 연결 방지
@@ -22,25 +22,25 @@ export const connectSocket = () => {
   });
 
   socket.on("connect", () => {
-    console.log("✅ 소켓 연결 성공:", socket.id);
+    // console.log("✅ 소켓 연결 성공:", socket.id);
   });
 
   socket.on("disconnect", () => {
-    console.log("❌ 소켓 연결 종료");
+    // console.log("❌ 소켓 연결 종료");
   });
 
   
 
   // 필요한 추가 이벤트 리스너는 여기서 등록
   socket.on("receive_message", (data) => {
-    console.log("📩 메시지 수신:", data);
+    // console.log("📩 메시지 수신:", data);
   });
 };
 
 export const joinRoom = (roomId) => {
   if (socket) {
     socket.emit("joinRoom", { roomId });
-    console.log("🚪 joinRoom emitted:", roomId);
+    // console.log("🚪 joinRoom emitted:", roomId);
   }
 };
 
