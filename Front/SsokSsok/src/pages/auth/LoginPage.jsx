@@ -100,9 +100,9 @@ const LoginPage = () => {
               <button className="confirm-button mt-7" onClick={() => {
                 handleLogin()
               }}>로그인</button>
-              <button className="confirm-button mt-4"   onClick={() => {
+              {/* <button className="confirm-button mt-4"   onClick={() => {
                 navigate("/signup")
-              }}>회원가입</button>
+              }}>회원가입</button> */}
 
 
             </div>
