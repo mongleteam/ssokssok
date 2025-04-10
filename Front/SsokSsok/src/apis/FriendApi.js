@@ -36,8 +36,8 @@ export const acceptGameApi = (friendId) => {
 };
 
 // 게임 초대 요청 거절
-export const rejectGameApi = (friendId) => {
-  return authApi.post("/multi/reject", { friendId });
+export const rejectGameApi = (friendId, roomId) => {
+  return authApi.post("/multi/reject", { friendId, roomId });
 };
 
 export const cancelGameApi = (friendId) => {
