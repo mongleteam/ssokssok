@@ -32,7 +32,7 @@ const WebcamDrawMission = ({
     updateDrawing,
     progress,
     starPoints,
-  } = useDrawStarMission(480, 350, backgroundImage, onComplete);
+  } = useDrawStarMission(480, 370, backgroundImage, onComplete);
 
   
 
@@ -40,15 +40,15 @@ const WebcamDrawMission = ({
   const progressStatusUI = useMemo(() => {
     return (
       <div className="w-full flex justify-center">
-        <div className="w-72 h-6 bg-gray-300 rounded-full overflow-hidden relative">
-          <div
-            className="h-full bg-green-400 transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-          <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">
-            {progress}%
-          </div>
-        </div>
+        <div className="w-80 h-8 bg-gray-300 rounded-full overflow-hidden relative shadow-inner border border-gray-400">
+  <div
+    className="h-full bg-green-500 transition-all duration-300"
+    style={{ width: `${progress}%` }}
+  />
+  <div className="absolute inset-0 flex items-center justify-center text-lg font-extrabold text-white drop-shadow-sm tracking-wider">
+    {progress}%
+  </div>
+</div>
       </div>
     );
   }, [progress]);
@@ -62,7 +62,7 @@ const WebcamDrawMission = ({
     if (!handLandmarks || handLandmarks.length < 9) return;
     const tip = {
       x: handLandmarks[8].x * 480,
-      y: handLandmarks[8].y * 350,
+      y: handLandmarks[8].y * 380,
     };
     const pip = handLandmarks[6];
     const isDrawing = handLandmarks[8].y < pip.y - 0.02;
@@ -85,17 +85,29 @@ useEffect(() => {
 
   return (
     <div id="capture-container" className="relative flex flex-col items-center gap-4">
+
+       {/* ✨ 안내 메시지 */}
+       {progress < 100 && (
+          <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 
+                          bg-[#8B5E3C] text-white font-cafe24 text-2xl 
+                          px-8 py-3 rounded-md border-4 border-stone-900 
+                          shadow-lg tracking-wide z-50 pointer-events-none">
+            🌟 1번부터 천천히 따라 그려보세요!
+          </div>
+        )}
+
       <div className="flex gap-8">
         <video
           ref={videoRef}
           autoPlay
           muted
-          className="rounded-lg w-[480px] h-[350px] scale-x-[-1]"
+          className={`rounded-lg w-[480px] h-[380px] scale-x-[-1] transition-opacity duration-300
+            ${showModal ? "opacity-0" : "opacity-100"}`}
         />
         <canvas
           ref={canvasRef}
           width={480}
-          height={370}
+          height={380}
           className=" rounded-lg"
         />
         {starPoints.slice(0, 10).map((p, i) => (
