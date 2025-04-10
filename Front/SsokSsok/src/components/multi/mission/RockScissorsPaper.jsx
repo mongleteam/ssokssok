@@ -160,8 +160,8 @@ const RockScissorsPaper = ({
           const finalWitchGesture = firstWitch;
           const finalPlayerGesture = playerGestureRef.current;
 
-          console.log("마녀 손:" , finalWitchGesture);
-          console.log("내 손:" , finalPlayerGesture);
+          // console.log("마녀 손:" , finalWitchGesture);
+          // console.log("내 손:" , finalPlayerGesture);
 
           if (finalPlayerGesture === "None") {
             setResult("noHand");

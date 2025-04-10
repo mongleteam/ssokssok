@@ -16,6 +16,7 @@ import MissionRouter from "../../components/story/MissionRouter.jsx";
 import IllustrationRouter from "../../components/story/IllustrationRouter.jsx";
 import { getFromIndexedDB } from "../../utils/indexedDbUtils";
 import PageAlert from "../../components/multi/PageAlert.jsx";
+import ManualCaptureButton from "../../components/multi/ManualCaptureButton";
 
 import { createProgressApi, updateProgressApi } from "../../apis/multiApi";
 import { cancelGameApi } from "../../apis/FriendApi";
@@ -66,6 +67,8 @@ function MultiPage() {
   const [showPageAlert, setShowPageAlert] = useState(false);
   const [peerCleanCount, setPeerCleanCount] = useState(0);
   const [missionClearedAlert, setMissionClearedAlert] = useState(false);
+  const captureRef = useRef();
+
 
   const navigate = useNavigate();
 
@@ -111,12 +114,12 @@ function MultiPage() {
       if (from === "inviter") {
         sendMessage("prevNext", { roomId, next: true, prev: false });
         if (shouldSaveOnMissionEnd) {
-          console.log("📝 진행상황 저장 시도 (미션 종료):", progressPk);
+          // console.log("📝 진행상황 저장 시도 (미션 종료):", progressPk);
           await updateProgressApi(progressPk, {
             nowPage: nextPage + 1,
             finish: false,
           });
-          console.log("✅ 저장 완료 (미션 종료):", nextPage + 1);
+          // console.log("✅ 저장 완료 (미션 종료):", nextPage + 1);
         }
       }
       return;
@@ -143,7 +146,7 @@ function MultiPage() {
           nowPage: nextPage + 1,
           finish: false,
         });
-        console.log("✅ 저장 완료 (일반):", nextPage + 1);
+        // console.log("✅ 저장 완료 (일반):", nextPage + 1);
       }
     }
   }, [
@@ -424,9 +427,9 @@ function MultiPage() {
           setProgressPk(newPk); // ✅ 상태 저장!
           // console.log("✅ 진행상황 pk 받아오기 완!", newPk);
         }
-        console.log("진행상황 등록 완료!");
+        // console.log("진행상황 등록 완료!");
       } catch (err) {
-        console.error("❌ 진행상황 등록 실패:", err);
+        // console.error("❌ 진행상황 등록 실패:", err);
       }
     }
   };
@@ -443,7 +446,7 @@ function MultiPage() {
         isMissionVisible &&
         currentMission?.type === "webcam-clean-multi"
       ) {
-        console.log("[CLEAN] 31페이지에서 objectCount 수신:", objectCount);
+        // console.log("[CLEAN] 31페이지에서 objectCount 수신:", objectCount);
         setPeerCleanCount(objectCount);
       }
     };
@@ -539,6 +542,7 @@ function MultiPage() {
       <StoryHeader />
 
       <div className="flex w-full h-[75%] max-w-[1200px] px-4 lg:px-12">
+      <ManualCaptureButton captureTargetRef={captureRef}/>
         <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
           {storyData.length > 0 && startReady && (
             <StoryIllustration storyData={storyData[currentPage]}>
@@ -587,7 +591,8 @@ function MultiPage() {
               />
             )}
         </div>
-        <div className="flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
+        <div ref={captureRef} className="relative flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
+          {/* <ManualCaptureButton captureTargetRef={captureRef} /> */}
           <VideoWithOverlay
             roomId={roomId}
             userName={role}
@@ -745,9 +750,9 @@ function MultiPage() {
                     nowPage: pageIndex,
                     finish: true,
                   });
-                  console.log("✅ 읽기 완료 처리 완");
+                  // console.log("✅ 읽기 완료 처리 완");
                 } catch (err) {
-                  console.error("❌ 읽기 완료 처리 실패:", err);
+                  // console.error("❌ 읽기 완료 처리 실패:", err);
                 }
               }
               sendMessage("leaveGame", { roomId, username: role });
@@ -757,7 +762,7 @@ function MultiPage() {
               setIsPauseModalOpen(true);
             }
           }}
-          className="fixed bottom-8 right-8 z-10 w-52 h-20 font-cafe24 text-xl hover:scale-110 transition-transform duration-200"
+          className="fixed bottom-2 right-8 z-10 w-52 h-20 font-cafe24 text-xl hover:scale-110 transition-transform duration-200"
         >
           <img
             src={pauseButton}

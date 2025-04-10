@@ -14,7 +14,7 @@ const MissionScreen = ({
   const [missionText, setMissionText] = useState(""); // 지시사항 텍스트 상태
   const [isHintModalOpen, setIsHintModalOpen] = useState(false); // 힌트 모달 상태
   useEffect(() => {
-    console.log("현재 사용자 이름:", userName);
+    // console.log("현재 사용자 이름:", userName);
   }, [userName]);
   useEffect(() => {
     const fetchMission = async () => {
