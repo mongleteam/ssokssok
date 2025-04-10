@@ -3,6 +3,8 @@ import { useTrackingCore } from "../../hooks/useTrackingCore";
 import { useFingerTracking } from "../../hooks/useFingerTracking";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import CountdownOverlay from "../webcam/CountdownOverlay";
+import CustomAlert from "../CustomAlert";
+
 const MAX_BREAD = 3;
 const HOLD_DURATION = 3000; // 3초
 
@@ -15,6 +17,8 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
     countdown,
     setShowModal,
     handleSave,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
   } = useTrackingCore(videoRef);
 
   const fingerPos = useFingerTracking(handLandmarks);
@@ -164,6 +168,13 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
 
       <video
         ref={videoRef}

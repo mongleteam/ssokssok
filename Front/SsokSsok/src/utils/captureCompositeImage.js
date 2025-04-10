@@ -50,3 +50,6 @@ export const captureCompositeImage= async (containerId) => {
     );
   });
 };
+
+
+

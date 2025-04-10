@@ -3,6 +3,8 @@ import { useTrackingCore } from "../../hooks/useTrackingCore";
 import { useDrawStarMission } from "../../hooks/useDrawStarMission";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import CountdownOverlay from "../webcam/CountdownOverlay";
+import CustomAlert from "../CustomAlert";
+
 
 const WebcamDrawMission = ({
   missionProps,
@@ -19,6 +21,8 @@ const WebcamDrawMission = ({
     countdown,
     setShowModal,
     handleSave,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
   } = useTrackingCore(videoRef, fairytalePk);
 
   const keyGuideImageKey = missionProps.instructionImages?.[0];
@@ -142,6 +146,13 @@ useEffect(() => {
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
     </div>
   );
 };

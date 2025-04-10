@@ -4,6 +4,9 @@ import { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
 import { useHandPose } from "../../hooks/useHandPose";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import CustomAlert from "../CustomAlert";
+
+
 
 const WebcamCleanMission = ({
   onComplete,
@@ -25,6 +28,8 @@ const WebcamCleanMission = ({
     handleSave,
     countdown,
     setShowModal,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
   } = useTrackingCore(videoRef, 1, captureWithVideoOverlay, {
     useHands: true,
     useHolistic: false,
@@ -187,6 +192,13 @@ const WebcamCleanMission = ({
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
+      )}
     </div>
   );
 };

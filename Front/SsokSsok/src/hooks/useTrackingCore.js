@@ -6,6 +6,7 @@ import { Camera } from "@mediapipe/camera_utils";
 import { captureCompositeImage } from "../utils/captureCompositeImage";
 import { sendThumbImage } from "../apis/bookStartApi";
 import { playShutterSound } from "../utils/playShutterSound";
+import CustomAlert from "../components/CustomAlert";
 
 export const useTrackingCore = (videoRef, fairytalePk = 1, captureFn = captureCompositeImage, options = {
   useHands : true, useHolistic: true }
@@ -16,6 +17,7 @@ export const useTrackingCore = (videoRef, fairytalePk = 1, captureFn = captureCo
   const [showModal, setShowModal] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const {useHands = true, useHolistic = true} = options;
+  const [alertMessage, setAlertMessage] = useState(null);
 
   const captureTriggered = useRef(false);  // 캡처 중복 방지
   const cameraRef = useRef(null);   // Mediapipe 카메라 인스턴스
@@ -126,7 +128,7 @@ export const useTrackingCore = (videoRef, fairytalePk = 1, captureFn = captureCo
     formData.append("file", blob, "thumb-capture.png");
     formData.append("fairytalePk", fairytalePk);
     await sendThumbImage(formData);
-    alert("✅ 저장 완료!");
+    setAlertMessage("🌟 방금 찍은 사진이 나만의 앨범에 저장됐어요!");
     setShowModal(false);
     setPreviewUrl(null);
   };
@@ -139,5 +141,7 @@ export const useTrackingCore = (videoRef, fairytalePk = 1, captureFn = captureCo
     countdown,
     setShowModal,
     handleSave,
+    alertMessage,          
+    setAlertMessage,
   };
 };

@@ -4,6 +4,8 @@ import { useHandPose } from "../../hooks/useHandPose";
 import CountdownOverlay from "../webcam/CountdownOverlay";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
 import  { captureWithVideoOverlay } from "../../utils/captureWithVideoOverlay";
+import CustomAlert from "../CustomAlert";
+
 const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps, assets }) => {
   const videoRef = useRef(null);
   const missionRef = useRef(null);
@@ -14,8 +16,9 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
   const [hoveredStoneId, setHoveredStoneId] = useState(null);
   const [lastHoveredStoneId, setLastHoveredStoneId] = useState(null);
   const [missionMessage, setMissionMessage] = useState("");
-
-  const { handLandmarks, showModal, previewUrl, handleSave, countdown, setShowModal } =
+  
+  const { handLandmarks, showModal, previewUrl, handleSave, countdown, setShowModal,    alertMessage,        // ⬅️ 추가
+    setAlertMessage } =
     useTrackingCore(videoRef, 1, captureWithVideoOverlay);
 
   const { getHandCenter, isHandOpen, isHandClosed } = useHandPose(handLandmarks);
@@ -156,6 +159,13 @@ const WebcamCollectStoneMission = ({ onComplete, setStatusContent, missionProps,
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {alertMessage && (
+              <CustomAlert
+                message={alertMessage}
+                onClose={() => setAlertMessage(null)}
+              />
+        )}
     </div>
   );
 };
