@@ -1,6 +1,7 @@
 package com.mongle.friendservice.service;
 
 import com.mongle.friendservice.dto.request.FriendRequestDTO;
+import com.mongle.friendservice.dto.request.MultiRejectDTO;
 import com.mongle.friendservice.dto.response.NotificationListResponseDTO;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -19,4 +20,5 @@ public interface NotificationService {
 
     void cancelMultiNotification(String userPk, FriendRequestDTO friendRequestDTO);
 
+    void disconnet(MultiRejectDTO multiRejectDTO);
 }

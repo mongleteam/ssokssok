@@ -2,10 +2,12 @@ package com.mongle.friendservice.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongle.friendservice.client.SocketServiceClient;
 import com.mongle.friendservice.client.UserServiceClient;
 
 import com.mongle.friendservice.dto.request.FriendRequestDTO;
 
+import com.mongle.friendservice.dto.request.MultiRejectDTO;
 import com.mongle.friendservice.dto.response.NotificationListResponseDTO;
 import com.mongle.friendservice.entity.Notification;
 import com.mongle.friendservice.exception.CustomException;
@@ -39,6 +41,7 @@ public class NotificationServiceImpl implements NotificationService {
     private static final String REDIS_NOTIFICATION_PREFIX = "notification:";
     private static final Long DEFAULT_TIMEOUT = 60000L;
     private final UserServiceClient userServiceClient;
+    private final SocketServiceClient socketServiceClient;
 
     public SseEmitter connect(String userPk, String lastEventId) {
         // 중복 연결 방지 하기 위해서 이전 emitter 제거
@@ -148,7 +151,10 @@ public class NotificationServiceImpl implements NotificationService {
         
     }
 
-
+    @Override
+    public void disconnet(MultiRejectDTO multiRejectDTO) {
+        socketServiceClient.disconnect(multiRejectDTO.getRoomId());
+    }
 
 
     @Override
