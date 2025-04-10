@@ -33,8 +33,26 @@ const SignupPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    if ((name === "id" || name === "nickname") && value.length > 8) return
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    // 공통: 공백 포함 시 무시
+    if (/\s/.test(value)) return;
+
+    // 아이디 입력 조건: 한글/특수문자/공백 금지
+    if (name === "id") {
+      if (!/^[a-zA-Z0-9]*$/.test(value)) return; // 영문/숫자만 허용
+      if (value.length > 8) return;
+    }
+
+    // 닉네임: 최대 8자, 공백 외 제한 없음
+    if (name === "nickname" && value.length > 8) return;
+
+      // 이름: 최대 5자
+    if (name === "name" && value.length > 5) return;
+
+    // 비밀번호: 최대 12자
+    if (name === "password" && value.length > 12) return;
+
+    // 기타 입력 필드 처리
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   const handleSignup = async () => {
@@ -51,10 +69,10 @@ const SignupPage = () => {
           window.location.href = "/login"
         } else {
           alert("회원가입에 실패했습니다.")
-          console.log("BASE_URL", import.meta.env.VITE_SPRING_API_URL)
+          // console.log("BASE_URL", import.meta.env.VITE_SPRING_API_URL)
         }
       } catch (err) {
-        console.error("회원가입 실패:", err)
+        // console.error("회원가입 실패:", err)
         alert("회원가입에 실패했습니다.")
         console.log("BASE_URL", import.meta.env.VITE_SPRING_API_URL)
       }
@@ -108,7 +126,7 @@ const SignupPage = () => {
             name="id"
             id="id"
             type="text"
-            placeholder="아이디 입력"
+            placeholder="최대8자, 공백/한글/특수문자 금지"
             className="custom-input"
             value={formData.id}
             onChange={handleChange}
@@ -130,7 +148,7 @@ const SignupPage = () => {
               name="name"
               id="name"
               type="text"
-              placeholder="이름을 입력하세요"
+              placeholder="이름(5자 이내)을 입력하세요"
               className="custom-input"
               value={formData.name}
               onChange={handleChange}
@@ -144,7 +162,7 @@ const SignupPage = () => {
                 name="nickname"
                 id="nickname"
                 type="text"
-                placeholder="닉네임을 입력하세요"
+                placeholder="닉네임(8자 이내)을 입력하세요"
                 className="custom-input"
                 value={formData.nickname}
                 onChange={handleChange}
@@ -178,7 +196,7 @@ const SignupPage = () => {
               name="password"
               id="password"
               type="password"
-              placeholder="비밀번호를 입력하세요"
+              placeholder="비밀번호(12자 이내)를 입력하세요"
               className="custom-input"
               value={formData.password}
               onChange={handleChange}
@@ -193,7 +211,12 @@ const SignupPage = () => {
               placeholder="비밀번호를 다시 입력하세요"
               className="custom-input"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/\s/.test(value)) return;
+                if (value.length > 12) return;
+                setConfirmPassword(value);
+              }}
             />
             {isMatch !== null && (
               <span className={`check-icon ${isMatch ? "valid" : "invalid"}`}>
