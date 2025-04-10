@@ -30,12 +30,12 @@ const VideoManager = ({ roomId, userName }) => {
         const connectionId = event.stream.connection.connectionId;
 
         if (subscribedConnectionIds.current.has(connectionId)) {
-          console.log("이미 구독한 connection입니다:", connectionId);
+          // console.log("이미 구독한 connection입니다:", connectionId);
           return;
         }
 
         subscribedConnectionIds.current.add(connectionId);
-        console.log("Subscribing to", connectionId);
+        // console.log("Subscribing to", connectionId);
 
         const subscriber = session.subscribe(event.stream, undefined);
         setSubscribers((prev) => [...prev, subscriber]);

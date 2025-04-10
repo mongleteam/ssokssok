@@ -170,7 +170,7 @@ const CleanMissionMulti = ({
   // 🔥 상대방 청소 횟수 수신
   useEffect(() => {
     const handleCleanCount = (data) => {
-      console.log("[CLEAN] objectCount 수신됨:", data);
+      // console.log("[CLEAN] objectCount 수신됨:", data);
 
       if (data.senderName !== userName) {
         setPeerCleanCount?.(data.objectCount);
