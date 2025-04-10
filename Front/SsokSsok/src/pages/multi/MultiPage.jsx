@@ -542,7 +542,7 @@ function MultiPage() {
       <StoryHeader />
 
       <div className="flex w-full h-[75%] max-w-[1200px] px-4 lg:px-12">
-      <ManualCaptureButton captureTargetRef={captureRef}/>
+      {/* <ManualCaptureButton captureTargetRef={captureRef}/> */}
         <div className="flex flex-col w-full lg:w-[60%] space-y-4 pr-4">
           {storyData.length > 0 && startReady && (
             <StoryIllustration storyData={storyData[currentPage]}>
@@ -591,8 +591,9 @@ function MultiPage() {
               />
             )}
         </div>
-        <div ref={captureRef} className="relative flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
-          {/* <ManualCaptureButton captureTargetRef={captureRef} /> */}
+        <div className="relative flex flex-col w-full lg:w-[40%] space-y-4 pl-4">
+          <ManualCaptureButton captureTargetRef={captureRef} />
+          <div ref={captureRef}>
           <VideoWithOverlay
             roomId={roomId}
             userName={role}
@@ -714,6 +715,7 @@ function MultiPage() {
               );
             }}
           </VideoWithOverlay>
+          </div>
         </div>
       </div>
 

@@ -97,7 +97,7 @@ const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
               className="w-full h-auto rounded-3xl shadow-lg"
               style={{ transform: "scaleX(-1)" }}
             />
-            <div className="absolute top-2 right-2 bg-white/50 text-black px-3 py-1 rounded-3xl text-base font-semibold shadow-md pointer-events-none z-50 font-cafe24">
+            <div className="absolute bottom-2 left-2 bg-white/50 text-black px-3 py-1 rounded-3xl text-base font-semibold shadow-md pointer-events-none z-50 font-cafe24">
               {userName}
             </div>
             {/* 오버레이 요소 */}
@@ -126,7 +126,7 @@ const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
               className="w-full h-auto rounded-3xl shadow-lg"
             />
             {/* 역할 오버레이 */}
-            <div className="absolute top-2 right-2 bg-white/50 text-black px-3 py-1 rounded-3xl text-base font-semibold shadow-md pointer-events-none z-50 font-cafe24">
+            <div className="absolute bottom-2 left-2 bg-white/50 text-black px-3 py-1 rounded-3xl text-base font-semibold shadow-md pointer-events-none z-50 font-cafe24">
               {userName === "헨젤" ? "그레텔" : "헨젤"}
             </div>
             <div

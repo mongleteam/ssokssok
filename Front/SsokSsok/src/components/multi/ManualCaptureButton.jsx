@@ -49,7 +49,7 @@ const ManualCaptureButton = ({ captureTargetRef, fairytalePk }) => {
     <>
       {/* 촬영 버튼 */}
       <div
-        className="absolute top-20 right-56 z-50 flex items-center"
+        className="absolute top-8 right-4 z-50 flex items-center"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
