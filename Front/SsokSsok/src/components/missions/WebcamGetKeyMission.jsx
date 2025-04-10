@@ -73,7 +73,7 @@ const WebcamGetKeyMission = ({ onComplete, setStatusContent, missionProps, asset
                     className="w-24 h-28 inline-block rotate-90"
                   />
                 )}
-                열쇠를 잡아보세요.
+                를 3초간 잡아보세요.
               </div>
             )}
           </div>

@@ -31,7 +31,7 @@ function SinglePage() {
     
           const fileMap = {};
           const fileNames = Object.keys(zip.files);
-          console.log("📁 포함된 파일 목록:", fileNames);
+          // console.log("📁 포함된 파일 목록:", fileNames);
     
           for (const fileName of fileNames) {
             const file = zip.file(fileName);

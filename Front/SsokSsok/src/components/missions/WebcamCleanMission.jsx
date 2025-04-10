@@ -16,6 +16,7 @@ const WebcamCleanMission = ({
   const missionRef = useRef(null);
   const [motionCount, setMotionCount] = useState(0);
   const [successMessage, setSuccessMessage] = useState("");
+  const [dusts, setDusts] = useState([]);
 
   const {
     handLandmarks,
@@ -32,13 +33,43 @@ const WebcamCleanMission = ({
   const { isHandOpen, getHandCenter } = useHandPose(handLandmarks);
 
   const broomImg = assets[missionProps.instructionImages?.[0]];
-  const dustImg1 = assets[missionProps.instructionImages?.[1]];
-  const dustImg2 = assets[missionProps.instructionImages?.[2]];
-  const dustImg3 = assets[missionProps.instructionImages?.[3]];
+  const dustImg = assets[missionProps.instructionImages?.[3]]; // 사용할 먼지 이미지 하나 (ex: dustImg3)
 
   const motionRef = useRef({ startX: null });
   const countRef = useRef(0);
 
+  // ✅ 먼지 3개 랜덤 위치에 배치 (처음 1번만)
+  useEffect(() => {
+    if (!dustImg) return;
+    if (dusts.length > 0) return;
+  
+    const MIN_DISTANCE = 30; // 퍼센트 기준 최소 거리 (예: 25%)
+  
+    const newDusts = [];
+    let tries = 0;
+  
+    while (newDusts.length < 3 && tries < 100) {
+      const x = Math.random() * 70 + 10; // 10% ~ 80%
+      const y = Math.random() * 60 + 20; // 20% ~ 80%
+      const tooClose = newDusts.some((d) => {
+        const dx = d.x - x;
+        const dy = d.y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        return dist < MIN_DISTANCE;
+      });
+      if (!tooClose) {
+        newDusts.push({
+          id: newDusts.length,
+          img: dustImg,
+          x,
+          y,
+        });
+      }
+      tries++;
+    }
+  
+    setDusts(newDusts);
+  }, [dustImg, dusts.length]);
 
   // 💨 좌/우 끝으로 손 흔들면 청소 카운트
   useEffect(() => {
@@ -65,7 +96,7 @@ const WebcamCleanMission = ({
     }
   }, [handLandmarks, isHandOpen]);
 
-  // 🧹 손 위에 빗자루 따라다니기 (빠르게)
+  // 🧹 손 위에 빗자루 따라다니기
   useEffect(() => {
     let animationId;
 
@@ -104,14 +135,6 @@ const WebcamCleanMission = ({
     setStatusContent(ui);
   }, [motionCount, successMessage]);
 
-  // 먼지 이미지 단계별 표시
-  const renderDust = () => {
-    if (motionCount === 0) return dustImg3;
-    if (motionCount === 1) return dustImg2;
-    if (motionCount === 2) return dustImg1;
-    return null;
-  };
-
   return (
     <div
       ref={missionRef}
@@ -125,16 +148,23 @@ const WebcamCleanMission = ({
         className="w-full h-full object-cover scale-x-[-1]"
       />
 
-      {/* 💨 먼지 이미지 */}
-      {renderDust() && (
-        <img
-          src={renderDust()}
-          alt="dust"
-          className="absolute top-20 right-0 w-[20rem] object-cover z-10 pointer-events-none"
-        />
-      )}
+      {/* 💨 먼지 이미지 3개 중 motionCount만큼 사라짐 */}
+      {dusts
+        .filter((_, index) => index >= motionCount)
+        .map((dust) => (
+          <img
+            key={dust.id}
+            src={dust.img}
+            alt="dust"
+            className="absolute w-[10rem] object-contain z-10 pointer-events-none"
+            style={{
+              left: `${dust.x}%`,
+              top: `${dust.y}%`,
+            }}
+          />
+        ))}
 
-      {/* 🧹 손이 열려 있고 좌표 있을 때만 빗자루 표시 */}
+      {/* 🧹 빗자루 이미지 */}
       {broomImg && getHandCenter && isHandOpen && (
         <img
           ref={broomRef}

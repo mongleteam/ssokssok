@@ -150,7 +150,14 @@ const WebcamReadTextMission = ({ onComplete, setStatusContent }) => {
                       setMissionState("success");
                       onComplete?.();
                     } else {
-                      setMissionState("fail");
+                      // ✅ fail은 약간 지연시켜서 useEffect가 먼저 처리되도록 유도
+                      setTimeout(() => {
+                        // 아직 성공하지 않은 상태에서만 fail 처리
+                        setMissionState((prev) => {
+                          if (prev !== "success") return "fail";
+                          return prev;
+                        });
+                      }, 100); // 100ms 정도 딜레이 주면 충분
                     }
                   }}
                 >

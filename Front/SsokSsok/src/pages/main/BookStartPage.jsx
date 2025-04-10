@@ -45,12 +45,12 @@ const BookStartPage = () => {
           setBookData(res.data.data)
         } else {
           setError("동화 정보를 불러오지 못했습니다.")
-          console.error("📛 API 실패 응답:", res.data)
+          // console.error("📛 API 실패 응답:", res.data)
         }
       })
       .catch((err) => {
         setError("서버 오류가 발생했습니다.")
-        console.error("❌ API 호출 오류:", err)
+        // console.error("❌ API 호출 오류:", err)
       })
       .finally(() => setLoading(false))
   }, []);
@@ -78,7 +78,7 @@ const BookStartPage = () => {
         fairytalePk: fairytale.fairytalePk,
         role: "FIRST",
       });
-      console.log("api 응답 : ", response.data)
+      // console.log("api 응답 : ", response.data)
   
       if (response.data.isSuccess) {
         const progressPk = response.data.data;
