@@ -141,7 +141,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
   const statusContent = useMemo(() => {
     if (isPlaying && countdown !== null) {
       return (
-        <div className="text-5xl text-center font-bold animate-bounce font-cafe24">
+        <div className="text-5xl text-center font-bold animate-bounce font-cafe24 mt-2">
           {countdown}
         </div>
       );
@@ -172,7 +172,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
       const isWin = result === "win";
       return (
         <div
-          className="relative flex flex-row items-center justify-center gap-4 text-center text-2xl font-bold text-amber-700 animate-pulse font-cafe24"
+          className="relative flex flex-row items-center justify-center gap-4 text-center text-2xl font-bold text-amber-700 animate-pulse font-cafe24 mt-3"
           style={{ transform: "translateY(-20px)" }}
         >
           <div>{missionMessage}</div>
@@ -259,7 +259,7 @@ const RockScissorsPaperMission = ({ onComplete, setStatusContent }) => {
       {/* 내 손(플레이어) vs 마녀 제스처 */}
       <div className="absolute top-4 left-4 text-white text-3xl font-semibold bg-black/50 px-6 py-4 rounded-xl space-y-1 font-cafe24">
         <div>
-          🧙 마녀: {displayWitch ? gestureToEmoji[displayWitch] : "..."}
+          🧙 마녀: {displayWitch ? gestureToEmoji[displayWitch] : "❓"}
         </div>
         <div>
           🧒 나: {displayPlayer ? gestureToEmoji[displayPlayer] : "..."}

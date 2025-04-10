@@ -37,11 +37,17 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
     while (placed.length < MAX_BREAD) {
       const x = Math.random() * 70 + 10;
       const y = Math.random() * 65 + 25;
+    
+      // 웹캠 영역 대략적으로 피하기 (오른쪽 상단)
+      const isOverlappingWebcam = x > 75 && y < 30;
+      if (isOverlappingWebcam) continue;
+    
       const tooClose = placed.some((b) => {
         const dx = b.x - x;
         const dy = b.y - y;
         return Math.sqrt(dx * dx + dy * dy) < MIN_DISTANCE;
       });
+    
       if (!tooClose) {
         placed.push({ id: placed.length, x, y, collected: false });
       }
@@ -131,8 +137,8 @@ const HandHoldBreadMission = ({ onComplete, setStatusContent, missionProps, asse
             key={bread.id}
             src={assets[breadImg]}
             alt="bread"
-            className="absolute w-12 h-12 z-10"
-            style={{ left: `${bread.x}%`, top: `${bread.y}%` }}
+            className="absolute w-12 h-12 z-10 "
+            style={{ left: `${bread.x}%`, top: `${bread.y}%`, filter: "drop-shadow(0 0 2px white) drop-shadow(0 0 5px white)" }}
           />
         ) : null
       )}

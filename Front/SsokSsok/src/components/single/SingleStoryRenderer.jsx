@@ -99,19 +99,19 @@ useEffect(() => {
     if (progressPk) {
       try {
         const isLast = nextPage + 1 === totalPageCount;
-        console.log("📌 저장 호출:", {
-          progressPk,
-          nowPage: nextPage + 1,
-          finish: isLast,
-        });
+        // console.log("📌 저장 호출:", {
+        //   progressPk,
+        //   nowPage: nextPage + 1,
+        //   finish: isLast,
+        // });
         
         await updateSingleProgressApi(progressPk, {
           nowPage: nextPage + 1,
           finish: isLast,
         });
-        console.log("📌 싱글 진행도 저장됨:", nextPage + 1, `(finish: ${isLast})`);
+        // console.log("📌 싱글 진행도 저장됨:", nextPage + 1, `(finish: ${isLast})`);
       } catch (err) {
-        console.error("❌ 싱글 진행도 저장 실패:", err);
+        // console.error("❌ 싱글 진행도 저장 실패:", err);
       }
     }
   };

@@ -80,11 +80,11 @@ const EatCookie = ({
 
   useEffect(() => {
     const handleCookieCount = (data) => {
-      console.log("[📩 수신됨] objectCount:", data);
+      // console.log("[📩 수신됨] objectCount:", data);
       const { senderName, objectCount } = data;
 
       if (senderName !== userName) {
-        console.log("[COOKIE] 📩 상대방 쿠키 개수:", objectCount);
+        // console.log("[COOKIE] 📩 상대방 쿠키 개수:", objectCount);
         setPeerCookieCount(objectCount);
         setLocalPeerCookieCount(objectCount);  // 내 컴포넌트에서도 로컬로 추적
       }
@@ -99,14 +99,14 @@ const EatCookie = ({
   const prevMouthOpenLocal = useRef(null);
 
   useEffect(() => {
-    console.log("[COOKIE] mouthOpen:", mouthOpen);
+    // console.log("[COOKIE] mouthOpen:", mouthOpen);
     if (prevMouthOpenLocal.current === null) {
       prevMouthOpenLocal.current = mouthOpen;
       return;
     }
     // 입이 열렸다가 닫히면 쿠키 먹은 것으로 처리
     if (prevMouthOpenLocal.current === true && mouthOpen === false) {
-      console.log("[COOKIE] 입이 닫혔어요 → 쿠키 먹기!");
+      // console.log("[COOKIE] 입이 닫혔어요 → 쿠키 먹기!");
           
       // ✅ 이미 성공했으면 아무 처리도 하지 않음
       if (success || count >= MAX_COOKIE) return;
@@ -125,7 +125,7 @@ const EatCookie = ({
           senderName: userName,
           objectCount: newCount,
         });
-        console.log("[COOKIE] 쿠키 먹은 개수:", newCount);
+        // console.log("[COOKIE] 쿠키 먹은 개수:", newCount);
       }
 
         // ✅ 성공 조건 처리

@@ -52,7 +52,7 @@ const MyAlbumPage = () => {
       setAlertMessage("삭제가 완료되었습니다!");
       setShowAlert(true);
     } catch (err) {
-      console.error("삭제 실패:", err);
+      // console.error("삭제 실패:", err);
       setAlertMessage("삭제 중 오류가 발생했습니다.");
       setShowAlert(true);
     }
