@@ -27,7 +27,6 @@ const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
       alreadyInitialized.current = true;
 
       const OVInstance = new OpenVidu();
-      OVInstance.setLogLevel("ERROR");
       setOV(OVInstance);
 
       const newSession = OVInstance.initSession();
@@ -122,7 +121,7 @@ const VideoWithOverlay = ({ roomId, userName, children, peerOverlay }) => {
             {/* <p className="text-center font-semibold font-cafe24">
               {userName === "헨젤" ? "그레텔" : "헨젤"}(친구)
             </p> */}
-            <VideoPlayer 
+            <VideoPlayer
               streamManager={sub}
               className="w-full h-auto rounded-3xl shadow-lg"
             />
