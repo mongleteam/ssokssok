@@ -3,12 +3,16 @@ import html2canvas from "html2canvas";
 import { playShutterSound } from "../../utils/playShutterSound";
 import { sendThumbImage } from "../../apis/bookStartApi";
 import PhotoCaptureModal from "../webcam/PhotoCaptureModal"; // 여기에 연결
+import CustomAlert from "../CustomAlert";
 
 const ManualCaptureButton = ({ captureTargetRef, fairytalePk }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const [isHovered, setIsHovered] = useState(false); // 추가
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
 
   const startCountdownAndCapture = async () => {
     for (let i = 3; i > 0; i--) {
@@ -37,6 +41,8 @@ const ManualCaptureButton = ({ captureTargetRef, fairytalePk }) => {
 
     try {
       await sendThumbImage(formData);
+      setAlertMessage("📸 사진이 저장되었습니다! 나만의 앨범에서 확인해보세요.");
+      setShowAlert(true);
     } catch (err) {
       console.error(err);
     }
@@ -87,6 +93,14 @@ const ManualCaptureButton = ({ captureTargetRef, fairytalePk }) => {
         onSave={handleSave}
         onClose={() => setShowModal(false)}
       />
+
+      {showAlert && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+        />
+      )}
+
     </>
   );
 };
