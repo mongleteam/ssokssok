@@ -52,7 +52,7 @@ const DrawStarMission = ({
   
     // console.log("✅ 성공 조건 체크:", { allVisited, backToStart, visited, last: drawPath.at(-1) });
   
-    if (allVisited && backToStart && !hasSentSuccess.current) {
+    if (allVisited && !hasSentSuccess.current) {
       hasSentSuccess.current = true;
       // console.log("🎉 성공! 메시지 보냄");
       sendMessage("isSuccess", {

@@ -13,7 +13,7 @@ const ContinueSingleModal = ({ onConfirm, onCancel }) => {
       >
         <h1 className="font-whitechalk text-5xl text-black mb-6">이어 읽기</h1>
 
-        <p className="font-whitechalk text-xl text-black text-center leading-relaxed mb-8 px-10">
+        <p className="font-whitechalk text-3xl text-black text-center leading-relaxed mb-8 px-10">
           이전에 읽던 페이지가 있어요! <br />
           해당 페이지부터 이어서 읽을까요?
         </p>

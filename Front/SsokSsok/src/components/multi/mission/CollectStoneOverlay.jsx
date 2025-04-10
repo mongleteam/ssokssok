@@ -68,11 +68,6 @@ const CollectStoneOverlay = ({
             senderName: userName,
             stoneId: stone.id,
           });
-          console.log("🪨 removeStone sent", {
-            roomId,
-            senderName: userName,
-            stoneId: stone.id,
-          });
           if (missionData.soundEffect?.length) {
             const sound = new Audio(assets[missionData.soundEffect[0]]);
             sound.play();
@@ -95,12 +90,6 @@ const CollectStoneOverlay = ({
 
   const handleInitStones = ({ senderName, stones: incomingStones }) => {
     if (senderName !== userName) {
-      console.log(
-        "📩 initStones received from",
-        senderName,
-        "→",
-        incomingStones
-      );
       setPeerStones(incomingStones); // 🔽 상위 전달
     }
   };
@@ -179,12 +168,6 @@ const CollectStoneOverlay = ({
   useEffect(() => {
     const handleInitStones = ({ senderName, stones: incomingStones }) => {
       if (senderName !== userName) {
-        console.log(
-          "📩 initStones received from",
-          senderName,
-          "→",
-          incomingStones
-        );
         setPeerStones(incomingStones);
       }
     };
@@ -216,7 +199,7 @@ const CollectStoneOverlay = ({
           roomId,
           stones: normalizedStones,
         });
-        console.log("🚀 initStones emitted:", normalizedStones);
+        // console.log("🚀 initStones emitted:", normalizedStones);
       }, 1000); // 🔥 타이밍 보정 (필요시)
     }
 
@@ -228,7 +211,7 @@ const CollectStoneOverlay = ({
     const receivedStonesRef = new Set();
 
     const handleRemoveStone = ({ senderName, stoneId }) => {
-      console.log("📩 removeStone received", { senderName, stoneId });
+      // console.log("📩 removeStone received", { senderName, stoneId });
 
       // 상대방이 주운 돌이고, 아직 안받은 돌이면 처리
       if (senderName !== userName) {
@@ -266,7 +249,7 @@ const CollectStoneOverlay = ({
     if (stoneCountReady && stones.length === 0 && !success) {
       setSuccess(true);
 
-      console.log("✅ isSuccess emit!");
+      // console.log("✅ isSuccess emit!");
       sendMessage("isSuccess", {
         senderName: userName,
         roomId,

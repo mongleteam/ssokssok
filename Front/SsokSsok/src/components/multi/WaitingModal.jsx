@@ -44,7 +44,7 @@ const WaitingModal = ({
     if (!isWaiting) return;
 
     onSocketEvent("inviteeJoined", () => {
-      console.log("🎉 소켓소켓 상대방이 입장했습니다!");
+      // console.log("🎉 소켓소켓 상대방이 입장했습니다!");
       
       onClose(true); // 자동 종료
     });
