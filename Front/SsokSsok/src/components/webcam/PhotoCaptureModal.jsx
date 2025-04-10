@@ -5,12 +5,12 @@ import closeButton from "../../assets/images/remove_icon.png";
 import saveButtonImg from "../../assets/images/btn_green.png"; // ✅ 저장 버튼 이미지 추가
 
 const PhotoCaptureModal = ({ isOpen, previewUrl, onSave, onClose, duration = 10000 }) => {
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(onClose, duration);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen, duration, onClose]);
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     const timer = setTimeout(onClose, duration);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [isOpen, duration, onClose]);
 
   return (
     <AnimatePresence>
