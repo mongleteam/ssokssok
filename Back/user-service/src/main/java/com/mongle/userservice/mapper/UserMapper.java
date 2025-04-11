@@ -3,6 +3,7 @@ package com.mongle.userservice.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.mongle.userservice.entity.User;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -38,5 +39,10 @@ public interface UserMapper {
 
     String getId(@Param("uuid") String uuid);
 
-    List<String> getIdList(@Param("id") String id);
+    List<String> getIdList(@Param("id") String id,
+                           @Param("currentUserId") String currentUserId,
+                           @Param("currentUserPk") String currentUserPk
+                           );
+
+    String findNicknameByUserId(@Param("id") String id);
 }

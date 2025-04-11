@@ -3,15 +3,12 @@ import com.corundumstudio.socketio.BroadcastOperations;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.mongle.socketservice.socket.dto.request.*;
-import com.mongle.socketservice.socket.dto.response.IsSuccessResponse;
-import com.mongle.socketservice.socket.dto.response.RoomExitResponse;
-import com.mongle.socketservice.socket.dto.response.RoomObjectCountResponse;
-import com.mongle.socketservice.socket.dto.response.RoomPageResponse;
+import com.mongle.socketservice.socket.dto.response.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-// cicd test12
+// cicd test12345
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -50,6 +47,79 @@ public class SocketEventHandler {
 
         // 게임에서 나갈 시 알리는 이벤트
         server.addEventListener("leaveGame", RoomExitRequest.class, (client, data, ack) -> leaveGame(client, data));
+
+        //수락자가 입장했음을 초대자에게 알림
+        server.addEventListener("inviteeJoined", RoomInviteeRequest.class, (client, data, ack) -> inviteeJoined(data));
+
+        // 초대자가 초대받는 사람에게 역할을 부여합니다.
+        server.addEventListener("sendStartInfo", RoomStartInfoRequest.class, (client, data, ack) -> sendStartInfo(data));
+
+        server.addEventListener("prevNext", RoomNextPrevRequest.class, (client, data, ack) ->
+                prevNext(data));
+
+        // 본인이 제거한 돌의 위치를 보냅니다.
+//        server.addEventListener("removeStone", StoneLocRequest.class, (client, data, ack) ->
+//                removeStone(data));
+
+        server.addEventListener("draw", RoomDrawRequest.class, (client, data, ack) -> draw(data));
+
+        server.addEventListener("initStones", RoomStoneRequest.class, (client, data, ack) -> initStones(data));
+
+        server.addEventListener("removeStone", RemoveStoneRequest.class, (client, data, ack) ->
+                removeStone(data));
+
+        server.addEventListener("sendRts", RtsRequest.class, (client, data, ack) ->
+                sendRts(data));
+    }
+
+    // 본인이 가위바위보에서 뭐 냈는지
+    private void sendRts(RtsRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("sendRts", new RtsResponse(data.getSenderName(), data.getRps()));
+    }
+
+    // 돌의 위치를 초기화 합니다.
+    private void initStones(RoomStoneRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("initStones", new RoomStoneResponse(data.getSenderName(), data.getStones()));
+    }
+
+    // 돌을 제거합니다.
+    private void removeStone(RemoveStoneRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("removeStone", new RemoveStoneResponse(data.getSenderName(), data.getStoneId()));
+    }
+
+
+    // frame 단위로 점 하나를 추가할 수 있습니다.
+    // frame 때 그림에 좌표하나가 추가 한다면 상대방에게 알립니다.
+    private void draw(RoomDrawRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("draw", new RoomDrawResponse(data.getSenderName(),data.getX(), data.getY()));
+    }
+
+    // 본인이 제거한 돌의 위치를 보냅니다.
+//    private void removeStone(StoneLocRequest data){
+//        String roomId = data.getRoomId();
+//        server.getRoomOperations(roomId).sendEvent("removeStone", new StoneLocResponse(data.getSenderName(), data.getX(), data.getY()));
+//    }
+
+    // 왼쪽인지 오른쪽인지
+    private void prevNext(RoomNextPrevRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("prevNext", new RoomNextPrevResponse(data.getNext(), data.getPrev()));
+    }
+
+    // 초대자가 초대받는 사람에게 역할을 부여합니다.
+    private void sendStartInfo(RoomStartInfoRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("sendStartInfo", new RoomStartInfoResponse(data.getInviteRole(), data.getInviteeRole(), data.getPageIndex()));
+    }
+    //수락자가 입장했음을 초대자에게 알림
+    private void inviteeJoined(RoomInviteeRequest data){
+        String roomId = data.getRoomId();
+        server.getRoomOperations(roomId).sendEvent("inviteeJoined", new RoomInviteeResponse(data.getSenderName(), data.getIsJoin()));
+
     }
 
     // 자기가 성공했는지 room에 있는 사람한테 전달한다.
@@ -115,6 +185,12 @@ public class SocketEventHandler {
 
         client.leaveRoom(roomId);
         client.disconnect();
+    }
+
+    public void disconnectRoomFromRest(RoomDisconnectionRequest data) {
+        RoomExitResponse response = new RoomExitResponse("상대가","초대 요청을 거절했습니다.");
+        server.getRoomOperations(data.getRoomId()).sendEvent("leaveGame", response);
+        disconnectRoom(data);
     }
 
 }

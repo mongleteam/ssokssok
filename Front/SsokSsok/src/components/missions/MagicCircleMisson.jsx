@@ -78,6 +78,8 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
     return dx * dx + dy * dy <= threshold * threshold;
   };
 
+  // frame 마다 호출되는 함수
+  // 각 frame에서 뭐할지 
   const onResults = (results) => {
     if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) return;
 
@@ -93,7 +95,11 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
 
     const isDrawing = fingerTip.y < fingerPip.y - 0.02;
 
+    // 만약 그리고 있다면
     if (isDrawing) {
+      
+      // tip 좌표를 그림에 추가한다.
+      // 이 때 상대방에게 event를 보내야함
       setDrawPath((prev) => [...prev, tip]);
 
       setVisited((prev) => {
@@ -126,8 +132,9 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
   }, [visited]);
 
   const drawCanvas = () => {
+    // console.log("🖌️ drawCanvas 호출됨");
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
+    const ctx = canvas?.getContext("2d"); // canvas
     if (!ctx || !bgRef.current) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -137,16 +144,29 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
 
     ctx.drawImage(bgRef.current, 0, 0, width, height);
 
-    if (drawPath.length > 1) {
-      ctx.beginPath();
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 3;
-      ctx.moveTo(drawPath[0].x, drawPath[0].y);
-      for (let i = 1; i < drawPath.length; i++) {
-        ctx.lineTo(drawPath[i].x, drawPath[i].y);
+      // 2. ⭐ 가이드라인 (회색)
+      if (starPoints.length > 1) {
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(180, 180, 180, 0.5)"; // 연한 회색
+        ctx.lineWidth = 2;
+        ctx.moveTo(starPoints[0].x, starPoints[0].y);
+        for (let i = 1; i < starPoints.length; i++) {
+          ctx.lineTo(starPoints[i].x, starPoints[i].y);
+        }
+        ctx.stroke();
       }
-      ctx.stroke();
-    }
+
+      // 3. ✍️ 유저가 그린 선 (노란색)
+      if (drawPath.length > 1) {
+        ctx.beginPath();
+        ctx.strokeStyle = "yellow"; // 유저 선은 노란색
+        ctx.lineWidth = 3;
+        ctx.moveTo(drawPath[0].x, drawPath[0].y);
+        for (let i = 1; i < drawPath.length; i++) {
+          ctx.lineTo(drawPath[i].x, drawPath[i].y);
+        }
+        ctx.stroke();
+      }
 
     starPoints.forEach((p, i) => {
       ctx.beginPath();
@@ -178,14 +198,12 @@ const MagicCircleMission = ({ width = 480, height = 360, backgroundImage, onComp
           muted
           className="border rounded-lg w-[480px] h-[360px] scale-x-[-1]"
         />
-        {starPoints.length > 0 && (
           <canvas
             ref={canvasRef}
             width={width}
             height={height}
             className="border rounded-lg"
           />
-        )}
       </div>
       <div className="w-full flex flex-col items-center gap-2 mt-4">
         <div className="text-lg font-bold text-gray-700">

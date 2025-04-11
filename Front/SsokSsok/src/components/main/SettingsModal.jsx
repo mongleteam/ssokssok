@@ -9,7 +9,7 @@ const SettingsModal = () => {
   
 
   return (
-    <div className="text-black text-xl text-center flex flex-col items-center">
+    <div className="text-black text-xl text-center flex flex-col items-center z-50">
       <img src={SettingsBoard} alt="SettingsBoard" className="w-[14rem] -mt-60" />
         {/* 🔊 배경음악 슬라이더 */}
         <div className="flex items-center w-[27rem] gap-4 mt-7">
@@ -23,7 +23,7 @@ const SettingsModal = () => {
           value={volume}
           onChange={(e) => {
             const vol = parseFloat(e.target.value)
-            console.log("🎯 슬라이더 움직임:", vol) // 확인용 로그
+            // console.log("🎯 슬라이더 움직임:", vol) // 확인용 로그
             setVolume(vol)
           }}
           className="w-full custom-slider"

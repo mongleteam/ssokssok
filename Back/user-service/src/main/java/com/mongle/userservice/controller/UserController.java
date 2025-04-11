@@ -67,7 +67,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseJson(true, 200, "회원정보 조회에 성공하였습니다.", response));
     }
     @GetMapping("/nicknameList")
-    public List<String> getNincknameList(@RequestParam("idList") List<String> idList){
+    public List<String[]> getNincknameList(@RequestParam("idList") List<String> idList){
         return userService.getNicknamesByUserId(idList);
     }
 
@@ -91,7 +91,9 @@ public class UserController {
     }
 
     @GetMapping("/id-list")
-    public List<String> getIdList(@RequestParam("id") String id){
-        return userService.getIdList(id);
+    public List<String> getIdList(
+            @RequestHeader("X-User-Id") String userPk,
+            @RequestParam("id") String id){
+        return userService.getIdList(id,userPk);
     }
 }

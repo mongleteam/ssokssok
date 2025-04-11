@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useMicVolume } from "../../hooks/useMicVolume";
 import speackIcon from "../../assets/images/speack_icon.png";
+import { useTrackingCore } from "../../hooks/useTrackingCore";
+import CountdownOverlay from "../webcam/CountdownOverlay";
+import PhotoCaptureModal from "../webcam/PhotoCaptureModal";
+import { captureCompositeImage } from "../../utils/captureCompositeImage";
+import CustomAlert from "../CustomAlert";
+
 
 const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const videoRef = useRef(null);
@@ -12,6 +18,16 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   const QUIET_THRESHOLD = 0.04;
   const REQUIRED_DURATION = 5000;
   const [missionMessage, setMissionMessage] = useState("");
+  const {
+    handLandmarks,
+    showModal,
+    countdown,
+    previewUrl,
+    setShowModal,
+    handleSave,
+    alertMessage,        // ⬅️ 추가
+    setAlertMessage,
+  } = useTrackingCore(videoRef, 1, captureCompositeImage);
 
   const secondsLeft = Math.max(0, Math.ceil((REQUIRED_DURATION - quietDuration) / 1000));
 
@@ -23,7 +39,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
-        console.error("📷 웹캠 접근 실패:", err);
+        // console.error("📷 웹캠 접근 실패:", err);
       }
     };
     setupCam();
@@ -63,19 +79,19 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
     if (!setStatusContent) return;
   
     const statusUI = (
-      <div className="flex flex-col items-center justify-center gap-4 mt-6">
+      <div className="flex flex-col items-center justify-center gap-4 mt-4">
         {isSuccess ? (
-          <div className="text-3xl font-bold text-green-700 animate-pulse mb-8">
+          <div className="text-2xl font-bold text-green-700 animate-pulse font-cafe24">
             ✅ 성공! 다음 페이지로 넘어가세요.
           </div>
         ) : (
           <div className="flex items-start justify-center gap-16">
-            <div className="w-24 h-24 -mt-5 rounded-full border-4 border-black flex items-center justify-center text-5xl font-bold">
+            <div className="w-16 h-16 -mt-2 rounded-full border-4 border-black flex items-center justify-center text-3xl font-bold">
               {secondsLeft}
             </div>
             <div className="flex items-center gap-2">
               <img src={speackIcon} alt="소리 아이콘" className="w-14 h-14" />
-              <div className="flex items-end gap-[7px] -mt-5">
+              <div className="flex items-end gap-[7px] -mt-4">
                 {Array.from({ length: 12 }, (_, i) => {
                   const level = Math.pow(i / 12, 2);
                   const isActive = volume >= level;
@@ -84,7 +100,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
                   return (
                     <div
                       key={i}
-                      className={`${barColor} w-4 transition-all duration-100 rounded-sm`}
+                      className={`${barColor} w-3 transition-all duration-100 rounded-sm`}
                       style={{ height: `${height}px` }}
                     />
                   );
@@ -118,7 +134,7 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
   };
 
   return (
-    <div className="relative w-[56rem] aspect-video torn-effect mt-6 mb-3 overflow-hidden">
+    <div id="capture-container" className="relative w-[48rem] aspect-video torn-effect mb-3 overflow-hidden">
       <video
         ref={videoRef}
         autoPlay
@@ -129,6 +145,23 @@ const WebcamSilentMission = ({ onComplete, setStatusContent }) => {
         <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
           <span className="text-white text-9xl font-bold animate-pingSlow">{overlayCount}</span>
         </div>
+      )}
+      {/* ✅ 엄지 들고 캡처 시 카운트다운 오버레이 */}
+       {countdown !== null && <CountdownOverlay count={countdown} />}
+
+     {/* ✅ 캡처 후 사진 미리보기 + 저장 모달 */}
+       <PhotoCaptureModal
+         isOpen={showModal}
+         previewUrl={previewUrl}
+         onSave={handleSave}
+        onClose={() => setShowModal(false)}
+      />
+
+      {alertMessage && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setAlertMessage(null)}
+        />
       )}
     </div>
   );

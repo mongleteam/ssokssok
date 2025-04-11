@@ -20,6 +20,8 @@ import HanselBookOpening from "../../components/animations/HanselBookOpening";
 import lockImg from "../../assets/images/lock.png";
 import useInitialAlarmLoad from "../../hooks/useInitialAlarmLoad";
 import { useAlarmStore } from "../../stores/alarmStore";
+import { useAlert } from "../../contexts/AlertContext";
+import { saveToIndexedDB, getFromIndexedDB } from "../../utils/indexedDbUtils";
 
 const books = [
     { title: "헨젤과 그레텔", image: bookHansel },
@@ -36,27 +38,50 @@ const MainPage = () => {
     const reset = useAlarmStore((state) => state.reset);
     const { accessToken } = useAuthStore()
     const navigate = useNavigate()
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (!accessToken || isTokenExpired(accessToken)) {
-            alert("로그인이 필요합니다.")
-            navigate("/login")
-        }
+    //     if (!accessToken || isTokenExpired(accessToken)) {
+    //         alert("로그인이 필요합니다.")
+    //         navigate("/login")
+    //     }
 
-    }, [accessToken, navigate])
-
+    // }, [accessToken, navigate])
+    const { showAlert } = useAlert()
     const [openHansel, setOpenHansel] = useState(false)
     const handleBookClick = (bookTitle) => {
         if (bookTitle === "헨젤과 그레텔") {
             setOpenHansel(true)
         } else {
-            alert("서비스 추후 준비중입니다 🥹")
+            showAlert("서비스 추후 준비중입니다 🥹")
         }
     }
     
     useEffect(() => {
         reset(); // ✅ 페이지 새로 들어올 때 상태 초기화
+        preloadZip(); // ZIP 백그라운드 다운로드
       }, []);
+
+     // 📦 ZIP 미리 다운로드해서 IndexedDB에 저장하는 함수
+     const preloadZip = async () => {
+        const ZIP_KEY = "HanselAndGretel_ZIP";
+        const zipUrl = "https://ssafy-mongle.s3.ap-southeast-2.amazonaws.com/HanselAndGretelData_single.zip";
+
+        try {
+            const existing = await getFromIndexedDB(ZIP_KEY);
+            if (!existing) {
+                // console.log("📦 ZIP 미리 다운로드 시작");
+                const res = await fetch(zipUrl);
+                const zipBlob = await res.blob();
+                await saveToIndexedDB(ZIP_KEY, zipBlob);
+                // console.log("✅ ZIP 미리 저장 완료");
+            } else {
+                // console.log("💾 ZIP 이미 IndexedDB에 저장돼 있음");
+            }
+        } catch (err) {
+            // console.error("❌ ZIP preload 실패:", err);
+        }
+    };
+
 
     useInitialAlarmLoad()
     if (openHansel) return <HanselBookOpening />
@@ -72,7 +97,7 @@ const MainPage = () => {
 
                 {/* 📌 첫 번째 책장과 책들 */}
                 <div className="relative flex flex-col items-center">
-                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[50rem] -mb-13 rotate-2 z-0" />
+                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[52rem] -mb-13 rotate-2 z-0" />
                     <div className="flex justify-center -mt-[26rem] z-10">
                     {books.slice(0, 4).map((book, index) => {
                         const isLocked = book.title !== "헨젤과 그레텔";
@@ -104,7 +129,7 @@ const MainPage = () => {
                 
                 {/* 📌 두 번째 책장과 책들 */}
                 <div className="relative flex flex-col items-center mt-8">
-                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[50rem] -mb-18 rotate-2 z-0" />
+                    <img src={SsokSsokBookClub} alt="Bookshelf" className="w-[52rem] -mb-18 rotate-2 z-0" />
                     <div className="flex justify-center -mt-[26rem] z-10">
                     {books.slice(4, 8).map((book, index) => {
                         const isLocked = book.title !== "헨젤과 그레텔";

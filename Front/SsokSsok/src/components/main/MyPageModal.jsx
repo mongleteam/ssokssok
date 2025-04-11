@@ -8,6 +8,8 @@ import FriendModal from "./FriendModal";
 import { useNavigate } from "react-router-dom";
 import DeleteMemberIcon from "../../assets/images/delete_member_icon.png"
 import {motion} from "framer-motion"
+import CustomConfirm from "../CustomConfirm";
+import CustomAlert from "../CustomAlert";
 
 const MyPageModal = ({openModal}) => {
   const [myInfo, setMyInfo] = useState(null)
@@ -23,16 +25,18 @@ const MyPageModal = ({openModal}) => {
     { x: -680, y: 0 },  // 왼쪽 아래
     { x: 0, y: 0 },   // 오른쪽 아래
   ];
-
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("")
+  const [showAlert, setShowAlert] = useState(false);
   useEffect(() => { 
     const fetchMyInfo = async () => {
       try {
         const res = await mypageInfoApi()
         setMyInfo(res.data)
         setNickname(res.data.data.nickname)
-        console.log(res.data.data.nickname)
+        // console.log(res.data.data.nickname)
       } catch (err) {
-        console.error("내 정보 조회 실패", err.response?.data || err.message);
+        // console.error("내 정보 조회 실패", err.response?.data || err.message);
       }
     }
 
@@ -40,10 +44,23 @@ const MyPageModal = ({openModal}) => {
   }, [])
 
   const handleLogout = async () => {
-    if (window.confirm("로그아웃갈비?")) {
-      await logout()
-    }
+    setShowLogoutConfirm(true); // 커스텀 confirm 모달 보여주기
   }
+
+  const confirmLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (err) {
+      // console.error("로그아웃 실패", err);
+    } finally {
+      setShowLogoutConfirm(false);
+    }
+  };
+  
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
+  };
 
   const handleNicknameSave = async () => {
     try {
@@ -54,12 +71,14 @@ const MyPageModal = ({openModal}) => {
         data: { ...prev.data, nickname },
       }))
       setEditing(false);
-      alert("닉네임이 수정되었습니다!")
+      // ✅ 커스텀 Alert로 변경!
+      setAlertMessage("닉네임이 수정되었습니다!");
+      setShowAlert(true);
     } catch (err) {
-      // 400 에러일 때 백엔드가 보내주는 message 표시
+      // 400 에러일 때 
       const errorMessage = err?.response?.data?.message || "닉네임 수정에 실패했습니다."
       alert(errorMessage)
-      console.error("닉네임 수정 실패", err)
+      // console.error("닉네임 수정 실패", err)
     }
   }
 
@@ -79,7 +98,7 @@ const MyPageModal = ({openModal}) => {
       // 초기화면으로 이동
       navigate("/")
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       alert("회원 탈퇴에 실패했습니다.")
     }
   }
@@ -108,6 +127,7 @@ const MyPageModal = ({openModal}) => {
               <input
                 type="text"
                 value={nickname}
+                maxLength={6}
                 onChange={(e) => setNickname(e.target.value)}
                 className="text-2xl px-2 py-1 rounded border border-gray-400"
               />
@@ -167,6 +187,20 @@ const MyPageModal = ({openModal}) => {
       />
 
 
+    {showLogoutConfirm && (
+      <CustomConfirm
+        message="로그아웃갈비? 🥩"
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
+      />
+    )}
+
+    {showAlert && (
+      <CustomAlert
+        message={alertMessage}
+        onClose={() => setShowAlert(false)}
+      />
+    )}
     </div>
   );
 };

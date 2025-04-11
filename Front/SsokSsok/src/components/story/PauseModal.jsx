@@ -3,14 +3,15 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import boardBackground from "../../assets/images/board3.png";
 import greenButton from "../../assets/images/btn_green.png";
+import { sendMessage, disconnectSocket } from "../../services/socket";
 
-const PauseModal = () => {
+const PauseModal = ({ roomId, userName }) => {
   const navigate = useNavigate();
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
       <div
-        className="relative w-[60%] h-[40%] flex flex-col items-center justify-center bg-center bg-no-repeat bg-[length:100%_100%]"
+        className="relative w-[60%] h-[50%] flex flex-col items-center justify-center bg-center bg-no-repeat bg-[length:100%_100%]"
         style={{ backgroundImage: `url(${boardBackground})` }}
       >
         <h1 className="font-whitechalk text-5xl text-black mb-4">그만 읽기</h1>
@@ -21,7 +22,14 @@ const PauseModal = () => {
         </p>
 
         <button
-          onClick={() => navigate("/main")}
+          onClick={() => {
+            sendMessage("leaveGame", {
+              roomId,
+              username: userName,
+            });
+            disconnectSocket();
+            navigate("/main");
+          }}          
           className="relative w-52 h-20 text-black font-whitechalk text-2xl hover:scale-105 transition-transform duration-200"
         >
           <img

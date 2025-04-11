@@ -17,7 +17,9 @@ import com.mongle.fairytaleservice.entity.progress;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +45,13 @@ public class FairytaleServiceImpl implements FairytaleService {
         var multiList = fairytaleMapper.findMultiProgress(fairytalePk, userPk);
 
         List<ProgressInfoDTO> progressList = new ArrayList<>();
-        progressList.addAll(single);
+        if (single != null && !single.isEmpty()) {
+            ProgressInfoDTO singleProgress = single.get(0);
+
+            if (!singleProgress.getFinish()) {
+                progressList.add(singleProgress);
+            }
+        }
         progressList.addAll(multiList);
         // 3. 응답 DTO 조립
         var response = new FairytaleInfoResponseDTO();
@@ -79,7 +87,7 @@ public class FairytaleServiceImpl implements FairytaleService {
     }
 
     @Override
-    public int createProgress(ProgressInsertRequestDTO requestDTO) {
+    public int createProgress(ProgressInsertRequestDTO requestDTO,String userPk) {
         // 1. now_page 값이 없으면 예외 처리
         if (requestDTO.getNowPage() == null) {
             throw new CustomException(ErrorCode.UNKNOWN_PAGE);
@@ -90,15 +98,15 @@ public class FairytaleServiceImpl implements FairytaleService {
         progress.setNowPage(requestDTO.getNowPage());
         progress.setMode(requestDTO.getMode().name());
         progress.setFriendId(requestDTO.getFriendId());
-        progress.setUserPk(requestDTO.getUserPk());
+        progress.setUserPk(userPk);
         progress.setFairytalePk(requestDTO.getFairytalePk());
         progress.setRole(requestDTO.getRole());
         progress.setFinish(false);  // 기본값 false
 
         // 3. progress DB에 삽입
         fairytaleMapper.insertProgress(progress);
-
-        return progress.getProgressPk();
+        int newPk = fairytaleMapper.getLastInsertId();
+        return newPk;
     }
     @Override
     public void updateProgress(int progressPk, String userPk, ProgressUpdateRequestDTO requestDTO){

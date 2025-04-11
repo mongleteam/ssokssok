@@ -1,30 +1,36 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { notiListApi } from "../apis/notificationApi";
 import { useAlarmStore } from "../stores/alarmStore";
 
 const useInitialAlarmLoad = () => {
-  const fetchedRef = useRef(false);
-  const setAlarms = useAlarmStore.getState().setAlarms;
-  const isLoaded = useAlarmStore.getState().isLoaded;
+  const setAlarms = useAlarmStore((state) => state.setAlarms);
+  const isLoaded = useAlarmStore((state) => state.isLoaded);
 
   useEffect(() => {
-    if (fetchedRef.current || isLoaded) return;
+    // console.log("🚀 useInitialAlarmLoad 실행됨");
+    if (isLoaded) return; // 이미 로딩된 경우 중복 방지
 
     const fetchAlarms = async () => {
       try {
-        const res = await notiListApi();
-        if (Array.isArray(res.data)) {
-          console.log("📥 초기 알림 불러옴:", res.data);
-          setAlarms(res.data); // ✅ 상태 업데이트
-          fetchedRef.current = true;
+        const response = await notiListApi();
+        // console.log("✅ 알림 API 응답:", response.data); 
+    
+        const notifications = response.data?.data?.notifications;
+    
+        if (Array.isArray(notifications) && notifications.length > 0) {
+          // console.log("📥 기존 알림 있음:", notifications);
+          setAlarms(notifications); // 이제 제대로 상태 저장됨!
+        } else {
+          // console.log("📭 기존 알림 없음 또는 잘못된 형식");
         }
       } catch (err) {
-        console.error("❌ 알림 불러오기 실패:", err);
+        // console.error("❌ 초기 알림 불러오기 실패:", err);
       }
     };
+    
 
     fetchAlarms();
-  }, []);
+  }, [setAlarms, isLoaded]);
 };
 
 export default useInitialAlarmLoad;

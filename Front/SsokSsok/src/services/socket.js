@@ -6,29 +6,42 @@ let socket = null; // 소켓 인스턴스를 외부에서 접근 가능하게 �
  * 소켓 연결 시작
  * @param {string} roomId - 방 ID
  */
-export const connectSocket = (roomId) => {
-  if (socket) return; // 중복 연결 방지
+export const connectSocket = () => {
+  // console.log("📡 connectSocket 호출됨");
+  if (socket) {
+    // console.log("⚠️ 이미 연결된 소켓 존재:", socket.id);
+    return; // 중복 연결 방지
+  }
 
-  socket = io("ws://3.36.67.192:9092/", {
-    path: "/socket.io",
-    query: { roomId },   // 쿼리로 roomId 전달
+  socket = io("wss://j12e201.p.ssafy.io", {
+    path: "/multi/socket.io",
+  // socket = io("ws://3.36.67.192:19092/", {
+    // path: "/socket.io",
     transports: ["websocket"],
     withCredentials: true,
   });
 
   socket.on("connect", () => {
-    console.log("✅ 소켓 연결 성공:", socket.id);
-    sendMessage("joinRoom", { roomId }); // 소켓 연결 성공 시 바로 방 조인 요청
+    // console.log("✅ 소켓 연결 성공:", socket.id);
   });
 
   socket.on("disconnect", () => {
-    console.log("❌ 소켓 연결 종료");
+    // console.log("❌ 소켓 연결 종료");
   });
+
+  
 
   // 필요한 추가 이벤트 리스너는 여기서 등록
   socket.on("receive_message", (data) => {
-    console.log("📩 메시지 수신:", data);
+    // console.log("📩 메시지 수신:", data);
   });
+};
+
+export const joinRoom = (roomId) => {
+  if (socket) {
+    socket.emit("joinRoom", { roomId });
+    // console.log("🚪 joinRoom emitted:", roomId);
+  }
 };
 
 /**
@@ -52,7 +65,11 @@ export const sendMessage = (eventName, data) => {
 /**
  * 소켓 이벤트 수신 등록
  */
-export const onSocketEvent = (eventName, callback) => {
+export const onSocketEvent = (event, callback) => {
   if (!socket) return;
-  socket.on(eventName, callback);
+  socket.on(event, callback);
+};
+
+export const offSocketEvent = (event) => {
+  if (socket) socket.off(event);
 };

@@ -18,12 +18,12 @@ const Header = () => {
     const [modalContent, setModalContent] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
-    // useInitialAlarmLoad()
+    useInitialAlarmLoad()
 
     // 🔥 상태 각각 구독해야 함!
     const alarms = useAlarmStore((state) => state.alarms);
     const isLoaded = useAlarmStore((state) => state.isLoaded);
-    console.log("🧷 Header 렌더링 - 알림 개수:", alarms, "로딩완료:", isLoaded)
+    // console.log("🧷 Header 렌더링 - 알림 개수:", alarms, "로딩완료:", isLoaded)
 
     
     
@@ -48,7 +48,7 @@ const Header = () => {
                     <motion.img
                         src={SsokSsokLogo}
                         alt="SsokSsokLogo"
-                        className="w-[7rem] cursor-pointer object-contain" // 로고만 키우기
+                        className="w-[10rem] cursor-pointer object-contain" // 로고만 키우기
                         whileHover={{ scale: 1.1 }}
                         transition={{ type: "spring", stiffness: 300 }}
                         onClick={() => navigate("/main")}
@@ -59,7 +59,7 @@ const Header = () => {
                     <motion.img
                         src={mybookIcon}
                         alt="My Album"
-                        className="w-[3.5rem] cursor-pointer object-contain"
+                        className="w-[4rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}
@@ -68,7 +68,7 @@ const Header = () => {
                     <motion.img
                         src={myPageIcon}
                         alt="My Page"
-                        className="w-[3.5rem] cursor-pointer object-contain"
+                        className="w-[4rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}
@@ -78,15 +78,15 @@ const Header = () => {
                         <motion.img
                             src={alarmIcon}
                             alt="Alarm"
-                            className="w-[3.5rem] cursor-pointer object-contain"
+                            className="w-[4rem] cursor-pointer object-contain"
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.9 }}
                             transition={{ type: "spring", stiffness: 300 }}
                             onClick={() => openModal(AlarmModal)}
                         />
-                        {isLoaded && alarms.length > 0 && (
+                        {alarms.length > 0 && (
                         <>
-                            {console.log("✅ 뱃지 렌더링!")}
+                            {}
                             <span className="absolute -top-0 -right-0 bg-red-500 text-white text-2xl w-6 h-6 flex items-center justify-center rounded-full font-bold font-dodam">
                             {alarms.length}
                             </span>
@@ -96,7 +96,7 @@ const Header = () => {
                     <motion.img
                         src={settingsIcon}
                         alt="Settings"
-                        className="w-[3.5rem] cursor-pointer object-contain"
+                        className="w-[4rem] cursor-pointer object-contain"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300 }}

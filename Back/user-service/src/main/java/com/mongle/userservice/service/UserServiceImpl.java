@@ -130,12 +130,17 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<String> getNicknamesByUserId(List<String> idList) {
+    public List<String[]> getNicknamesByUserId(List<String> idList) {
+        ArrayList<String[]> nicknames = new ArrayList<>();
         if (idList.size() == 0) {
-            return new ArrayList<>();
+            return nicknames;
+        } else {
+            for(String id : idList) {
+                String nickname = userMapper.findNicknameByUserId(id);
+                nicknames.add(new String[]{id, nickname});
+            }
         }
-
-        return userMapper.findNicknamesByUserId(idList);
+        return nicknames;
     }
 
     @Override
@@ -149,8 +154,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<String> getIdList(String id) {
-        return userMapper.getIdList(id);
+    public List<String> getIdList(String id, String userPk) {
+        String currentUserId = userMapper.getId(userPk);
+
+        return userMapper.getIdList(id,currentUserId,userPk);
     }
 
 

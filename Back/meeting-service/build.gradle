@@ -30,7 +30,7 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    implementation 'io.livekit:livekit-server:0.8.2'
+    implementation 'io.openvidu:openvidu-java-client:2.31.0'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
