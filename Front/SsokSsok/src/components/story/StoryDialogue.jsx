@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Repeat } from "lucide-react";
 
-function StoryDialogue({ storyData }) {
+function StoryDialogue({ storyData, isTtsEnabled  }) {
   const [scriptText, setScriptText] = useState("");
   const [isTtsEnded, setIsTtsEnded] = useState(false);
   const audioRef = useRef(null); // ✅ 오디오 저장용 ref
@@ -28,7 +28,7 @@ function StoryDialogue({ storyData }) {
   }, [storyData]);
 
   useEffect(() => {
-    if (!storyData?.tts) return;
+    if (!storyData?.tts || !isTtsEnabled) return; // ⛔ 자동재생 OFF면 재생 안 함
 
     const ttsAudio = new Audio(storyData.tts);
     audioRef.current = ttsAudio;

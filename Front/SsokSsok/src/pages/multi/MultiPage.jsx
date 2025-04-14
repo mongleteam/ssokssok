@@ -68,6 +68,7 @@ function MultiPage() {
   const [peerCleanCount, setPeerCleanCount] = useState(0);
   const [missionClearedAlert, setMissionClearedAlert] = useState(false);
   const captureRef = useRef();
+  const [isTtsEnabled, setIsTtsEnabled] = useState(true); // 기본값은 자동 재생 ON
 
 
   const navigate = useNavigate();
@@ -540,6 +541,13 @@ function MultiPage() {
       </div>
 
       <StoryHeader />
+      <button
+        onClick={() => setIsTtsEnabled((prev) => !prev)}
+        className="absolute text-3xl top-5 right-20 px-4 py-2 rounded z-20"
+      >
+        {isTtsEnabled ? "🔊" : "🔇"}
+      </button>
+
 
       <div className="flex w-full h-[75%] max-w-[1200px] px-4 lg:px-12">
       {/* <ManualCaptureButton captureTargetRef={captureRef}/> */}
@@ -576,6 +584,7 @@ function MultiPage() {
                 key={`dialogue-${currentPage}`}
                 storyData={storyData[currentPage]}
                 assets={assets}
+                isTtsEnabled={isTtsEnabled} // 🔥 상태 전달!
               />
             )}
           {!isPhotoModalOpen &&
