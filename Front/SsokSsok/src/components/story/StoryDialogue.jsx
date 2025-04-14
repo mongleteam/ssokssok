@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Repeat } from "lucide-react";
 
-function StoryDialogue({ storyData }) {
+function StoryDialogue({ storyData, isTtsEnabled, setIsTtsEnabled }) {
   const [scriptText, setScriptText] = useState("");
   const [isTtsEnded, setIsTtsEnded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false); // 말풍선용
   const audioRef = useRef(null); // ✅ 오디오 저장용 ref
 
   useEffect(() => {
@@ -28,7 +29,7 @@ function StoryDialogue({ storyData }) {
   }, [storyData]);
 
   useEffect(() => {
-    if (!storyData?.tts) return;
+    if (!storyData?.tts || !isTtsEnabled) return; // ⛔ 자동재생 OFF면 재생 안 함
 
     const ttsAudio = new Audio(storyData.tts);
     audioRef.current = ttsAudio;
@@ -80,6 +81,31 @@ function StoryDialogue({ storyData }) {
 
   return (
       <div className="relative flex items-center justify-center font-whitechalk text-3xl text-center w-full h-full flex-col">
+        <div
+          className="absolute top-4 left-4 z-20 flex items-center"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {/* 토글 버튼 */}
+          <button
+            onClick={() => setIsTtsEnabled((prev) => !prev)}
+            className="px-4 py-2 text-3xl rounded hover:scale-105 transition"
+          >
+            {isTtsEnabled ? "🔊" : "🔇"}
+          </button>
+          {/* 툴팁 말풍선 */}
+          {isHovered && (
+            <div className="relative ml-2">
+              <div className="px-3 py-1 bg-white text-black rounded-lg shadow text-sm font-cafe24 animate-fade-in">
+                TTS 자동 재생을 {isTtsEnabled ? "꺼요" : "켜요"}!
+              </div>
+              <div className="absolute top-1/2 left-[-6px] -translate-y-1/2 w-0 h-0 
+                border-t-8 border-b-8 border-r-8 
+                border-t-transparent border-b-transparent border-r-white" />
+            </div>
+          )}
+        </div>
+
       {scriptText && (
         <div className="m-4 px-6 py-4 max-w-2xl text-center whitespace-pre-line">
           {scriptText}
