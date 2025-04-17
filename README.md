@@ -143,7 +143,7 @@ Infra
 
 ## 아키텍쳐 구조도
 
-![alt text](img/Architecture_mongle_fin.png)
+![alt text](img/Architecture_mogle_fin.png)
 
 ---
 
